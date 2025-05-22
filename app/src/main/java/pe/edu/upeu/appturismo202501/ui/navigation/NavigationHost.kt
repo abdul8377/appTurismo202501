@@ -20,6 +20,7 @@ import pe.edu.upeu.appturismo202501.ui.presentation.screens.administrador.Admini
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.EmprendedorScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.register.RegisterScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.usuario.UsuarioScreen
+import pe.edu.upeu.appturismo202501.utils.SessionManager
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -29,9 +30,25 @@ fun NavigationHost(
     darkMode: MutableState<Boolean>,
     innerPadding: PaddingValues,
 ) {
+    // Leer token y rol guardados
+    val token = SessionManager.getToken()
+    val role = SessionManager.getUserRole()
+
+    // Definir pantalla inicial según si hay sesión y rol
+    val startDestination = if (token.isNullOrEmpty()) {
+        Destinations.Welcome.route
+    } else {
+        when (role) {
+            "Emprendedor" -> Destinations.Emprendedor.route
+            "Usuario" -> Destinations.Usuario.route
+            "Administrador" -> Destinations.Administrador.route
+            else -> Destinations.Pantalla1.route // fallback si rol desconocido
+        }
+    }
+
     NavHost(
         navController = navController,
-        startDestination = Destinations.Welcome.route,
+        startDestination = startDestination,
         modifier = Modifier.padding(innerPadding)
     ) {
         // ---------- PANTALLAS PRINCIPALES ----------
@@ -105,8 +122,9 @@ fun NavigationHost(
                 navController = navController,
                 onLogoutClicked = {
                     TokenUtils.clearToken()
-                    navController.navigate(Destinations.Login.route) {
-                        popUpTo(Destinations.Login.route) { inclusive = true }
+                    SessionManager.clearSession()  // Limpia sesión al salir
+                    navController.navigate(Destinations.Welcome.route) { // Cambiado a Welcome
+                        popUpTo(Destinations.Welcome.route) { inclusive = true }
                     }
                 }
             )
@@ -133,7 +151,7 @@ fun NavigationHost(
             )
         }
 
-
+        // Aquí podrías agregar otras rutas que uses
 
     }
 }

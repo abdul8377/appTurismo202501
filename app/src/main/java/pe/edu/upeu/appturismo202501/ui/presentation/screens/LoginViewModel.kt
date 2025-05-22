@@ -7,6 +7,7 @@ import pe.edu.upeu.appturismo202501.modelo.CheckEmailDto
 import pe.edu.upeu.appturismo202501.modelo.LoginDto
 import pe.edu.upeu.appturismo202501.modelo.LoginResp
 import pe.edu.upeu.appturismo202501.repository.LoginUserRepository
+import pe.edu.upeu.appturismo202501.utils.SessionManager
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
 import javax.inject.Inject
 
@@ -74,11 +75,14 @@ class LoginViewModel @Inject constructor(
                     val body = response.body()
                     val token = body?.token
                     val tokenType = "Bearer"
-                    if (!token.isNullOrEmpty()) {
+                    if (!token.isNullOrEmpty() && body?.id != null) {
+                        SessionManager.saveSession(token, body.id, body.roles?.firstOrNull() ?: "")
+
                         TokenUtils.TOKEN_CONTENT = "$tokenType $token"
                         TokenUtils.USER_LOGIN = loginDto.email
+
                         listUser.value = body
-                        _userRole.value = body?.roles?.firstOrNull()
+                        _userRole.value = body.roles?.firstOrNull()
                         _islogin.value = true
                     } else {
                         _errorMessage.value = "Credenciales incorrectas"
@@ -101,4 +105,5 @@ class LoginViewModel @Inject constructor(
     fun clearErrorMessage() {
         _errorMessage.value = null
     }
+
 }

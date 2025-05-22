@@ -8,6 +8,7 @@ data class LoginDto(
 )
 
 data class LoginResp(
+    val id: Int,
     val token: String,
     val name: String,
     val email: String,

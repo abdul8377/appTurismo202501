@@ -13,7 +13,8 @@ import javax.inject.Inject
 interface LoginUserRepository {
     suspend fun loginUsuario(userLogin: LoginDto): Response<LoginResp>
     suspend fun checkEmail(checkEmailDto: CheckEmailDto): Response<CheckEmailResp>
-    suspend fun sendResetPasswordEmail(request: ResetPasswordRequest): Response<ApiResponse>  // Nuevo método
+    suspend fun sendResetPasswordEmail(request: ResetPasswordRequest): Response<ApiResponse>
+    suspend fun logout(token: String): Response<ApiResponse>   // Agregado método logout
 }
 
 class LoginUserRespositoryImp @Inject constructor(
@@ -30,5 +31,10 @@ class LoginUserRespositoryImp @Inject constructor(
 
     override suspend fun sendResetPasswordEmail(request: ResetPasswordRequest): Response<ApiResponse> {
         return restLoginUsuario.sendResetPasswordEmail(request)
+    }
+
+    override suspend fun logout(token: String): Response<ApiResponse> {
+        val bearerToken = "Bearer $token"  // Aquí agregas el prefijo Bearer
+        return restLoginUsuario.logout(bearerToken)
     }
 }

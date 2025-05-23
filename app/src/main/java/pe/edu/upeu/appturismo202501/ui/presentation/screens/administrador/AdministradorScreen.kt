@@ -7,9 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -20,52 +18,68 @@ import androidx.navigation.NavHostController
 import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.DrawerNavItem
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.SidebarDrawer
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
 import pe.edu.upeu.appturismo202501.utils.SessionManager
 
 @Composable
 fun AdministradorScreen(
     navController: NavHostController,
-    onLogoutClicked: () -> Unit,       // Parámetro para manejar logout desde NavigationHost
+    onLogoutClicked: () -> Unit,
     viewModel: AdministradorViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
 
+    // Definir los ítems para el menú lateral
     val items = listOf(
         DrawerNavItem("Inicio", Icons.Default.Home, "inicio"),
+        DrawerNavItem("Usuarios", Icons.Default.Person, "usuarios"),
         DrawerNavItem("Perfil", Icons.Default.Person, "perfil"),
         DrawerNavItem("Ajustes", Icons.Default.Settings, "ajustes")
     )
 
+    // Estado para manejar el item seleccionado en el menú
     var selectedId by rememberSaveable { mutableStateOf("inicio") }
     val isLoading by remember { viewModel::isLoading }
 
+    // DrawerSidebar: Menú lateral con navegación
     SidebarDrawer(
         items = items,
         selectedItemId = selectedId,
         onItemClicked = { item ->
             selectedId = item.id
             when (item.id) {
-                "inicio" -> navController.navigate(Destinations.Pantalla1.route)
-                "perfil" -> navController.navigate(Destinations.PerfilWelcome.route)
-                "ajustes" -> navController.navigate(Destinations.Welcome.route)
+                "inicio" -> {
+                    // Aquí puedes agregar lógica para "Inicio" si es necesario
+                }
+                "usuarios" -> {
+
+                }
+                "perfil" -> {
+                    navController.navigate(Destinations.PerfilWelcome.route)
+                }
+                "ajustes" -> {
+                    navController.navigate(Destinations.Welcome.route)
+                }
             }
         },
         onLogoutClicked = {
             val token = SessionManager.getToken()
             if (!token.isNullOrEmpty()) {
-                viewModel.logout(token,
+                viewModel.logout(
+                    token,
                     onLogoutSuccess = {
-                        onLogoutClicked()  // Se ejecuta la función pasada desde NavigationHost
+                        onLogoutClicked()
                     },
                     onLogoutFailed = { error ->
                         Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                     }
                 )
             } else {
-                onLogoutClicked() // Si no hay token, también ejecutar logout
+                onLogoutClicked()
             }
         }
     ) {
+        // Mostrar contenido basado en la selección del menú
         if (isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -81,6 +95,7 @@ fun AdministradorScreen(
                 ) {
                     Text("Panel de Administración", style = MaterialTheme.typography.headlineMedium)
                 }
+                "usuarios" -> UserScreen()
                 "perfil" -> Box(
                     Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center

@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import pe.edu.upeu.appturismo202501.ui.presentation.Pantalla1
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.LoginScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.forgotpassword.ForgotPasswordScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.PerfilScreen
@@ -19,6 +18,7 @@ import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.WelcomeScree
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.administrador.AdministradorScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.EmprendedorScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.register.RegisterScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.usuario.UsuarioScreen
 import pe.edu.upeu.appturismo202501.utils.SessionManager
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
@@ -30,11 +30,9 @@ fun NavigationHost(
     darkMode: MutableState<Boolean>,
     innerPadding: PaddingValues,
 ) {
-    // Leer token y rol guardados
     val token = SessionManager.getToken()
     val role = SessionManager.getUserRole()
 
-    // Definir pantalla inicial según si hay sesión y rol
     val startDestination = if (token.isNullOrEmpty()) {
         Destinations.Welcome.route
     } else {
@@ -42,7 +40,7 @@ fun NavigationHost(
             "Emprendedor" -> Destinations.Emprendedor.route
             "Usuario" -> Destinations.Usuario.route
             "Administrador" -> Destinations.Administrador.route
-            else -> Destinations.Pantalla1.route // fallback si rol desconocido
+            else -> Destinations.Administrador.route // fallback para rol desconocido
         }
     }
 
@@ -51,29 +49,19 @@ fun NavigationHost(
         startDestination = startDestination,
         modifier = Modifier.padding(innerPadding)
     ) {
-        // ---------- PANTALLAS PRINCIPALES ----------
-        composable(Destinations.Welcome.route) {
-            WelcomeScreen(navController)
-        }
-
+        // Pantallas principales
+        composable(Destinations.Welcome.route) { WelcomeScreen(navController) }
         composable(Destinations.Search.route) {
             SearchScreen(
                 navController = navController,
-                suggestions = listOf(
-                    "Isla Taquile", "Isla Amantaní",
-                    "Lago Titicaca", "Puno", "Cusco"
-                )
+                suggestions = listOf("Isla Taquile", "Isla Amantaní", "Lago Titicaca", "Puno", "Cusco")
             )
         }
-
-        composable(Destinations.PerfilWelcome.route) {
-            PerfilScreen(navController = navController)
-        }
-
+        composable(Destinations.PerfilWelcome.route) { PerfilScreen(navController) }
         composable(Destinations.Login.route) {
             LoginScreen(
                 navigateToHome = {
-                    navController.navigate(Destinations.Pantalla1.route) {
+                    navController.navigate(Destinations.Administrador.route) {
                         popUpTo(Destinations.Login.route) { inclusive = true }
                     }
                 },
@@ -100,36 +88,25 @@ fun NavigationHost(
                 }
             )
         }
-
-        // Ruta Forgot Password
         composable(Destinations.ForgotPassword.route) {
-            ForgotPasswordScreen(
-                onBack = { navController.popBackStack() }
-            )
+            ForgotPasswordScreen(onBack = { navController.popBackStack() })
         }
 
-        // ---------- RUTAS POR ROL ----------
-        composable(Destinations.Emprendedor.route) {
-            EmprendedorScreen(navController)
-        }
-
-        composable(Destinations.Usuario.route) {
-            UsuarioScreen(navController)
-        }
-
+        // Rutas por rol
+        composable(Destinations.Emprendedor.route) { EmprendedorScreen(navController) }
+        composable(Destinations.Usuario.route) { UsuarioScreen(navController) }
         composable(Destinations.Administrador.route) {
             AdministradorScreen(
                 navController = navController,
                 onLogoutClicked = {
                     TokenUtils.clearToken()
-                    SessionManager.clearSession()  // Limpia sesión al salir
-                    navController.navigate(Destinations.Welcome.route) { // Cambiado a Welcome
+                    SessionManager.clearSession()
+                    navController.navigate(Destinations.Welcome.route) {
                         popUpTo(Destinations.Welcome.route) { inclusive = true }
                     }
                 }
             )
         }
-
         composable(Destinations.Register.route) {
             RegisterScreen(
                 onNavigateByRole = { role ->
@@ -143,7 +120,7 @@ fun NavigationHost(
                         "Administrador" -> navController.navigate(Destinations.Administrador.route) {
                             popUpTo(Destinations.Register.route) { inclusive = true }
                         }
-                        else -> navController.navigate(Destinations.Pantalla1.route) {
+                        else -> navController.navigate(Destinations.Administrador.route) {
                             popUpTo(Destinations.Register.route) { inclusive = true }
                         }
                     }
@@ -151,7 +128,10 @@ fun NavigationHost(
             )
         }
 
-        // Aquí podrías agregar otras rutas que uses
+        // Ruta para gestión de usuarios
+        composable(Destinations.User.route) {
+            UserScreen()
+        }
 
     }
 }

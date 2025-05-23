@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import pe.edu.upeu.appturismo202501.utils.SessionManager
 
 
 data class DrawerNavItem(
@@ -35,6 +36,10 @@ fun SidebarDrawer(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    // Obtener el ID del usuario y el rol desde SessionManager
+    val userId = SessionManager.getUserId()  // Obtener el ID del usuario
+    val userRole = SessionManager.getUserRole() ?: "No asignado"  // Obtener el rol del usuario
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -44,19 +49,32 @@ fun SidebarDrawer(
                     .width(280.dp)
                     .background(MaterialTheme.colorScheme.surface)
             ) {
-                // Header del Drawer
+                // Header del Drawer con el nombre del usuario y rol
                 Box(
                     Modifier
                         .fillMaxWidth()
-                        .height(140.dp)
+                        .height(180.dp)
                         .background(MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        "Tu App",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            "Bienvenido, Usuario", // Puedes cambiar esto a un nombre dinámico si lo tienes en SessionManager
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "ID: $userId", // Mostrar el ID del usuario
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Text(
+                            text = "Rol: $userRole", // Mostrar el rol del usuario
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
                 }
 
                 Spacer(Modifier.height(16.dp))

@@ -1,5 +1,4 @@
-package pe.edu.upeu.sysventasjpc.ui.presentation.components
-
+package pe.edu.upeu.appturismo202501.ui.presentation.components
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -14,25 +13,23 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
 
-
 @Composable
 fun BottomNavigationBar(items: List<Destinations>, navController: NavHostController) {
-
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoutex = navBackStackEntry?.destination?.route
-    if (currentRoutex == null || currentRoutex == Destinations.Login.route)
-    {
+
+    // Condición para no mostrar la barra en la ruta de login
+    if (currentRoutex == null || currentRoutex == Destinations.Login.route) {
         return
     }
 
-    /*val items = listOf(
-        Destinations.Pantalla1,
-        Destinations.Pantalla2,
-        Destinations.Pantalla3,
-    )*/
+    // Variable para almacenar el índice del item seleccionado
     var selectedItem by remember { mutableStateOf(0) }
-    var currentRoute by remember { mutableStateOf(Destinations.Pantalla1.route) }
 
+    // Variable para almacenar la ruta actual
+    var currentRoute by remember { mutableStateOf(Destinations.Welcome.route) }
+
+    // Iteración para encontrar el índice del item seleccionado
     items.forEachIndexed { index, navigationItem ->
         if (navigationItem.route == currentRoute) {
             selectedItem = index
@@ -43,25 +40,19 @@ fun BottomNavigationBar(items: List<Destinations>, navController: NavHostControl
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 alwaysShowLabel = true,
-                icon = { Icon(item.icon!!, contentDescription = item.title) },
+                icon = { Icon(item.icon, contentDescription = item.title) },
                 label = { Text(item.title) },
                 selected = selectedItem == index,
                 onClick = {
                     selectedItem = index
                     currentRoute = item.route
                     navController.navigate(item.route) {
-                        if(item.route=="pantalla1"){
+                        if (item.route == Destinations.Welcome.route) {
                             popUpTo(item.route)
-                        }else{
+                        } else {
                             launchSingleTop = true
                             restoreState = true
                         }
-                        /*navController.graph.startDestinationRoute?.let { route ->
-                            popUpTo(route) {
-                                saveState = true
-                            }
-                        }*/
-
                     }
                 }
             )

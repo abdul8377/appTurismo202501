@@ -8,6 +8,7 @@ import okhttp3.OkHttpClient
 import pe.edu.upeu.appturismo202501.data.remote.RestCategory
 import pe.edu.upeu.appturismo202501.data.remote.RestLoginUsuario
 import pe.edu.upeu.appturismo202501.data.remote.RestRegister
+import pe.edu.upeu.appturismo202501.data.remote.RestUser
 import pe.edu.upeu.appturismo202501.data.remote.RestZonaTuristica
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
 import retrofit2.Retrofit
@@ -67,6 +68,11 @@ class DataSourceModule {
     @Provides
     fun provideRestZonaTuristica(retrofit: Retrofit): RestZonaTuristica =
         retrofit.create(RestZonaTuristica::class.java)
+
+    @Singleton
+    @Provides
+    fun provideRestUser(retrofit: Retrofit): RestUser =
+        retrofit.create(RestUser::class.java)
 
 
 }

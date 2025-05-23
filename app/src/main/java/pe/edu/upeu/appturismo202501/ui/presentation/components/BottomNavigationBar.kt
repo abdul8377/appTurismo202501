@@ -19,34 +19,36 @@ fun BottomNavigationBar(
     items: List<Destinations>
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRouteX = navBackStackEntry?.destination?.route
-    if (currentRouteX == null || currentRouteX == Destinations.Pantalla1.route) {
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    // Ocultar barra si currentRoute es null o quieres excluir algunas pantallas
+    if (currentRoute == null || currentRoute == Destinations.Welcome.route) {
         return
     }
 
-    val currentRoute = currentRoute(navController)
-    NavigationBar(
-        //backgroundColor = Color(0.0f, 0.8f, 0.8f),
-        //contentColor = Color.White
-    ) {
-        items.forEach { screen -> NavigationBarItem( icon = {
-            Icon(
-                imageVector = screen.icon,
-                contentDescription = screen.title
-            )
-        },
-            label = { Text(screen.title) },
-            selected = currentRoute == screen.route,
-            onClick = {
-                navController.navigate(screen.route) {
-                    popUpTo(navController.graph.findStartDestination().id) {
-                        saveState = true
+    NavigationBar {
+        items.forEach { screen ->
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        imageVector = screen.icon,
+                        contentDescription = screen.title
+                    )
+                },
+                label = { Text(screen.title) },
+                selected = currentRoute == screen.route,
+                onClick = {
+                    navController.navigate(screen.route) {
+                        // Evitar crear múltiples copias en la pila
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
                     }
-                    launchSingleTop = true
-                }
-            },
-            alwaysShowLabel = false
-        )
+                },
+                alwaysShowLabel = false
+            )
         }
     }
 }

@@ -13,21 +13,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 sealed class Destinations(
     val route: String,
     val title: String,
-    val icon: ImageVector) {
-
-
-    object Welcome : Destinations("Welcome", "Welcome", Icons.Filled.Home)
+    val icon: ImageVector
+) {
+    object Welcome : Destinations("welcome", "Welcome", Icons.Filled.Home)
     object Login : Destinations("login", "Login", Icons.Filled.Settings)
-    object Register : Destinations("register", "register", Icons.Filled.Check)
-    object Pantalla1 : Destinations("pantalla1", "Pantalla1", Icons.Filled.Home)
+    object Register : Destinations("register", "Register", Icons.Filled.Check)
     object Search : Destinations("search", "Search", Icons.Filled.Search)
-    object PerfilWelcome: Destinations("perfilWelcome", "PerfilWelcome", Icons.Filled.Person)
+    object PerfilWelcome : Destinations("perfilWelcome", "PerfilWelcome", Icons.Filled.Person)
 
-    // Aquí añades los nuevos destinos que usas para los roles:
+    // Roles y pantallas
     object Emprendedor : Destinations("emprendedor", "Emprendedor", Icons.Filled.Person)
     object Usuario : Destinations("usuario", "Usuario", Icons.Filled.Person)
     object Administrador : Destinations("administrador", "Administrador", Icons.Filled.Person)
-    // Nueva ruta ForgotPassword
+    object User : Destinations("user", "User", Icons.Filled.Person) // pantalla para administrar usuarios
+
     object ForgotPassword : Destinations("forgot_password", "Forgot Password", Icons.Filled.Settings)
 }
+
+
 

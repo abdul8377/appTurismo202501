@@ -9,9 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.*
+import androidx.navigation.navArgument
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.LoginScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.forgotpassword.ForgotPasswordScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.SearchScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.administrador.AdministradorScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.EmprendedorScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.forgotpassword.ForgotPasswordScreen
@@ -113,7 +117,18 @@ fun NavigationHost(
         }
 
         // Rutas por rol
-        composable(Destinations.Emprendedor.route) { EmprendedorScreen(navController) }
+        composable(Destinations.Emprendedor.route) {
+            EmprendedorScreen(
+                navController = navController,
+                onLogoutClicked = {
+                    TokenUtils.clearToken()
+                    SessionManager.clearSession()
+                    navController.navigate(Destinations.Welcome.route) {
+                        popUpTo(Destinations.Welcome.route)
+                    }
+                }
+            )
+        }
         composable(Destinations.Usuario.route) { UsuarioScreen(navController) }
         composable(Destinations.Administrador.route) {
             AdministradorScreen(
@@ -130,14 +145,18 @@ fun NavigationHost(
 
         // Otros
         composable(Destinations.User.route) { UserScreen() }
-        composable("ver_tipo_de_negocio_screen/{id}") { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id")?.toLongOrNull()
-            if (id != null) {
-                VerTipoDeNegocioScreen(id = id)
-            } else {
-                Text("ID inválido")
-            }
+
+        // VerTipoDeNegocioScreen (única definición)
+        composable(
+            route = "ver_tipo_de_negocio_screen/{id}",
+            arguments = listOf(
+                navArgument("id") { type = NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getLong("id") ?: 0L
+            VerTipoDeNegocioScreen(id = id)
         }
     }
 }
+
 

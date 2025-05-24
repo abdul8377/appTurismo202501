@@ -19,6 +19,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.navigation.NavHostController
+import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
 import pe.edu.upeu.appturismo202501.ui.presentation.components.TipoDeNegocioForm
 
 @Composable
@@ -107,8 +108,9 @@ fun TipoDeNegocioScreen(
                             TipoDeNegocioItem(
                                 tipoDeNegocio = tipoDeNegocio,
                                 onViewClick = {
-                                    // Navegar a la pantalla de detalles del tipo de negocio
-                                    navController.navigate("ver_tipo_de_negocio_screen/${tipoDeNegocio.id}")
+                                    val destino = Destinations.VerTipoDeNegocio
+                                        .route.replace("{id}", tipoDeNegocio.id.toString())
+                                    navController.navigate(destino)
                                 },
                                 onEditClick = {
                                     tipoDeNegocioToEdit.value = tipoDeNegocio

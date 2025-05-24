@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -28,6 +29,15 @@ sealed class Destinations(
     object User : Destinations("user", "User", Icons.Filled.Person) // pantalla para administrar usuarios
 
     object ForgotPassword : Destinations("forgot_password", "Forgot Password", Icons.Filled.Settings)
+
+    object Negocios      : Destinations("negocios", "Negocios",    Icons.Filled.Person)
+    object Ajustes       : Destinations("ajustes", "Ajustes",      Icons.Filled.Settings)
+
+    object VerTipoDeNegocio : Destinations(
+        "ver_tipo_de_negocio_screen/{id}",
+        "Detalle Negocio",
+        Icons.Filled.Info // o el icono que prefieras
+    )
 }
 
 

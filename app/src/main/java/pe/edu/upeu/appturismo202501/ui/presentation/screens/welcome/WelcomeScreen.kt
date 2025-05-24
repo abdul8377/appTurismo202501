@@ -93,26 +93,26 @@ import pe.edu.upeu.appturismo202501.utils.TokenUtils
 fun WelcomeScreen(
     navController: NavController,
     viewModel: CategoryViewModel = hiltViewModel(),
-    zonaViewModel: ZonaTuristicaViewModel = hiltViewModel()
+    zonaViewModel: ZonaTuristicaViewModel = hiltViewModel(),
 ) {
     val categories by viewModel.categories.collectAsState()
-    val zonas by zonaViewModel.zonas.collectAsState()
-    // Suponiendo que tu ImageResp.fullUrl() ya usa BuildConfig.API_BASE_URL internamente
-    val banners: List<ActivityBanner> = zonas.map { zona ->
-        val imageUrl = zona.images.firstOrNull()
-            ?.fullUrl(TokenUtils.API_URL)     // <— aquí ya usas tu API_URL
-            ?: ""                             // o tu placeholder
 
-        ActivityBanner(
-            imageUrl = imageUrl,
-            name     = zona.nombre
-        )
-    }
-
+    val banners by zonaViewModel.banners.collectAsState()
     var selectedIndex by rememberSaveable { mutableStateOf(0) }
     val selectedCategory: CategoryResp? = categories.getOrNull(selectedIndex)
 
 
+    val staticTab = CategoryResp(
+        id         = -1L,
+        nombre     = "Cultura Estatico",
+        descripcion= "Experiencias culturales estatico", // opcional
+        imagenUrl  = null,
+        iconoUrl   = null
+    )
+    val allTabs = remember(categories) {
+        listOf(staticTab) + categories
+    }
+    val selectedItem = allTabs.getOrNull(selectedIndex)
 
     Scaffold(
         bottomBar = {
@@ -157,15 +157,31 @@ fun WelcomeScreen(
                             Log.d("WelcomeScreen", "Imagen URL = ${selectedCategory?.imagenUrl}")
                         }
 
-                        // AsyncImage carga fondo
-                        AsyncImage(
-                            model = selectedCategory?.imagenUrl,
-                            contentDescription = selectedCategory?.nombre,
-                            placeholder        = painterResource(R.drawable.bg),
-                            error              = painterResource(R.drawable.bg),
-                            modifier           = Modifier.fillMaxSize(),
-                            contentScale       = ContentScale.Crop
-                        )
+                        // 1) Fondo dinámico
+                        if ((selectedItem?.id ?: 0) < 0) {
+                            // Imagen local para tabs estáticos
+                            val res = when (selectedItem?.id) {
+                                -1L -> R.drawable.cultura
+
+                                else-> R.drawable.bg
+                            }
+                            Image(
+                                painter = painterResource(res),
+                                contentDescription = selectedItem?.nombre,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            // Imagen remota para tabs de la API
+                            AsyncImage(
+                                model = selectedItem?.imagenUrl,
+                                contentDescription = selectedItem?.nombre,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop,
+                                placeholder = painterResource(R.drawable.bg),
+                                error       = painterResource(R.drawable.bg)
+                            )
+                        }
                         // 2) Degradado superpuesto
                         Box(
                             modifier = Modifier
@@ -189,14 +205,14 @@ fun WelcomeScreen(
                                 .padding(16.dp)
                         ) {
                             Text(
-                                text       = selectedCategory?.nombre ?: "Cargando...",
+                                text       = selectedItem?.nombre.orEmpty(),
                                 color      = Color.White,
                                 fontSize   = 28.sp,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(Modifier.height(8.dp))
                             Text(
-                                text  = selectedCategory?.descripcion ?: "Descripción no disponible",
+                                text  = selectedItem?.descripcion.orEmpty(),
                                 color = Color.White.copy(alpha = .8f)
                             )
                             Spacer(Modifier.height(66.dp))
@@ -204,7 +220,7 @@ fun WelcomeScreen(
 
                         // ===== TABS =====
                         CategoryTabs(
-                            categories    = categories,
+                            categories    = allTabs,
                             selectedIndex = selectedIndex,
                             onSelected    = { idx -> selectedIndex = idx },
                             modifier      = Modifier
@@ -250,14 +266,16 @@ fun WelcomeScreen(
 
                 item {
                     ActivitiesSection(
-                        title       = "Zonas Turísticas",
-                        items       = banners,
+                        title = "Zonas Turísticas Destacadas",
+                        items = banners,
                         onItemClick = { banner ->
-                            // navega a detalle
-                            navController.navigate("zonaDetail/${banner.name}")
+                            // por ejemplo, navegar a un detalle:
+                            navController.navigate("zona/${banner.name}")
                         }
                     )
                 }
+
+
 
 
 

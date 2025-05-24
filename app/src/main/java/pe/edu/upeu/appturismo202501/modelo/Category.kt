@@ -17,7 +17,7 @@ data class CategoryResp(
     val nombre: String,
     val descripcion: String?,
 
-    // Como en el backend ahora devuelves imagen_url e icono_url:
+
     @SerializedName("imagen_url")
     val imagenUrl: String?,
 

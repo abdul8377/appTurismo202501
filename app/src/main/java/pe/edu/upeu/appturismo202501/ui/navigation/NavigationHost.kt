@@ -9,8 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.LoginScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.forgotpassword.ForgotPasswordScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.PerfilScreen
@@ -95,7 +97,18 @@ fun NavigationHost(
         }
 
         // Rutas por rol
-        composable(Destinations.Emprendedor.route) { EmprendedorScreen(navController) }
+        composable(Destinations.Emprendedor.route) {
+            EmprendedorScreen(
+                navController = navController,
+                onLogoutClicked = {
+                    TokenUtils.clearToken()
+                    SessionManager.clearSession()
+                    navController.navigate(Destinations.Welcome.route){
+                        popUpTo(Destinations.Welcome.route)
+                    }
+                }
+            )
+        }
         composable(Destinations.Usuario.route) { UsuarioScreen(navController) }
         composable(Destinations.Administrador.route) {
             AdministradorScreen(
@@ -135,13 +148,14 @@ fun NavigationHost(
             UserScreen()
         }
 
-        composable("ver_tipo_de_negocio_screen/{id}") { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id")?.toLongOrNull()
-            if (id != null) {
-                VerTipoDeNegocioScreen(id = id) // Pasa el id correctamente aquí
-            } else {
-                Text("ID inválido") // En caso de que el ID no sea válido
-            }
+        composable(
+            route = Destinations.VerTipoDeNegocio.route,
+            arguments = listOf(
+                navArgument("id") { type = NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getLong("id") ?: 0L
+            VerTipoDeNegocioScreen(id = id)
         }
 
 

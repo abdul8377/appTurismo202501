@@ -15,96 +15,73 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.DrawerNavItem
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.SidebarDrawer
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.TipoDeNegocioScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.VerTipoDeNegocioScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
 import pe.edu.upeu.appturismo202501.utils.SessionManager
-
 @Composable
 fun AdministradorScreen(
     navController: NavHostController,
-    onLogoutClicked: () -> Unit,
-    viewModel: AdministradorViewModel = hiltViewModel()
+    onLogoutClicked: () -> Unit
 ) {
-    val context = LocalContext.current
+    val adminNavController = rememberNavController()
 
-    // Definir los ítems para el menú lateral
     val items = listOf(
-        DrawerNavItem("Inicio", Icons.Default.Home, "inicio"),
-        DrawerNavItem("Usuarios", Icons.Default.Person, "usuarios"),
-        DrawerNavItem("Tipos de Negocio", Icons.Default.Person, "negocios"),
-        DrawerNavItem("Ajustes", Icons.Default.Settings, "ajustes")
+        DrawerNavItem("Inicio",   Icons.Default.Home,     Destinations.Administrador.route),
+        DrawerNavItem("Usuarios", Icons.Default.Person,   Destinations.User.route),
+        DrawerNavItem("Negocios", Icons.Default.Person,   Destinations.Negocios.route),
+        DrawerNavItem("Ajustes",  Icons.Default.Settings, Destinations.Ajustes.route)
     )
 
-    // Estado para manejar el item seleccionado en el menú
-    var selectedId by rememberSaveable { mutableStateOf("inicio") }
-    val isLoading by remember { viewModel::isLoading }
-
-    // DrawerSidebar: Menú lateral con navegación
     SidebarDrawer(
         items = items,
-        selectedItemId = selectedId,
+        selectedRoute = adminNavController.currentBackStackEntryAsState().value
+            ?.destination?.route
+            ?: Destinations.Administrador.route,
         onItemClicked = { item ->
-            selectedId = item.id
-            when (item.id) {
-                "inicio" -> {
-                    // Aquí puedes agregar lógica para "Inicio" si es necesario
-                }
-                "usuarios" -> {
-                    // Aquí iría la lógica para los usuarios
-                }
-                "negocios" -> {
-                    // Aquí es donde se debe pasar el navController a la pantalla de TipoDeNegocioScreen
-                }
-                "ajustes" -> {
-                    navController.navigate(Destinations.Welcome.route)
-                }
+            adminNavController.navigate(item.route) {
+                popUpTo(Destinations.Administrador.route) { inclusive = false }
+                launchSingleTop = true
             }
         },
-        onLogoutClicked = {
-            val token = SessionManager.getToken()
-            if (!token.isNullOrEmpty()) {
-                viewModel.logout(
-                    token,
-                    onLogoutSuccess = {
-                        onLogoutClicked()
-                    },
-                    onLogoutFailed = { error ->
-                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                    }
-                )
-            } else {
-                onLogoutClicked()
-            }
-        }
+        onLogoutClicked = onLogoutClicked
     ) {
-        // Mostrar contenido basado en la selección del menú
-        if (isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
+        NavHost(
+            navController = adminNavController,
+            startDestination = Destinations.Administrador.route,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            composable(Destinations.Administrador.route) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Bienvenido al Dashboard")
+                }
             }
-        } else {
-            when (selectedId) {
-                "inicio" -> Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    UserScreen()
+            composable(Destinations.User.route) {
+                UserScreen()
+            }
+            composable(Destinations.Negocios.route) {
+                TipoDeNegocioScreen(navController = adminNavController)
+            }
+            composable(Destinations.Ajustes.route) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Ajustes de la App")
                 }
-                "usuarios" -> UserScreen()
-                "negocios" -> TipoDeNegocioScreen(navController) // Asegúrate de pasar el navController
-
-                "ajustes" -> Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Configuraciones", style = MaterialTheme.typography.headlineMedium)
-                }
+            }
+            composable(
+                route = "ver_tipo_de_negocio_screen/{id}",
+                arguments = listOf(navArgument ("id") { type = NavType.LongType })
+            ) { backStack ->
+                val id = backStack.arguments!!.getLong("id")
+                VerTipoDeNegocioScreen(id)
             }
         }
     }

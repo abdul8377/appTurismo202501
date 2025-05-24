@@ -105,5 +105,4 @@ class LoginViewModel @Inject constructor(
     fun clearErrorMessage() {
         _errorMessage.value = null
     }
-
 }

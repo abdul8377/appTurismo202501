@@ -18,6 +18,7 @@ import pe.edu.upeu.appturismo202501.repository.ZonaTuristicaRepository
 import pe.edu.upeu.appturismo202501.repository.ZonaTuristicaRepositoryImpl
 import javax.inject.Singleton
 
+
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
@@ -46,7 +47,6 @@ abstract class RepositoryModule {
         impl: ZonaTuristicaRepositoryImpl
     ): ZonaTuristicaRepository
 
-
     @Binds
     @Singleton
     abstract fun bindUserRepository(
@@ -58,4 +58,5 @@ abstract class RepositoryModule {
     abstract fun bindTipoDeNegocioRepository(
         tipoDeNegocioRepositoryImpl: TipoDeNegocioRepositoryImpl
     ): TipoDeNegocioRepository
+
 }

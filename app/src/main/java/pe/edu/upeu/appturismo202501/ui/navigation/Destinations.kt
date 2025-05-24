@@ -1,14 +1,8 @@
 package pe.edu.upeu.appturismo202501.ui.navigation
 
-import android.graphics.drawable.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.*
 
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class Destinations(
@@ -30,8 +24,8 @@ sealed class Destinations(
 
     object ForgotPassword : Destinations("forgot_password", "Forgot Password", Icons.Filled.Settings)
 
-    object Negocios      : Destinations("negocios", "Negocios",    Icons.Filled.Person)
-    object Ajustes       : Destinations("ajustes", "Ajustes",      Icons.Filled.Settings)
+    object Negocios : Destinations("negocios", "Negocios", Icons.Filled.Person)
+    object Ajustes : Destinations("ajustes", "Ajustes", Icons.Filled.Settings)
 
     object VerTipoDeNegocio : Destinations(
         "ver_tipo_de_negocio_screen/{id}",
@@ -39,6 +33,3 @@ sealed class Destinations(
         Icons.Filled.Info // o el icono que prefieras
     )
 }
-
-
-

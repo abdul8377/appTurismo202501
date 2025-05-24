@@ -62,7 +62,7 @@ fun AdministradorScreen(
         ) {
             composable(Destinations.Administrador.route) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Bienvenido al Dashboard")
+
                 }
             }
             composable(Destinations.User.route) {
@@ -78,9 +78,9 @@ fun AdministradorScreen(
             }
             composable(
                 route = "ver_tipo_de_negocio_screen/{id}",
-                arguments = listOf(navArgument ("id") { type = NavType.LongType })
+                arguments = listOf(navArgument("id") { type = NavType.LongType })
             ) { backStack ->
-                val id = backStack.arguments!!.getLong("id")
+                val id = backStack.arguments?.getLong("id") ?: 0L
                 VerTipoDeNegocioScreen(id)
             }
         }

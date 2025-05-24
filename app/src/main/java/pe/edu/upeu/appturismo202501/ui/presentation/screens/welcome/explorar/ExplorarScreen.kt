@@ -4,10 +4,6 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -52,28 +48,26 @@ fun ExplorarScreen(
 ) {
     val categories by viewModel.categories.collectAsState()
     val zonas by zonaViewModel.zonas.collectAsState()
-    // Suponiendo que tu ImageResp.fullUrl() ya usa BuildConfig.API_BASE_URL internamente
-    val banners: List<ActivityBanner> = zonas.map { zona ->
-        val imageUrl = zona.images.firstOrNull()
-            ?.fullUrl(TokenUtils.API_URL)     // <— aquí ya usas tu API_URL
-            ?: ""                             // o tu placeholder
 
+    // Prepara banners para sección Zonas Turísticas
+    val banners: List<ActivityBanner> = zonas.map { zona ->
+        val imageUrl = zona.imagenUrl ?: ""  // usa imagenUrl directamente
         ActivityBanner(
             imageUrl = imageUrl,
-            name     = zona.nombre
+            name = zona.nombre
         )
     }
+
 
     var selectedIndex by rememberSaveable { mutableStateOf(0) }
     val selectedCategory: CategoryResp? = categories.getOrNull(selectedIndex)
 
     Scaffold(
         bottomBar = {
-            var selectedIndex by remember { mutableStateOf(0) }
-
-            var sel by remember { mutableStateOf(0) }
-
-        }) { padding ->
+            // En ExplorarScreen normalmente no va barra inferior, la maneja WelcomeMain
+            // Si quieres, aquí puedes poner otra barra o nada
+        }
+    ) { padding ->
         Box(
             Modifier
                 .fillMaxSize()
@@ -85,14 +79,11 @@ fun ExplorarScreen(
                     Box(
                         Modifier
                             .fillMaxWidth()
-                            .height((LocalConfiguration.current.screenHeightDp * 0.6f).dp)
+                            .height((LocalConfiguration.current.screenHeightDp * 0.65f).dp)
                     ) {
-                        // Log para depurar la URL
-                        LaunchedEffect (selectedCategory?.imagenUrl) {
-                            Log.d("WelcomeScreen", "Imagen URL = ${selectedCategory?.imagenUrl}")
+                        LaunchedEffect(selectedCategory?.imagenUrl) {
+                            Log.d("ExplorarScreen", "Imagen URL = ${selectedCategory?.imagenUrl}")
                         }
-
-                        // AsyncImage carga fondo
                         AsyncImage(
                             model = selectedCategory?.imagenUrl,
                             contentDescription = selectedCategory?.nombre,
@@ -101,7 +92,6 @@ fun ExplorarScreen(
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
-                        // 2) Degradado superpuesto
                         Box(
                             modifier = Modifier
                                 .matchParentSize()
@@ -116,8 +106,6 @@ fun ExplorarScreen(
                                     )
                                 )
                         )
-
-                        // Nombre y descripción sobre la imagen
                         Column(
                             Modifier
                                 .align(Alignment.BottomStart)
@@ -132,13 +120,11 @@ fun ExplorarScreen(
                             Spacer(Modifier.height(8.dp))
                             Text(
                                 text = selectedCategory?.descripcion ?: "Descripción no disponible",
-                                color = Color.White.copy(alpha = .8f),
+                                color = Color.White.copy(alpha = 0.8f),
                                 fontSize = 16.sp
                             )
                             Spacer(Modifier.height(66.dp))
                         }
-
-                        // ===== TABS =====
                         CategoryTabs(
                             categories = categories,
                             selectedIndex = selectedIndex,
@@ -147,20 +133,22 @@ fun ExplorarScreen(
                                 .align(Alignment.BottomStart)
                                 .fillMaxWidth()
                         )
-
                     }
                 }
 
                 item {
                     val culturalExperiences = listOf(
-                        Experience(R.drawable.ic_launcher_background, "TICKET DE ENTRADA",
+                        Experience(
+                            R.drawable.ic_launcher_background, "TICKET DE ENTRADA",
                             "San Diego Ticket de entrada al Museo USS Midway",
-                            "1 día • Sin colas • Audioguía opcional", 4.9, 3204, "39 USD"),
-                        Experience(R.drawable.ic_launcher_background, "EXCURSIÓN DE UN DÍA",
+                            "1 día • Sin colas • Audioguía opcional", 4.9, 3204, "39 USD"
+                        ),
+                        Experience(
+                            R.drawable.ic_launcher_background, "EXCURSIÓN DE UN DÍA",
                             "Las Vegas: Gran Cañón y Presa Hoover, Ópalo",
-                            "10 horas • Sin colas • Comidas incl.", 4.7, 2105, "99 USD")
+                            "10 horas • Sin colas • Comidas incl.", 4.7, 2105, "99 USD"
+                        )
                     )
-
                     ExperiencesSection(
                         title = "Experiencias culturales inolvidables",
                         experiences = culturalExperiences
@@ -172,7 +160,6 @@ fun ExplorarScreen(
                         CulturalBanner(R.drawable.ic_launcher_background, "USS Midway Museum", "46 actividades"),
                         CulturalBanner(R.drawable.ic_launcher_background, "Estatua de la Libertad", "164 actividades")
                     )
-
                     CulturalSpacesSection(
                         title = "Espacios culturales que no te puedes perder",
                         items = sample,
@@ -183,16 +170,15 @@ fun ExplorarScreen(
 
                 item {
                     ActivitiesSection(
-                        title = "Zonas Turísticas",
+                        title = "Zonas Turísticas Destacadas",
                         items = banners,
                         onItemClick = { banner ->
-                            navController.navigate("zonaDetail/${banner.name}")
+                            navController.navigate("zona/${banner.name}")
                         }
                     )
                 }
             }
 
-            /* ---------- BUSCADOR FLOTANTE ---------- */
             SimpleSearchBar(
                 onClick = { navController.navigate("search") },
                 modifier = Modifier
@@ -205,11 +191,12 @@ fun ExplorarScreen(
     }
 }
 
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun WelcomeScreenPreview() {
     val navController = rememberNavController()          // ← NavController “falso” para previews
-    AppTurismo202501Theme(colorScheme = LightGreenColors) {
+    AppTurismo202501Theme (colorScheme = LightGreenColors) {
         ExplorarScreen(navController = navController)
     }
 }

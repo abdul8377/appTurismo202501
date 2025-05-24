@@ -10,6 +10,8 @@ import pe.edu.upeu.appturismo202501.repository.LoginUserRepository
 import pe.edu.upeu.appturismo202501.repository.LoginUserRespositoryImp
 import pe.edu.upeu.appturismo202501.repository.RegisterRepository
 import pe.edu.upeu.appturismo202501.repository.RegisterRepositoryImpl
+import pe.edu.upeu.appturismo202501.repository.TipoDeNegocioRepository
+import pe.edu.upeu.appturismo202501.repository.TipoDeNegocioRepositoryImpl
 import pe.edu.upeu.appturismo202501.repository.UserRepository
 import pe.edu.upeu.appturismo202501.repository.UserRepositoryImpl
 import pe.edu.upeu.appturismo202501.repository.ZonaTuristicaRepository
@@ -50,4 +52,10 @@ abstract class RepositoryModule {
     abstract fun bindUserRepository(
         userRepositoryImpl: UserRepositoryImpl
     ): UserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTipoDeNegocioRepository(
+        tipoDeNegocioRepositoryImpl: TipoDeNegocioRepositoryImpl
+    ): TipoDeNegocioRepository
 }

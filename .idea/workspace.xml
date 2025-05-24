@@ -10,12 +10,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6e8adcfa-376f-4aba-a89d-518bc12de741" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/data/remote/RestUser.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/repository/UserRespository.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/componentsA/ChangePasswordDialog.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/componentsA/UserItem.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/user/UserScreen.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/user/UserViewModel.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/data/remote/RestTipoDeNegocio.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/modelo/TipoDeNegocio.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/repository/TipoDeNegocioRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/alertas/AlertDialogComponent.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/alertas/SnackbarNotification.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/componentsA/TipoDeNegocioForm.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/componentsA/TipoDeNegocioItem.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/administrador/HomeAdminScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/tipodenegocio/TipoDeNegocioScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/tipodenegocio/TipoDeNegocioViewModel.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/tipodenegocio/VerTipoDeNegocioScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/search/SearchComponent.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.bin" afterDir="false" />
@@ -24,17 +30,12 @@
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/di/DataSourceModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/di/DataSourceModule.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/di/RepositoryModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/di/RepositoryModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/modelo/Users.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/modelo/Users.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/navigation/Destinations.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/navigation/Destinations.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/navigation/NavigationHost.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/navigation/NavigationHost.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/components/BottomNavigationBar.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/components/BottomNavigationBar.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/components/BottonBar.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/components/BottonBar.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/componentsA/Drawer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/componentsA/Drawer.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/administrador/AdministradorScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/administrador/AdministradorScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/utils/TokenUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/utils/TokenUtils.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +45,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R5CX41SEWLE)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=A2YE6R3C19000740)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -70,11 +71,11 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Kotlin File" />
         <option value="Kotlin Object" />
         <option value="Class" />
         <option value="Kotlin Data Class" />
         <option value="Kotlin Interface" />
+        <option value="Kotlin File" />
         <option value="Kotlin Class" />
       </list>
     </option>

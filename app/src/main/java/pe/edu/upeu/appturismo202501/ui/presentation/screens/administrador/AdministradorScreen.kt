@@ -18,6 +18,7 @@ import androidx.navigation.NavHostController
 import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.DrawerNavItem
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.SidebarDrawer
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.TipoDeNegocioScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
 import pe.edu.upeu.appturismo202501.utils.SessionManager
 
@@ -33,7 +34,7 @@ fun AdministradorScreen(
     val items = listOf(
         DrawerNavItem("Inicio", Icons.Default.Home, "inicio"),
         DrawerNavItem("Usuarios", Icons.Default.Person, "usuarios"),
-        DrawerNavItem("Perfil", Icons.Default.Person, "perfil"),
+        DrawerNavItem("Tipos de Negocio", Icons.Default.Person, "negocios"),
         DrawerNavItem("Ajustes", Icons.Default.Settings, "ajustes")
     )
 
@@ -52,10 +53,10 @@ fun AdministradorScreen(
                     // Aquí puedes agregar lógica para "Inicio" si es necesario
                 }
                 "usuarios" -> {
-
+                    // Aquí iría la lógica para los usuarios
                 }
-                "perfil" -> {
-                    navController.navigate(Destinations.PerfilWelcome.route)
+                "negocios" -> {
+                    // Aquí es donde se debe pasar el navController a la pantalla de TipoDeNegocioScreen
                 }
                 "ajustes" -> {
                     navController.navigate(Destinations.Welcome.route)
@@ -93,15 +94,11 @@ fun AdministradorScreen(
                     Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Panel de Administración", style = MaterialTheme.typography.headlineMedium)
+                    UserScreen()
                 }
                 "usuarios" -> UserScreen()
-                "perfil" -> Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Perfil del Administrador", style = MaterialTheme.typography.headlineMedium)
-                }
+                "negocios" -> TipoDeNegocioScreen(navController) // Asegúrate de pasar el navController
+
                 "ajustes" -> Box(
                     Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center

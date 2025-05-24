@@ -8,6 +8,7 @@ import okhttp3.OkHttpClient
 import pe.edu.upeu.appturismo202501.data.remote.RestCategory
 import pe.edu.upeu.appturismo202501.data.remote.RestLoginUsuario
 import pe.edu.upeu.appturismo202501.data.remote.RestRegister
+import pe.edu.upeu.appturismo202501.data.remote.RestTipoDeNegocio
 import pe.edu.upeu.appturismo202501.data.remote.RestUser
 import pe.edu.upeu.appturismo202501.data.remote.RestZonaTuristica
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
@@ -73,6 +74,12 @@ class DataSourceModule {
     @Provides
     fun provideRestUser(retrofit: Retrofit): RestUser =
         retrofit.create(RestUser::class.java)
+
+    @Singleton
+    @Provides
+    fun restTipoDeNegocio(retrofit: Retrofit): RestTipoDeNegocio {
+        return retrofit.create(RestTipoDeNegocio::class.java)
+    }
 
 
 }

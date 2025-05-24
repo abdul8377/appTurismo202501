@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
@@ -18,6 +19,7 @@ import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.WelcomeScree
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.administrador.AdministradorScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.EmprendedorScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.register.RegisterScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.VerTipoDeNegocioScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.usuario.UsuarioScreen
 import pe.edu.upeu.appturismo202501.utils.SessionManager
@@ -132,6 +134,18 @@ fun NavigationHost(
         composable(Destinations.User.route) {
             UserScreen()
         }
+
+        composable("ver_tipo_de_negocio_screen/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")?.toLongOrNull()
+            if (id != null) {
+                VerTipoDeNegocioScreen(id = id) // Pasa el id correctamente aquí
+            } else {
+                Text("ID inválido") // En caso de que el ID no sea válido
+            }
+        }
+
+
+
 
     }
 }

@@ -1,6 +1,7 @@
 package pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -47,20 +48,23 @@ fun ExplorarScreen(
     zonaViewModel: ZonaTuristicaViewModel = hiltViewModel()
 ) {
     val categories by viewModel.categories.collectAsState()
-    val zonas by zonaViewModel.zonas.collectAsState()
 
-    // Prepara banners para sección Zonas Turísticas
-    val banners: List<ActivityBanner> = zonas.map { zona ->
-        val imageUrl = zona.imagenUrl ?: ""  // usa imagenUrl directamente
-        ActivityBanner(
-            imageUrl = imageUrl,
-            name = zona.nombre
-        )
-    }
-
-
+    val banners by zonaViewModel.banners.collectAsState()
     var selectedIndex by rememberSaveable { mutableStateOf(0) }
     val selectedCategory: CategoryResp? = categories.getOrNull(selectedIndex)
+
+
+    val staticTab = CategoryResp(
+        id         = -1L,
+        nombre     = "Cultura Estatico",
+        descripcion= "Experiencias culturales estatico", // opcional
+        imagenUrl  = null,
+        iconoUrl   = null
+    )
+    val allTabs = remember(categories) {
+        listOf(staticTab) + categories
+    }
+    val selectedItem = allTabs.getOrNull(selectedIndex)
 
     Scaffold(
         bottomBar = {
@@ -81,17 +85,37 @@ fun ExplorarScreen(
                             .fillMaxWidth()
                             .height((LocalConfiguration.current.screenHeightDp * 0.65f).dp)
                     ) {
-                        LaunchedEffect(selectedCategory?.imagenUrl) {
-                            Log.d("ExplorarScreen", "Imagen URL = ${selectedCategory?.imagenUrl}")
+                        // Log para depurar la URL
+                        LaunchedEffect (selectedCategory?.imagenUrl) {
+                            Log.d("WelcomeScreen", "Imagen URL = ${selectedCategory?.imagenUrl}")
                         }
-                        AsyncImage(
-                            model = selectedCategory?.imagenUrl,
-                            contentDescription = selectedCategory?.nombre,
-                            placeholder = painterResource(R.drawable.bg),
-                            error = painterResource(R.drawable.bg),
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
+
+                        // 1) Fondo dinámico
+                        if ((selectedItem?.id ?: 0) < 0) {
+                            // Imagen local para tabs estáticos
+                            val res = when (selectedItem?.id) {
+                                -1L -> R.drawable.cultura
+
+                                else-> R.drawable.bg
+                            }
+                            Image(
+                                painter = painterResource(res),
+                                contentDescription = selectedItem?.nombre,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            // Imagen remota para tabs de la API
+                            AsyncImage(
+                                model = selectedItem?.imagenUrl,
+                                contentDescription = selectedItem?.nombre,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop,
+                                placeholder = painterResource(R.drawable.bg),
+                                error       = painterResource(R.drawable.bg)
+                            )
+                        }
+                        // 2) Degradado superpuesto
                         Box(
                             modifier = Modifier
                                 .matchParentSize()
@@ -106,65 +130,70 @@ fun ExplorarScreen(
                                     )
                                 )
                         )
+
+                        // Nombre y descripción sobre la imagen
                         Column(
                             Modifier
                                 .align(Alignment.BottomStart)
                                 .padding(16.dp)
                         ) {
                             Text(
-                                text = selectedCategory?.nombre ?: "Cargando...",
-                                color = Color.White,
-                                fontSize = 28.sp,
+                                text       = selectedItem?.nombre.orEmpty(),
+                                color      = Color.White,
+                                fontSize   = 28.sp,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(Modifier.height(8.dp))
                             Text(
-                                text = selectedCategory?.descripcion ?: "Descripción no disponible",
-                                color = Color.White.copy(alpha = 0.8f),
-                                fontSize = 16.sp
+                                text  = selectedItem?.descripcion.orEmpty(),
+                                color = Color.White.copy(alpha = .8f)
                             )
                             Spacer(Modifier.height(66.dp))
                         }
+
+                        // ===== TABS =====
                         CategoryTabs(
-                            categories = categories,
+                            categories    = allTabs,
                             selectedIndex = selectedIndex,
-                            onSelected = { idx -> selectedIndex = idx },
-                            modifier = Modifier
+                            onSelected    = { idx -> selectedIndex = idx },
+                            modifier      = Modifier
                                 .align(Alignment.BottomStart)
                                 .fillMaxWidth()
                         )
+
                     }
                 }
 
                 item {
+
+
                     val culturalExperiences = listOf(
-                        Experience(
-                            R.drawable.ic_launcher_background, "TICKET DE ENTRADA",
+                        Experience(R.drawable.ic_launcher_background, "TICKET DE ENTRADA",
                             "San Diego Ticket de entrada al Museo USS Midway",
-                            "1 día • Sin colas • Audioguía opcional", 4.9, 3204, "39 USD"
-                        ),
-                        Experience(
-                            R.drawable.ic_launcher_background, "EXCURSIÓN DE UN DÍA",
+                            "1 día • Sin colas • Audioguía opcional", 4.9, 3204, "39 USD"),
+                        Experience(R.drawable.ic_launcher_background, "EXCURSIÓN DE UN DÍA",
                             "Las Vegas: Gran Cañón y Presa Hoover, Ópalo",
-                            "10 horas • Sin colas • Comidas incl.", 4.7, 2105, "99 USD"
-                        )
+                            "10 horas • Sin colas • Comidas incl.", 4.7, 2105, "99 USD"),
+                        // …más
                     )
+
                     ExperiencesSection(
                         title = "Experiencias culturales inolvidables",
                         experiences = culturalExperiences
                     )
                 }
 
+                val sample = listOf(
+                    CulturalBanner(R.drawable.ic_launcher_background,  "USS Midway Museum",    "46 actividades"),
+                    CulturalBanner(R.drawable.ic_launcher_background,  "Estatua de la Libertad","164 actividades")
+                )
+
                 item {
-                    val sample = listOf(
-                        CulturalBanner(R.drawable.ic_launcher_background, "USS Midway Museum", "46 actividades"),
-                        CulturalBanner(R.drawable.ic_launcher_background, "Estatua de la Libertad", "164 actividades")
-                    )
                     CulturalSpacesSection(
                         title = "Espacios culturales que no te puedes perder",
                         items = sample,
-                        topPadding = 8.dp,
-                        bottomPadding = 12.dp
+                        topPadding = 8.dp,      // separa un poco del bloque anterior
+                        bottomPadding = 12.dp   // separa del LazyRow
                     )
                 }
 
@@ -173,23 +202,35 @@ fun ExplorarScreen(
                         title = "Zonas Turísticas Destacadas",
                         items = banners,
                         onItemClick = { banner ->
+                            // por ejemplo, navegar a un detalle:
                             navController.navigate("zona/${banner.name}")
                         }
                     )
                 }
+
+
+
+
+
+
             }
 
+            /* ---------- BUSCADOR FLOTANTE ---------- */
             SimpleSearchBar(
                 onClick = { navController.navigate("search") },
                 modifier = Modifier
+                    //.align(Alignment.TopCenter)   // encima del resto
                     .align(Alignment.TopCenter)
                     .padding(top = 35.dp, start = 20.dp, end = 20.dp)
                     .fillMaxWidth()
-                    .zIndex(1f)
+                    .padding(top = 16.dp)         // distancia al borde
+                    .zIndex(1f)                   // garantiza prioridad de dibujo
             )
         }
     }
 }
+
+
 
 
 @Preview(showBackground = true, showSystemUi = true)

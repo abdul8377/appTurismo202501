@@ -88,16 +88,29 @@ fun CategoryTabs(
                         }
 
                         // AsyncImage para el icono
-                        if (!cat.iconoUrl.isNullOrBlank()) {
-                            AsyncImage(
-                                model             = cat.iconoUrl,
+                        if (cat.id < 0) {
+                            // Icono local
+                            val iconRes = when(cat.id) {
+                                -1L -> R.drawable.hogar
+
+                                else-> R.drawable.ic_launcher_background
+                            }
+                            Icon(
+                                painter = painterResource(iconRes),
                                 contentDescription = cat.nombre,
-                                placeholder        = painterResource(R.drawable.ic_launcher_background),
-                                error              = painterResource(R.drawable.ic_launcher_background),
-                                modifier           = Modifier.size(24.dp),
-                                contentScale       = ContentScale.Crop
+                                modifier = Modifier.size(24.dp)
+                            )
+                        } else {
+                            // Icono remoto
+                            AsyncImage(
+                                model = cat.iconoUrl,
+                                contentDescription = cat.nombre,
+                                modifier = Modifier.size(24.dp),
+                                placeholder = painterResource(R.drawable.ic_launcher_background),
+                                error       = painterResource(R.drawable.ic_launcher_background)
                             )
                         }
+
                         Text(
                             text     = cat.nombre,
                             fontSize = 15.sp,

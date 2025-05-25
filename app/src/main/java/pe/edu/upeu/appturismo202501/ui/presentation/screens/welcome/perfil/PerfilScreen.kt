@@ -7,70 +7,93 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsB.MonedaSelector
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.LoginScreen
+import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
+import pe.edu.upeu.appturismo202501.utils.SessionManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PerfilScreen(navController: NavController) {
-    // Estado para el ModalBottomSheet de inicio de sesión
+fun PerfilScreen(navControllerGlobal: NavController) {
+    val token = SessionManager.getToken()
+    val userId = SessionManager.getUserId() ?: "Desconocido"
+    val userRole = SessionManager.getUserRole() ?: "Invitado"
+
     var showSheet by remember { mutableStateOf(false) }
-    var showMonedaSelector by remember { mutableStateOf(false) }  // Control del modal para seleccionar moneda
+    var showMonedaSelector by remember { mutableStateOf(false) }
+
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = false,
+        skipPartiallyExpanded = true,
         confirmValueChange = { it != SheetValue.Hidden }
     )
 
-    // Abrir el ModalSheet en el primer renderizado
-    LaunchedEffect(Unit) {
-        sheetState.show()
-    }
-
+    // Modal para Login
     if (showSheet) {
         ModalBottomSheet(
             onDismissRequest = { showSheet = false },
             sheetState = sheetState,
             containerColor = MaterialTheme.colorScheme.surface,
-            modifier = Modifier.fillMaxHeight()
+            modifier = Modifier.fillMaxHeight(0.9f)
         ) {
-            // Aquí puedes colocar el LoginScreen u otro contenido según necesites
-            Text(text = "Iniciar sesión aquí")
+            LoginScreen(
+                navToHome = {
+                    showSheet = false
+                    navControllerGlobal.navigate(Destinations.Welcome.route) {
+                        popUpTo(Destinations.Login.route) { inclusive = true }
+                    }
+                },
+                navToRegister = {
+                    showSheet = false
+                    navControllerGlobal.navigate(Destinations.Register.route)
+                },
+                navToForgotPassword = {
+                    showSheet = false
+                    navControllerGlobal.navigate(Destinations.ForgotPassword.route)
+                },
+                navToEmprendedor = {
+                    showSheet = false
+                    navControllerGlobal.navigate(Destinations.Emprendedor.route)
+                },
+                navToUsuario = {
+                    showSheet = false
+                    navControllerGlobal.navigate(Destinations.Welcome.route)  // Navega a WelcomeMain para usuarios
+                },
+                navToAdministrador = {
+                    showSheet = false
+                    navControllerGlobal.navigate(Destinations.Administrador.route)
+                }
+            )
         }
     }
 
+    // Modal para selector moneda
     if (showMonedaSelector) {
+        val monedaSheetState = rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { it != SheetValue.Hidden }
+        )
+
         ModalBottomSheet(
             onDismissRequest = { showMonedaSelector = false },
-            sheetState = sheetState,
+            sheetState = monedaSheetState,
             containerColor = MaterialTheme.colorScheme.surface,
             modifier = Modifier
-                .fillMaxWidth()  // Modal ocupa todo el ancho
-                .height(700.dp)  // Fijar la altura para que sea fija y no cambie
+                .fillMaxWidth()
+                .height(700.dp)
         ) {
             MonedaSelector(onClose = { showMonedaSelector = false })
         }
     }
 
-
-
-
-
-
-    // Pantalla principal del perfil
     Scaffold(
-        bottomBar = {} // Se elimina la barra de navegación para el perfil
+        bottomBar = {} // Sin barra inferior aquí
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -79,8 +102,8 @@ fun PerfilScreen(navController: NavController) {
                 .fillMaxSize()
         ) {
             item {
-                // Título del perfil
                 Spacer(modifier = Modifier.height(24.dp))
+
                 Text(
                     text = "Perfil",
                     style = MaterialTheme.typography.headlineLarge,
@@ -88,64 +111,95 @@ fun PerfilScreen(navController: NavController) {
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
 
-                // Descripción del perfil
-                Text(
-                    text = "Accede a tu reserva desde cualquier dispositivo. Regístrate, sincroniza tus reservas, añade actividades a tus favoritos y guarda tus datos personales para reservar más rápidamente.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.85f),
-                    modifier = Modifier.padding(bottom = 24.dp)
-                )
-
-                // Botón para iniciar sesión o registrarse
-                Button(
-                    onClick = { showSheet = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                if (token.isNullOrEmpty()) {
+                    // Sin sesión activa: mostrar invitación a iniciar sesión
+                    Text(
+                        text = "Accede a tu reserva desde cualquier dispositivo. Regístrate, sincroniza tus reservas, añade actividades a tus favoritos y guarda tus datos personales para reservar más rápidamente.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.85f),
+                        modifier = Modifier.padding(bottom = 24.dp)
                     )
-                ) {
-                    Text("Iniciar sesión o registrarse")
+
+                    Button(
+                        onClick = { showSheet = true },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Text("Iniciar sesión o registrarse")
+                    }
+                } else {
+                    // Con sesión activa: mostrar datos del usuario
+                    Text(
+                        text = "ID: $userId",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = "Rol: $userRole",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+
+                    // Botón de Cerrar Sesión
+                    Button(
+                        onClick = {
+                            // Limpiar sesión
+                            SessionManager.clearSession()
+                            navControllerGlobal.navigate(Destinations.Welcome.route) {
+                                popUpTo(Destinations.Welcome.route) { inclusive = true }
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    ) {
+                        Text("Cerrar sesión")
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
-            // Sección de Ajustes
+            // Secciones adicionales
             sectionWithButtons("Ajustes", listOf(
-                Triple("Moneda", "EUR (€)") { showMonedaSelector = true }, // Al presionar, abre el selector de moneda
-                Triple("Idioma", "Español") { /* Acción para Idioma */ },
-                Triple("Apariencia", "Configuración predeterminada del sistema") { /* Acción para Apariencia */ },
-                Triple("Notificaciones", null) { /* Acción para Notificaciones */ }
+                Triple("Moneda", "EUR (€)") { showMonedaSelector = true },
+                Triple("Idioma", "Español") { /* Acción */ },
+                Triple("Apariencia", "Configuración predeterminada del sistema") { /* Acción */ },
+                Triple("Notificaciones", null) { /* Acción */ }
             ))
 
-            // Sección de Ayuda
             sectionWithButtons("Ayuda", listOf(
-                Triple("Sobre GetYourGuide", null) { /* Acción para Sobre GetYourGuide */ },
-                Triple("Centro de ayuda", null) { /* Acción para Centro de ayuda */ },
-                Triple("Escríbenos", null) { /* Acción para Escríbenos */ }
+                Triple("Sobre GetYourGuide", null) { /* Acción */ },
+                Triple("Centro de ayuda", null) { /* Acción */ },
+                Triple("Escríbenos", null) { /* Acción */ }
             ))
 
-            // Sección de Comentarios
             sectionWithButtons("Comentarios", listOf(
-                Triple("Comparte tu opinión", null) { /* Acción para Comparte tu opinión */ },
-                Triple("Valora la aplicación", null) { /* Acción para Valora la aplicación */ }
+                Triple("Comparte tu opinión", null) { /* Acción */ },
+                Triple("Valora la aplicación", null) { /* Acción */ }
             ))
 
-            // Sección de Información legal
             sectionWithButtons("Información legal", listOf(
-                Triple("Términos y condiciones generales", null) { /* Acción para Términos y condiciones generales */ },
-                Triple("Información legal", null) { /* Acción para Información legal */ },
-                Triple("Privacidad", null) { /* Acción para Privacidad */ }
+                Triple("Términos y condiciones generales", null) { /* Acción */ },
+                Triple("Información legal", null) { /* Acción */ },
+                Triple("Privacidad", null) { /* Acción */ }
             ))
         }
     }
 }
 
-// Función reutilizable para crear secciones con botones
 fun LazyListScope.sectionWithButtons(
     title: String,
     items: List<Triple<String, String?, () -> Unit>>
@@ -157,7 +211,9 @@ fun LazyListScope.sectionWithButtons(
     items(items) { (label, value, onClick) ->
         Button(
             onClick = onClick,
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.surface,

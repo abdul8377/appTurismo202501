@@ -8,7 +8,6 @@ import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.ProductionQuantityLimits
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.ProductionQuantityLimits
@@ -17,14 +16,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.*
+import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.NavItem
+import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.TurismoNavigationBar
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.carrito.CarritoScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.ExplorarScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.perfil.PerfilScreen
-import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.TurismoNavigationBar
-import androidx.compose.ui.graphics.vector.ImageVector
-import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.NavItem
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.productos.ProductosScreen
 
 enum class BottomDestination(
@@ -37,13 +36,16 @@ enum class BottomDestination(
     PRODUCTOS("Productos", "productos", Icons.Filled.ProductionQuantityLimits, Icons.Outlined.ProductionQuantityLimits),
     CARRITO("Carrito", "carrito", Icons.Filled.ShoppingCart, Icons.Outlined.ShoppingCart),
     RESERVAS("Reservas", "reservas", Icons.Filled.Favorite, Icons.Outlined.FavoriteBorder),
-    PERFIL("Perfil", "perfil", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle)
+    PERFIL("Perfil", "perfil", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle),
 }
 
 @Composable
-fun WelcomeMain() {
-    val navController = rememberNavController()
-    var selectedRoute by rememberSaveable { mutableStateOf(BottomDestination.EXPLORAR.route) }
+fun WelcomeMain(
+    navControllerGlobal: NavHostController,
+    initialRoute: String = BottomDestination.EXPLORAR.route
+) {
+    val navControllerLocal = rememberNavController()
+    var selectedRoute by rememberSaveable { mutableStateOf(initialRoute) }
 
     Scaffold(
         bottomBar = {
@@ -58,12 +60,12 @@ fun WelcomeMain() {
 
             TurismoNavigationBar(
                 items = navItems,
-                selectedRoute = selectedRoute,  // Aquí pasas selectedRoute
+                selectedRoute = selectedRoute,
                 onItemSelected = { selectedItem ->
-                    navController.navigate(selectedItem.route) {
+                    navControllerLocal.navigate(selectedItem.route) {
                         launchSingleTop = true
                         restoreState = true
-                        popUpTo(navController.graph.startDestinationId) {
+                        popUpTo(navControllerLocal.graph.startDestinationId) {
                             saveState = true
                         }
                     }
@@ -73,15 +75,25 @@ fun WelcomeMain() {
         }
     ) { innerPadding ->
         NavHost(
-            navController = navController,
-            startDestination = BottomDestination.EXPLORAR.route,
+            navController = navControllerLocal,
+            startDestination = initialRoute,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(BottomDestination.EXPLORAR.route) { ExplorarScreen(navController) } // Pasar navController aquí
-            composable(BottomDestination.PRODUCTOS.route) { ProductosScreen() }
-            composable(BottomDestination.CARRITO.route) { CarritoScreen() }
-            composable(BottomDestination.RESERVAS.route) { ReservasScreen() }
-            composable(BottomDestination.PERFIL.route) { PerfilScreen(navController) }
+            composable(BottomDestination.EXPLORAR.route) {
+                ExplorarScreen(navControllerLocal)
+            }
+            composable(BottomDestination.PRODUCTOS.route) {
+                ProductosScreen()
+            }
+            composable(BottomDestination.CARRITO.route) {
+                CarritoScreen()
+            }
+            composable(BottomDestination.RESERVAS.route) {
+                // ReservasScreen() si tienes
+            }
+            composable(BottomDestination.PERFIL.route) {
+                PerfilScreen(navControllerGlobal)
+            }
         }
     }
 }

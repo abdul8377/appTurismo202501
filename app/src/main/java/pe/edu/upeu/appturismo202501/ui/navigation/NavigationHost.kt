@@ -20,10 +20,7 @@ import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.Emprende
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.register.RegisterScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.VerTipoDeNegocioScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.usuario.UsuarioScreen
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.*
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.main.WelcomeMain
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.perfil.PerfilScreen
 import pe.edu.upeu.appturismo202501.utils.SessionManager
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
 
@@ -37,58 +34,53 @@ fun NavigationHost(
     val token = SessionManager.getToken()
     val role = SessionManager.getUserRole()
 
-    val startDestination = when {
-        token.isNullOrEmpty() -> Destinations.Welcome.route
-        else -> when (role) {
-            "Emprendedor" -> Destinations.Emprendedor.route
-            "Usuario" -> Destinations.Usuario.route
-            "Administrador" -> Destinations.Administrador.route
-            else -> Destinations.Administrador.route
-        }
-    }
+    // Siempre va a WelcomeMain si hay token, sino igual WelcomeMain (que tendrá login dentro si no hay sesión)
+    val startDestination = Destinations.Welcome.route
 
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = Modifier.padding(innerPadding)
     ) {
-        // Comunes
-        composable(Destinations.Welcome.route) { WelcomeMain() }
+        // Pantalla principal con pestañas (incluye perfil)
+        composable(Destinations.Welcome.route) {
+            WelcomeMain(navControllerGlobal = navController)
+        }
+
         composable(Destinations.Search.route) {
             SearchScreen(
                 navController = navController,
                 suggestions = listOf("Isla Taquile", "Isla Amantaní", "Lago Titicaca", "Puno", "Cusco")
             )
         }
-        composable(Destinations.PerfilWelcome.route) { PerfilScreen(navController) }
 
         // Login y registro
         composable(Destinations.Login.route) {
             LoginScreen(
-                navigateToHome = {
-                    navController.navigate(Destinations.Administrador.route) {
+                navToHome = {
+                    navController.navigate(Destinations.Welcome.route) {
                         popUpTo(Destinations.Login.route) { inclusive = true }
                     }
                 },
-                navigateToEmprendedorScreen = {
+                navToEmprendedor = {
                     navController.navigate(Destinations.Emprendedor.route) {
                         popUpTo(Destinations.Login.route) { inclusive = true }
                     }
                 },
-                navigateToUsuarioScreen = {
-                    navController.navigate(Destinations.Usuario.route) {
+                navToUsuario = {
+                    navController.navigate(Destinations.Welcome.route) {  // Va a WelcomeMain para usuario
                         popUpTo(Destinations.Login.route) { inclusive = true }
                     }
                 },
-                navigateToAdministradorScreen = {
+                navToAdministrador = {
                     navController.navigate(Destinations.Administrador.route) {
                         popUpTo(Destinations.Login.route) { inclusive = true }
                     }
                 },
-                onRegisterClick = {
+                navToRegister = {
                     navController.navigate(Destinations.Register.route)
                 },
-                navigateToForgotPasswordScreen = {
+                navToForgotPassword = {
                     navController.navigate(Destinations.ForgotPassword.route)
                 }
             )
@@ -97,13 +89,7 @@ fun NavigationHost(
         composable(Destinations.Register.route) {
             RegisterScreen(
                 onNavigateByRole = { role ->
-                    val route = when (role) {
-                        "Emprendedor" -> Destinations.Emprendedor.route
-                        "Usuario" -> Destinations.Usuario.route
-                        "Administrador" -> Destinations.Administrador.route
-                        else -> Destinations.Administrador.route
-                    }
-                    navController.navigate(route) {
+                    navController.navigate(Destinations.Welcome.route) {
                         popUpTo(Destinations.Register.route) { inclusive = true }
                     }
                 }
@@ -114,7 +100,7 @@ fun NavigationHost(
             ForgotPasswordScreen(onBack = { navController.popBackStack() })
         }
 
-        // Rutas por rol
+        // Rutas por rol sin PerfilScreen independiente
         composable(Destinations.Emprendedor.route) {
             EmprendedorScreen(
                 navController = navController,
@@ -127,7 +113,7 @@ fun NavigationHost(
                 }
             )
         }
-        composable(Destinations.Usuario.route) { UsuarioScreen(navController) }
+
         composable(Destinations.Administrador.route) {
             AdministradorScreen(
                 navController = navController,
@@ -142,14 +128,14 @@ fun NavigationHost(
         }
 
         // Otros
-        composable(Destinations.User.route) { UserScreen() }
+        composable(Destinations.User.route) {
+            UserScreen()
+        }
 
-        // VerTipoDeNegocioScreen (única definición)
+        // Detalle tipo de negocio
         composable(
             route = Destinations.VerTipoDeNegocio.route,
-            arguments = listOf(
-                navArgument("id") { type = NavType.LongType }
-            )
+            arguments = listOf(navArgument("id") { type = NavType.LongType })
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getLong("id") ?: 0L
             VerTipoDeNegocioScreen(id = id)

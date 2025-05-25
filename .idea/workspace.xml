@@ -10,19 +10,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6e8adcfa-376f-4aba-a89d-518bc12de741" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/componentsB/MonedaSelector.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/welcome/carrito/CarritoScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/welcome/explorar/ExplorarScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/welcome/main/WelcomeMain.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/welcome/perfil/PerfilScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/welcome/productos/ProductViewModel.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/welcome/productos/ProductosScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/welcome/reservas/ReservasScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/config.properties" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/config.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/modelo/Category.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/modelo/Category.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/modelo/ZonaTuristica.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/modelo/ZonaTuristica.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/componentsA/Tabs.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/componentsA/Tabs.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/welcome/WelcomeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/welcome/WelcomeScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/welcome/viewModel/ZonaTuristicaViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/welcome/viewModel/ZonaTuristicaViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/di/DataSourceModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/di/DataSourceModule.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/di/RepositoryModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/di/RepositoryModule.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/navigation/Destinations.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/navigation/Destinations.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/navigation/NavigationHost.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/navigation/NavigationHost.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/componentsA/NavigationBar.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/componentsA/NavigationBar.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/LoginViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/LoginViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/administrador/AdministradorScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/administrador/AdministradorScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/welcome/PerfilScreen.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/ui/presentation/screens/welcome/WelcomeScreen.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/utils/TokenUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/pe/edu/upeu/appturismo202501/utils/TokenUtils.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/local.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,10 +97,11 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "android.gradle.sync.needed": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "com.google.services.firebase.aqiPopupShown": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "Merging main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/AppTurismo/app/src/main/res/drawable",
     "project.structure.last.edited": "SDK Location",

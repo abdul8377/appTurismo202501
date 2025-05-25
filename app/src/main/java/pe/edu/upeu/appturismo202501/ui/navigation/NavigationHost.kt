@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
@@ -15,15 +14,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.LoginScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.forgotpassword.ForgotPasswordScreen
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.PerfilScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.SearchScreen
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.WelcomeScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.administrador.AdministradorScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.EmprendedorScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.register.RegisterScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.VerTipoDeNegocioScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.usuario.UsuarioScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.*
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.main.WelcomeMain
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.perfil.PerfilScreen
 import pe.edu.upeu.appturismo202501.utils.SessionManager
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
 
@@ -37,14 +37,13 @@ fun NavigationHost(
     val token = SessionManager.getToken()
     val role = SessionManager.getUserRole()
 
-    val startDestination = if (token.isNullOrEmpty()) {
-        Destinations.Welcome.route
-    } else {
-        when (role) {
+    val startDestination = when {
+        token.isNullOrEmpty() -> Destinations.Welcome.route
+        else -> when (role) {
             "Emprendedor" -> Destinations.Emprendedor.route
             "Usuario" -> Destinations.Usuario.route
             "Administrador" -> Destinations.Administrador.route
-            else -> Destinations.Administrador.route // fallback para rol desconocido
+            else -> Destinations.Administrador.route
         }
     }
 
@@ -53,8 +52,8 @@ fun NavigationHost(
         startDestination = startDestination,
         modifier = Modifier.padding(innerPadding)
     ) {
-        // Pantallas principales
-        composable(Destinations.Welcome.route) { WelcomeScreen(navController) }
+        // Comunes
+        composable(Destinations.Welcome.route) { WelcomeMain() }
         composable(Destinations.Search.route) {
             SearchScreen(
                 navController = navController,
@@ -62,6 +61,8 @@ fun NavigationHost(
             )
         }
         composable(Destinations.PerfilWelcome.route) { PerfilScreen(navController) }
+
+        // Login y registro
         composable(Destinations.Login.route) {
             LoginScreen(
                 navigateToHome = {
@@ -92,6 +93,23 @@ fun NavigationHost(
                 }
             )
         }
+
+        composable(Destinations.Register.route) {
+            RegisterScreen(
+                onNavigateByRole = { role ->
+                    val route = when (role) {
+                        "Emprendedor" -> Destinations.Emprendedor.route
+                        "Usuario" -> Destinations.Usuario.route
+                        "Administrador" -> Destinations.Administrador.route
+                        else -> Destinations.Administrador.route
+                    }
+                    navController.navigate(route) {
+                        popUpTo(Destinations.Register.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(Destinations.ForgotPassword.route) {
             ForgotPasswordScreen(onBack = { navController.popBackStack() })
         }
@@ -103,7 +121,7 @@ fun NavigationHost(
                 onLogoutClicked = {
                     TokenUtils.clearToken()
                     SessionManager.clearSession()
-                    navController.navigate(Destinations.Welcome.route){
+                    navController.navigate(Destinations.Welcome.route) {
                         popUpTo(Destinations.Welcome.route)
                     }
                 }
@@ -122,32 +140,11 @@ fun NavigationHost(
                 }
             )
         }
-        composable(Destinations.Register.route) {
-            RegisterScreen(
-                onNavigateByRole = { role ->
-                    when (role) {
-                        "Emprendedor" -> navController.navigate(Destinations.Emprendedor.route) {
-                            popUpTo(Destinations.Register.route) { inclusive = true }
-                        }
-                        "Usuario" -> navController.navigate(Destinations.Usuario.route) {
-                            popUpTo(Destinations.Register.route) { inclusive = true }
-                        }
-                        "Administrador" -> navController.navigate(Destinations.Administrador.route) {
-                            popUpTo(Destinations.Register.route) { inclusive = true }
-                        }
-                        else -> navController.navigate(Destinations.Administrador.route) {
-                            popUpTo(Destinations.Register.route) { inclusive = true }
-                        }
-                    }
-                }
-            )
-        }
 
-        // Ruta para gestión de usuarios
-        composable(Destinations.User.route) {
-            UserScreen()
-        }
+        // Otros
+        composable(Destinations.User.route) { UserScreen() }
 
+        // VerTipoDeNegocioScreen (única definición)
         composable(
             route = Destinations.VerTipoDeNegocio.route,
             arguments = listOf(
@@ -157,9 +154,5 @@ fun NavigationHost(
             val id = backStackEntry.arguments?.getLong("id") ?: 0L
             VerTipoDeNegocioScreen(id = id)
         }
-
-
-
-
     }
 }

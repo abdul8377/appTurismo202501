@@ -10,6 +10,7 @@ import javax.inject.Inject
 
 interface UserRepository {
     suspend fun getUsers(role: String? = null, isActive: Boolean? = null): Response<List<UsersDto>>
+    suspend fun getUserById(userId: Long): Response<UsersDto>
     suspend fun toggleActive(userId: Long, request: ToggleActiveRequest): Response<ApiResponse>
     suspend fun changePassword(userId: Long, request: ChangePasswordRequest): Response<ApiResponse>
 }
@@ -22,6 +23,10 @@ class UserRepositoryImpl @Inject constructor(
         return restUser.getUsers(role, isActive)
     }
 
+    override suspend fun getUserById(userId: Long): Response<UsersDto> {
+        return restUser.getUserById(userId)
+    }
+
     override suspend fun toggleActive(userId: Long, request: ToggleActiveRequest): Response<ApiResponse> {
         return restUser.toggleActive(userId, request)
     }
@@ -30,3 +35,4 @@ class UserRepositoryImpl @Inject constructor(
         return restUser.changePassword(userId, request)
     }
 }
+

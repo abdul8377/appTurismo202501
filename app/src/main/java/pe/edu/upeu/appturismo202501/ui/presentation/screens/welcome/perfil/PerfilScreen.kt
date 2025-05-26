@@ -1,44 +1,38 @@
 package pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.perfil
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import pe.edu.upeu.appturismo202501.ui.presentation.componentsB.MonedaSelector
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.LoginScreen
 import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
-import pe.edu.upeu.appturismo202501.utils.SessionManager
+import pe.edu.upeu.appturismo202501.ui.presentation.componentsB.MonedaSelector
+import pe.edu.upeu.appturismo202501.ui.presentation.componentsPerfil.SectionWithButtons
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.LoginScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PerfilScreen(navControllerGlobal: NavController) {
-    val token = SessionManager.getToken()
-    val userId = SessionManager.getUserId() ?: "Desconocido"
-    val userRole = SessionManager.getUserRole() ?: "Invitado"
-
+fun PerfilScreen(
+    navControllerGlobal: NavController,
+    viewModel: PerfilViewModel = hiltViewModel()
+) {
     var showSheet by remember { mutableStateOf(false) }
     var showMonedaSelector by remember { mutableStateOf(false) }
 
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { it != SheetValue.Hidden }
-    )
+    val loginSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val monedaSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val userState by viewModel.userState.collectAsState()
 
-    // Modal para Login
+    // --- Login Modal ---
     if (showSheet) {
         ModalBottomSheet(
             onDismissRequest = { showSheet = false },
-            sheetState = sheetState,
+            sheetState = loginSheetState,
             containerColor = MaterialTheme.colorScheme.surface,
             modifier = Modifier.fillMaxHeight(0.9f)
         ) {
@@ -63,7 +57,7 @@ fun PerfilScreen(navControllerGlobal: NavController) {
                 },
                 navToUsuario = {
                     showSheet = false
-                    navControllerGlobal.navigate(Destinations.Welcome.route)  // Navega a WelcomeMain para usuarios
+                    navControllerGlobal.navigate(Destinations.Welcome.route)
                 },
                 navToAdministrador = {
                     showSheet = false
@@ -73,13 +67,8 @@ fun PerfilScreen(navControllerGlobal: NavController) {
         }
     }
 
-    // Modal para selector moneda
+    // --- Moneda Selector Modal ---
     if (showMonedaSelector) {
-        val monedaSheetState = rememberModalBottomSheetState(
-            skipPartiallyExpanded = true,
-            confirmValueChange = { it != SheetValue.Hidden }
-        )
-
         ModalBottomSheet(
             onDismissRequest = { showMonedaSelector = false },
             sheetState = monedaSheetState,
@@ -92,9 +81,7 @@ fun PerfilScreen(navControllerGlobal: NavController) {
         }
     }
 
-    Scaffold(
-        bottomBar = {} // Sin barra inferior aquí
-    ) { padding ->
+    Scaffold { padding ->
         LazyColumn(
             modifier = Modifier
                 .padding(padding)
@@ -111,148 +98,154 @@ fun PerfilScreen(navControllerGlobal: NavController) {
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
 
-                if (token.isNullOrEmpty()) {
-                    // Sin sesión activa: mostrar invitación a iniciar sesión
-                    Text(
-                        text = "Accede a tu reserva desde cualquier dispositivo. Regístrate, sincroniza tus reservas, añade actividades a tus favoritos y guarda tus datos personales para reservar más rápidamente.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.85f),
-                        modifier = Modifier.padding(bottom = 24.dp)
-                    )
-
-                    Button(
-                        onClick = { showSheet = true },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        shape = RoundedCornerShape(50),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    ) {
-                        Text("Iniciar sesión o registrarse")
+                when {
+                    userState.isLoading -> {
+                        CircularProgressIndicator()
                     }
-                } else {
-                    // Con sesión activa: mostrar datos del usuario
-                    Text(
-                        text = "ID: $userId",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Text(
-                        text = "Rol: $userRole",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+                    userState.error != null -> {
+                        Text(
+                            text = "Error: ${userState.error}",
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                    !userState.isLoggedIn -> {
+                        Text(
+                            text = "Accede a tu reserva desde cualquier dispositivo. Regístrate, sincroniza tus reservas, añade actividades a tus favoritos y guarda tus datos personales para reservar más rápidamente.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.85f),
+                            modifier = Modifier.padding(bottom = 24.dp)
+                        )
 
-                    // Botón de Cerrar Sesión
-                    Button(
-                        onClick = {
-                            // Limpiar sesión
-                            SessionManager.clearSession()
-                            navControllerGlobal.navigate(Destinations.Welcome.route) {
-                                popUpTo(Destinations.Welcome.route) { inclusive = true }
+                        Button(
+                            onClick = { showSheet = true },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            shape = MaterialTheme.shapes.large,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
+                        ) {
+                            Text("Iniciar sesión o registrarse")
+                        }
+                    }
+                    else -> {
+                        Text(
+                            text = "Nombre: ${userState.name} ${userState.lastName}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Text(
+                            text = "Email: ${userState.email}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Text(
+                            text = "Rol: ${userState.role}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
+                }
+            }
+
+            if (userState.isLoggedIn && userState.name.isNotEmpty() && !userState.role.equals("Emprendedor", ignoreCase = true)) {
+                item {
+                    SectionWithButtons(
+                        title = "¿Eres emprendedor?",
+                        items = listOf(
+                            Triple(
+                                "Activa tu perfil como emprendedor",
+                                "Publica tus negocios turísticos y llega a más personas"
+                            ) {
+                                navControllerGlobal.navigate(Destinations.Emprendedor.route)
                             }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        shape = RoundedCornerShape(50),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                            contentColor = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                    ) {
-                        Text("Cerrar sesión")
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            // Secciones adicionales
-            sectionWithButtons("Ajustes", listOf(
-                Triple("Moneda", "EUR (€)") { showMonedaSelector = true },
-                Triple("Idioma", "Español") { /* Acción */ },
-                Triple("Apariencia", "Configuración predeterminada del sistema") { /* Acción */ },
-                Triple("Notificaciones", null) { /* Acción */ }
-            ))
-
-            sectionWithButtons("Ayuda", listOf(
-                Triple("Sobre GetYourGuide", null) { /* Acción */ },
-                Triple("Centro de ayuda", null) { /* Acción */ },
-                Triple("Escríbenos", null) { /* Acción */ }
-            ))
-
-            sectionWithButtons("Comentarios", listOf(
-                Triple("Comparte tu opinión", null) { /* Acción */ },
-                Triple("Valora la aplicación", null) { /* Acción */ }
-            ))
-
-            sectionWithButtons("Información legal", listOf(
-                Triple("Términos y condiciones generales", null) { /* Acción */ },
-                Triple("Información legal", null) { /* Acción */ },
-                Triple("Privacidad", null) { /* Acción */ }
-            ))
-        }
-    }
-}
-
-fun LazyListScope.sectionWithButtons(
-    title: String,
-    items: List<Triple<String, String?, () -> Unit>>
-) {
-    item {
-        Spacer(modifier = Modifier.height(12.dp))
-        SectionTitle(title)
-    }
-    items(items) { (label, value, onClick) ->
-        Button(
-            onClick = onClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.onSurface
-            )
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.Start
-            ) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                value?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                        ),
+                        icons = listOf(Icons.Default.Star)
                     )
                 }
             }
+
+            item {
+                val ajustesItems = mutableListOf(
+                    Triple("Moneda", "EUR (€)") { showMonedaSelector = true },
+                    Triple("Idioma", "Español") { },
+                    Triple("Apariencia", "Configuración predeterminada del sistema") { },
+                    Triple("Notificaciones", null) { }
+                )
+                val ajustesIcons = mutableListOf(
+                    Icons.Default.AttachMoney,
+                    Icons.Default.Language,
+                    Icons.Default.ColorLens,
+                    Icons.Default.Notifications
+                )
+                if (userState.isLoggedIn && userState.name.isNotEmpty()) {
+                    ajustesItems.add(0, Triple("Perfil", null) { })
+                    ajustesIcons.add(0, Icons.Default.AccountCircle)
+                }
+
+                SectionWithButtons(
+                    title = "Ajustes",
+                    items = ajustesItems,
+                    icons = ajustesIcons
+                )
+            }
+
+            item {
+                SectionWithButtons(
+                    title = "Ayuda",
+                    items = listOf(
+                        Triple("Sobre GetYourGuide", null) { },
+                        Triple("Centro de ayuda", null) { },
+                        Triple("Escríbenos", null) { }
+                    ),
+                    icons = listOf(Icons.Default.Info, Icons.Default.Help, Icons.Default.Email)
+                )
+            }
+
+            item {
+                SectionWithButtons(
+                    title = "Comentarios",
+                    items = listOf(
+                        Triple("Comparte tu opinión", null) { },
+                        Triple("Valora la aplicación", null) { }
+                    ),
+                    icons = listOf(Icons.Default.Share, Icons.Default.ThumbUp)
+                )
+            }
+
+            if (userState.isLoggedIn && userState.name.isNotEmpty()) {
+                item {
+                    SectionWithButtons(
+                        title = "Información legal",
+                        items = listOf(
+                            Triple("Términos y condiciones generales", null) { },
+                            Triple("Información legal", null) { },
+                            Triple("Privacidad", null) { },
+                            Triple("Cerrar sesión", null) {
+                                viewModel.logout()
+                                navControllerGlobal.navigate(Destinations.Welcome.route) {
+                                    popUpTo(Destinations.Welcome.route) { inclusive = true }
+                                }
+                            }
+                        ),
+                        icons = listOf(
+                            Icons.Default.Description,
+                            Icons.Default.Gavel,
+                            Icons.Default.PrivacyTip,
+                            Icons.Default.Logout
+                        )
+                    )
+                }
+            }
+
+            item { Spacer(modifier = Modifier.height(32.dp)) }
         }
     }
-}
-
-@Composable
-fun SectionTitle(title: String) {
-    val isDark = isSystemInDarkTheme()
-    val background = if (isDark) Color(0xFF1E1E1E) else Color(0xFFF5F5F5)
-    val textColor = if (isDark) Color.LightGray else Color.Gray
-
-    Text(
-        text = title,
-        style = MaterialTheme.typography.labelLarge.copy(color = textColor),
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(background)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-    )
 }

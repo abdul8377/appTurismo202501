@@ -34,15 +34,20 @@ fun NavigationHost(
     val token = SessionManager.getToken()
     val role = SessionManager.getUserRole()
 
-    // Siempre va a WelcomeMain si hay token, sino igual WelcomeMain (que tendrá login dentro si no hay sesión)
-    val startDestination = Destinations.Welcome.route
+    // ✅ Redirige dinámicamente según el rol si hay token
+    val startDestination = when {
+        token.isNullOrEmpty() -> Destinations.Welcome.route
+        role.equals("ADMINISTRADOR", ignoreCase = true) -> Destinations.Administrador.route
+        role.equals("EMPRENDEDOR", ignoreCase = true) -> Destinations.Emprendedor.route
+        else -> Destinations.Welcome.route
+    }
 
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = Modifier.padding(innerPadding)
     ) {
-        // Pantalla principal con pestañas (incluye perfil)
+        // Pantalla principal con pestañas (usuario normal)
         composable(Destinations.Welcome.route) {
             WelcomeMain(navControllerGlobal = navController)
         }
@@ -54,27 +59,27 @@ fun NavigationHost(
             )
         }
 
-        // Login y registro
+        // Login
         composable(Destinations.Login.route) {
             LoginScreen(
                 navToHome = {
                     navController.navigate(Destinations.Welcome.route) {
-                        popUpTo(Destinations.Login.route) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
                     }
                 },
                 navToEmprendedor = {
                     navController.navigate(Destinations.Emprendedor.route) {
-                        popUpTo(Destinations.Login.route) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
                     }
                 },
                 navToUsuario = {
-                    navController.navigate(Destinations.Welcome.route) {  // Va a WelcomeMain para usuario
-                        popUpTo(Destinations.Login.route) { inclusive = true }
+                    navController.navigate(Destinations.Welcome.route) {
+                        popUpTo(0) { inclusive = true }
                     }
                 },
                 navToAdministrador = {
                     navController.navigate(Destinations.Administrador.route) {
-                        popUpTo(Destinations.Login.route) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
                     }
                 },
                 navToRegister = {
@@ -90,7 +95,7 @@ fun NavigationHost(
             RegisterScreen(
                 onNavigateByRole = { role ->
                     navController.navigate(Destinations.Welcome.route) {
-                        popUpTo(Destinations.Register.route) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )
@@ -100,7 +105,7 @@ fun NavigationHost(
             ForgotPasswordScreen(onBack = { navController.popBackStack() })
         }
 
-        // Rutas por rol sin PerfilScreen independiente
+        // Pantalla Emprendedor
         composable(Destinations.Emprendedor.route) {
             EmprendedorScreen(
                 navController = navController,
@@ -108,12 +113,13 @@ fun NavigationHost(
                     TokenUtils.clearToken()
                     SessionManager.clearSession()
                     navController.navigate(Destinations.Welcome.route) {
-                        popUpTo(Destinations.Welcome.route)
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )
         }
 
+        // Pantalla Administrador
         composable(Destinations.Administrador.route) {
             AdministradorScreen(
                 navController = navController,
@@ -121,13 +127,13 @@ fun NavigationHost(
                     TokenUtils.clearToken()
                     SessionManager.clearSession()
                     navController.navigate(Destinations.Welcome.route) {
-                        popUpTo(Destinations.Welcome.route) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )
         }
 
-        // Otros
+        // Pantalla User básica
         composable(Destinations.User.route) {
             UserScreen()
         }

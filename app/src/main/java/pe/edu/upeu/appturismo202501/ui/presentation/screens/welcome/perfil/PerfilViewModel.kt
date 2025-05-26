@@ -2,34 +2,90 @@ package pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.perfil
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import pe.edu.upeu.appturismo202501.modelo.UsersDto
+import pe.edu.upeu.appturismo202501.repository.UserRepository
 import pe.edu.upeu.appturismo202501.utils.SessionManager
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
+import javax.inject.Inject
 
-class PerfilViewModel : ViewModel() {
+data class UserState(
+    val name: String = "",
+    val lastName: String = "",
+    val email: String = "",
+    val role: String = "",
+    val isLoading: Boolean = false,
+    val error: String? = null,
+    val isLoggedIn: Boolean = false   // <-- Nuevo campo para estado de sesión
+)
 
-    // Variable para almacenar el estado del token
-    var isLoggedIn: Boolean = false
-        private set
+@HiltViewModel
+class PerfilViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
+
+    private val _userState = MutableStateFlow(UserState())
+    val userState: StateFlow<UserState> = _userState
 
     init {
-        checkSession() // Verificar si el usuario está logueado al inicio
+        // Solo intenta cargar si hay token e id válido
+        val token = SessionManager.getToken()
+        val userId = SessionManager.getUserId().takeIf { it != -1 }?.toLong()
+        if (token != null && userId != null) {
+            fetchUserData(userId)
+        } else {
+            // No hay sesión guardada, estado inicial no logueado
+            _userState.value = UserState(isLoggedIn = false, isLoading = false)
+        }
     }
 
-    // Función para verificar si hay token y actualizar el estado
-    private fun checkSession() {
-        isLoggedIn = !SessionManager.getToken().isNullOrEmpty()
+    private fun fetchUserData(userId: Long) {
+        viewModelScope.launch {
+            _userState.value = _userState.value.copy(isLoading = true)
+            try {
+                val response = userRepository.getUserById(userId)
+                if (response.isSuccessful) {
+                    response.body()?.let { user ->
+                        _userState.value = UserState(
+                            name = user.name,
+                            lastName = "",  // Si tienes lastName, inclúyelo aquí
+                            email = user.email,
+                            role = user.roles.firstOrNull()?.name ?: "Invitado",
+                            isLoading = false,
+                            isLoggedIn = true
+                        )
+                    } ?: run {
+                        _userState.value = UserState(
+                            error = "Usuario no encontrado",
+                            isLoading = false,
+                            isLoggedIn = false
+                        )
+                    }
+                } else {
+                    _userState.value = UserState(
+                        error = "Error al obtener datos: ${response.code()}",
+                        isLoading = false,
+                        isLoggedIn = false
+                    )
+                }
+            } catch (e: Exception) {
+                _userState.value = UserState(
+                    error = e.localizedMessage ?: "Error desconocido",
+                    isLoading = false,
+                    isLoggedIn = false
+                )
+            }
+        }
     }
 
-    // Función para cerrar sesión
     fun logout() {
         viewModelScope.launch {
-            // Limpiar la sesión y token
             TokenUtils.clearToken()
             SessionManager.clearSession()
-
-            // Actualizar el estado de sesión
-            isLoggedIn = false
+            _userState.value = UserState(isLoggedIn = false) // Resetear estado
         }
     }
 }

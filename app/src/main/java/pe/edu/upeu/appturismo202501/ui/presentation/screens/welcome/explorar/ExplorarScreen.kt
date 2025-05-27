@@ -22,10 +22,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import coil3.compose.AsyncImage
 import pe.edu.upeu.appturismo202501.R
 import pe.edu.upeu.appturismo202501.modelo.CategoryResp
+import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.ActivitiesSection
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.ActivityBanner
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.Experience
@@ -34,6 +38,10 @@ import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.CategoryTabs
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.CulturalBanner
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.CulturalSpacesSection
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.SimpleSearchBar
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.CulturaContent
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.GastronomiaContent
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.GastronomiaTab
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.ProductosContent
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.viewModel.CategoryViewModel
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.viewModel.ZonaTuristicaViewModel
 import pe.edu.upeu.appturismo202501.ui.theme.AppTurismo202501Theme
@@ -47,35 +55,49 @@ fun ExplorarScreen(
     viewModel: CategoryViewModel = hiltViewModel(),
     zonaViewModel: ZonaTuristicaViewModel = hiltViewModel()
 ) {
-    val categories by viewModel.categories.collectAsState()
-
-    val banners by zonaViewModel.banners.collectAsState()
-    var selectedIndex by rememberSaveable { mutableStateOf(0) }
-    val selectedCategory: CategoryResp? = categories.getOrNull(selectedIndex)
 
 
-    val staticTab = CategoryResp(
-        id         = -1L,
-        nombre     = "Cultura Estatico",
-        descripcion= "Experiencias culturales estatico", // opcional
-        imagenUrl  = null,
-        iconoUrl   = null
+    val categories by viewModel.categories.collectAsState(initial = emptyList())
+
+    val tabs = listOf(
+        Destinations.CulturaTab,
+        Destinations.ProductosTab,
+        Destinations.GastronomiaTab
+        // …más si necesitas
     )
-    val allTabs = remember(categories) {
-        listOf(staticTab) + categories
-    }
+    // 2) Tu tab estático como CategoryResp "fake"
+    val staticTabs = listOf(
+        CategoryResp(-1, "Cultura",        "Experiencias culturales",  null, null),
+        CategoryResp(-2, "Productos",      "Nuestros mejores productos", null, null)
+    )
+
+    // 3) Lista completa de pestañas
+    val allTabs = remember(categories) { staticTabs + categories }
+
+    // 4) Estado de cuál pestaña está activa
+    var selectedIndex by rememberSaveable { mutableStateOf(0) }
     val selectedItem = allTabs.getOrNull(selectedIndex)
 
+    // 5) Creo el NavController anidado
+    val innerNav = rememberNavController()
+
+    val topInset = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    val screenH = LocalConfiguration.current.screenHeightDp.dp
+    val headerH = screenH * 0.65f + topInset
+
     Scaffold(
+        contentWindowInsets = WindowInsets(0),
         bottomBar = {
             // En ExplorarScreen normalmente no va barra inferior, la maneja WelcomeMain
             // Si quieres, aquí puedes poner otra barra o nada
         }
-    ) { padding ->
+    ) { innerPadding ->
         Box(
             Modifier
                 .fillMaxSize()
-                .padding(bottom = padding.calculateBottomPadding())
+                // solo inset inferior (para tu bottomBar)
+                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
+                .padding(bottom = innerPadding.calculateBottomPadding())
         ) {
             LazyColumn {
                 item {
@@ -83,11 +105,12 @@ fun ExplorarScreen(
                     Box(
                         Modifier
                             .fillMaxWidth()
-                            .height((LocalConfiguration.current.screenHeightDp * 0.65f).dp)
+                            .height(headerH)
+                            .offset(y = -topInset)
                     ) {
                         // Log para depurar la URL
-                        LaunchedEffect (selectedCategory?.imagenUrl) {
-                            Log.d("WelcomeScreen", "Imagen URL = ${selectedCategory?.imagenUrl}")
+                        LaunchedEffect (selectedItem?.imagenUrl) {
+                            Log.d("WelcomeScreen", "Imagen URL = ${selectedItem?.imagenUrl}")
                         }
 
                         // 1) Fondo dinámico
@@ -95,6 +118,7 @@ fun ExplorarScreen(
                             // Imagen local para tabs estáticos
                             val res = when (selectedItem?.id) {
                                 -1L -> R.drawable.cultura
+                                -2L -> R.drawable.producto
 
                                 else-> R.drawable.bg
                             }
@@ -155,61 +179,44 @@ fun ExplorarScreen(
                         CategoryTabs(
                             categories    = allTabs,
                             selectedIndex = selectedIndex,
-                            onSelected    = { idx -> selectedIndex = idx },
+                            onSelected    = { idx ->
+                                selectedIndex = idx
+                                innerNav.navigate(tabs[idx].route) {
+                                    popUpTo(innerNav.graph.startDestinationId)
+                                    launchSingleTop = true
+                                }
+                            },
                             modifier      = Modifier
                                 .align(Alignment.BottomStart)
                                 .fillMaxWidth()
                         )
 
                     }
-                }
 
-                item {
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(top = innerPadding.calculateTopPadding())
+                    ) {
+                        NavHost(
+                            navController = innerNav,
+                            startDestination = Destinations.CulturaTab.route
+                        ) {
+                            composable (Destinations.CulturaTab.route) {
+                                CulturaContent(navController)
+                            }
+                            composable (Destinations.ProductosTab.route) {
+                                ProductosContent(navController)
+                            }
+                            composable (Destinations.GastronomiaTab.route) {
+                                GastronomiaContent()
+                            }
 
 
-                    val culturalExperiences = listOf(
-                        Experience(R.drawable.ic_launcher_background, "TICKET DE ENTRADA",
-                            "San Diego Ticket de entrada al Museo USS Midway",
-                            "1 día • Sin colas • Audioguía opcional", 4.9, 3204, "39 USD"),
-                        Experience(R.drawable.ic_launcher_background, "EXCURSIÓN DE UN DÍA",
-                            "Las Vegas: Gran Cañón y Presa Hoover, Ópalo",
-                            "10 horas • Sin colas • Comidas incl.", 4.7, 2105, "99 USD"),
-                        // …más
-                    )
-
-                    ExperiencesSection(
-                        title = "Experiencias culturales inolvidables",
-                        experiences = culturalExperiences
-                    )
-                }
-
-                val sample = listOf(
-                    CulturalBanner(R.drawable.ic_launcher_background,  "USS Midway Museum",    "46 actividades"),
-                    CulturalBanner(R.drawable.ic_launcher_background,  "Estatua de la Libertad","164 actividades")
-                )
-
-                item {
-                    CulturalSpacesSection(
-                        title = "Espacios culturales que no te puedes perder",
-                        items = sample,
-                        topPadding = 8.dp,      // separa un poco del bloque anterior
-                        bottomPadding = 12.dp   // separa del LazyRow
-                    )
-                }
-
-                item {
-                    ActivitiesSection(
-                        title = "Zonas Turísticas Destacadas",
-                        items = banners,
-                        onItemClick = { banner ->
-                            // por ejemplo, navegar a un detalle:
-                            navController.navigate("zona/${banner.name}")
                         }
-                    )
+                    }
+
                 }
-
-
-
 
 
 
@@ -233,11 +240,4 @@ fun ExplorarScreen(
 
 
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun WelcomeScreenPreview() {
-    val navController = rememberNavController()          // ← NavController “falso” para previews
-    AppTurismo202501Theme (colorScheme = LightGreenColors) {
-        ExplorarScreen(navController = navController)
-    }
-}
+

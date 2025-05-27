@@ -8,15 +8,34 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Text
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import pe.edu.upeu.appturismo202501.ui.navigation.NavigationHost
-import pe.edu.upeu.appturismo202501.ui.theme.*
+import pe.edu.upeu.appturismo202501.ui.theme.AppTurismo202501Theme
+import pe.edu.upeu.appturismo202501.ui.theme.DarkGreenColors
+import pe.edu.upeu.appturismo202501.ui.theme.DarkPurpleColors
+import pe.edu.upeu.appturismo202501.ui.theme.DarkRedColors
+import pe.edu.upeu.appturismo202501.ui.theme.LightGreenColors
+import pe.edu.upeu.appturismo202501.ui.theme.LightPurpleColors
+import pe.edu.upeu.appturismo202501.ui.theme.LightRedColors
+import pe.edu.upeu.appturismo202501.ui.theme.ThemeType
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
+import pe.edu.upeu.appturismo202501.utils.isNight
+import androidx.compose.ui.graphics.Color
+
+
+
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

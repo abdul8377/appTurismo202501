@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.AppTurismo202501" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.AppTurismo202501" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- 1) Permitir dibujar tras la barra de estado -->
+        <item name="android:windowTranslucentStatus">true</item>
+        <!-- 2) Asegurarnos de que el sistema dibuje los fondos de barra correctamente -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <!-- 3) Color transparente para la status bar -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
 </resources>

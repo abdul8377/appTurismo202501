@@ -32,4 +32,8 @@ sealed class Destinations(
         "Detalle Negocio",
         Icons.Filled.Info // o el icono que prefieras
     )
+    object CulturaTab   : Destinations("explorar/cultura",  "Cultura",  Icons.Filled.Museum)
+    object ProductosTab : Destinations("explorar/productos","Productos",Icons.Filled.ShoppingCart)
+    object GastronomiaTab : Destinations("explorar/gastronomia","Gastronomia",Icons.Filled.Cable)
+
 }

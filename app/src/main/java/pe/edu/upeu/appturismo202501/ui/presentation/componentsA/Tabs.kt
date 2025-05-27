@@ -92,6 +92,7 @@ fun CategoryTabs(
                             // Icono local
                             val iconRes = when(cat.id) {
                                 -1L -> R.drawable.hogar
+                                -2L -> R.drawable.iconoproducto
 
                                 else-> R.drawable.ic_launcher_background
                             }

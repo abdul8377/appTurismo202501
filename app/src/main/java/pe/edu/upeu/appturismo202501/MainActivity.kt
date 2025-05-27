@@ -9,10 +9,12 @@ import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import pe.edu.upeu.appturismo202501.ui.navigation.NavigationHost
@@ -26,6 +28,8 @@ import pe.edu.upeu.appturismo202501.ui.theme.LightRedColors
 import pe.edu.upeu.appturismo202501.ui.theme.ThemeType
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
 import pe.edu.upeu.appturismo202501.utils.isNight
+import androidx.compose.ui.graphics.Color
+
 
 
 @AndroidEntryPoint
@@ -33,8 +37,12 @@ class MainActivity : ComponentActivity() {
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 1️⃣ Dibuja detrás de la barra de estado
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         enableEdgeToEdge()
         setContent {
+
             val themeType= remember{ mutableStateOf(ThemeType.RED) }
             val darkThemex= isNight()
             val darkTheme = remember { mutableStateOf(darkThemex) }
@@ -48,6 +56,7 @@ class MainActivity : ComponentActivity() {
                 else LightGreenColors}
                 else->{LightRedColors}
             }
+
 
             TokenUtils.CONTEXTO_APPX=this@MainActivity
 
@@ -64,6 +73,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {

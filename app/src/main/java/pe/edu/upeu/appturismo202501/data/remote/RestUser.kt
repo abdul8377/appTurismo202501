@@ -14,6 +14,12 @@ interface RestUser {
         @Query("is_active") isActive: Boolean? = null
     ): Response<List<UsersDto>>
 
+    // Obtener usuario individual por ID
+    @GET("users/{id}")
+    suspend fun getUserById(
+        @Path("id") userId: Long
+    ): Response<UsersDto>
+
     @PATCH("users/{id}/active")
     suspend fun toggleActive(
         @Path("id") userId: Long,
@@ -25,7 +31,6 @@ interface RestUser {
         @Path("id") userId: Long,
         @Body body: ChangePasswordRequest
     ): Response<ApiResponse>
-
 }
 
 // Clases para request bodies:

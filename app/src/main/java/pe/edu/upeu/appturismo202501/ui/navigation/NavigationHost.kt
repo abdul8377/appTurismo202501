@@ -17,13 +17,11 @@ import pe.edu.upeu.appturismo202501.ui.presentation.screens.forgotpassword.Forgo
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.SearchScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.administrador.AdministradorScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.EmprendedorScreen
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.register.RegisterScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedorcreate.EmprendedorCreateScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.register.RegisterScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.VerTipoDeNegocioScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.usuario.UsuarioScreen
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.*
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.main.WelcomeMain
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.perfil.PerfilScreen
 import pe.edu.upeu.appturismo202501.utils.SessionManager
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
 
@@ -37,14 +35,12 @@ fun NavigationHost(
     val token = SessionManager.getToken()
     val role = SessionManager.getUserRole()
 
+    // ✅ Redirige dinámicamente según el rol si hay token
     val startDestination = when {
         token.isNullOrEmpty() -> Destinations.Welcome.route
-        else -> when (role) {
-            "Emprendedor" -> Destinations.Emprendedor.route
-            "Usuario" -> Destinations.Usuario.route
-            "Administrador" -> Destinations.Administrador.route
-            else -> Destinations.Administrador.route
-        }
+        role.equals("ADMINISTRADOR", ignoreCase = true) -> Destinations.Administrador.route
+        role.equals("EMPRENDEDOR", ignoreCase = true) -> Destinations.Emprendedor.route
+        else -> Destinations.Welcome.route
     }
 
     NavHost(
@@ -52,43 +48,45 @@ fun NavigationHost(
         startDestination = startDestination,
         modifier = Modifier.padding(innerPadding)
     ) {
-        // Comunes
-        composable(Destinations.Welcome.route) { WelcomeMain() }
+        // Pantalla principal con pestañas (usuario normal)
+        composable(Destinations.Welcome.route) {
+            WelcomeMain(navControllerGlobal = navController)
+        }
+
         composable(Destinations.Search.route) {
             SearchScreen(
                 navController = navController,
                 suggestions = listOf("Isla Taquile", "Isla Amantaní", "Lago Titicaca", "Puno", "Cusco")
             )
         }
-        composable(Destinations.PerfilWelcome.route) { PerfilScreen(navController) }
 
-        // Login y registro
+        // Login
         composable(Destinations.Login.route) {
             LoginScreen(
-                navigateToHome = {
-                    navController.navigate(Destinations.Administrador.route) {
-                        popUpTo(Destinations.Login.route) { inclusive = true }
+                navToHome = {
+                    navController.navigate(Destinations.Welcome.route) {
+                        popUpTo(0) { inclusive = true }
                     }
                 },
-                navigateToEmprendedorScreen = {
+                navToEmprendedor = {
                     navController.navigate(Destinations.Emprendedor.route) {
-                        popUpTo(Destinations.Login.route) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
                     }
                 },
-                navigateToUsuarioScreen = {
-                    navController.navigate(Destinations.Usuario.route) {
-                        popUpTo(Destinations.Login.route) { inclusive = true }
+                navToUsuario = {
+                    navController.navigate(Destinations.Welcome.route) {
+                        popUpTo(0) { inclusive = true }
                     }
                 },
-                navigateToAdministradorScreen = {
+                navToAdministrador = {
                     navController.navigate(Destinations.Administrador.route) {
-                        popUpTo(Destinations.Login.route) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
                     }
                 },
-                onRegisterClick = {
+                navToRegister = {
                     navController.navigate(Destinations.Register.route)
                 },
-                navigateToForgotPasswordScreen = {
+                navToForgotPassword = {
                     navController.navigate(Destinations.ForgotPassword.route)
                 }
             )
@@ -97,14 +95,8 @@ fun NavigationHost(
         composable(Destinations.Register.route) {
             RegisterScreen(
                 onNavigateByRole = { role ->
-                    val route = when (role) {
-                        "Emprendedor" -> Destinations.Emprendedor.route
-                        "Usuario" -> Destinations.Usuario.route
-                        "Administrador" -> Destinations.Administrador.route
-                        else -> Destinations.Administrador.route
-                    }
-                    navController.navigate(route) {
-                        popUpTo(Destinations.Register.route) { inclusive = true }
+                    navController.navigate(Destinations.Welcome.route) {
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )
@@ -114,7 +106,7 @@ fun NavigationHost(
             ForgotPasswordScreen(onBack = { navController.popBackStack() })
         }
 
-        // Rutas por rol
+        // Pantalla Emprendedor
         composable(Destinations.Emprendedor.route) {
             EmprendedorScreen(
                 navController = navController,
@@ -122,12 +114,13 @@ fun NavigationHost(
                     TokenUtils.clearToken()
                     SessionManager.clearSession()
                     navController.navigate(Destinations.Welcome.route) {
-                        popUpTo(Destinations.Welcome.route)
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )
         }
-        composable(Destinations.Usuario.route) { UsuarioScreen(navController) }
+
+        // Pantalla Administrador
         composable(Destinations.Administrador.route) {
             AdministradorScreen(
                 navController = navController,
@@ -135,24 +128,28 @@ fun NavigationHost(
                     TokenUtils.clearToken()
                     SessionManager.clearSession()
                     navController.navigate(Destinations.Welcome.route) {
-                        popUpTo(Destinations.Welcome.route) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )
         }
 
-        // Otros
-        composable(Destinations.User.route) { UserScreen() }
+        // Pantalla User básica
+        composable(Destinations.User.route) {
+            UserScreen()
+        }
 
-        // VerTipoDeNegocioScreen (única definición)
+        // Detalle tipo de negocio
         composable(
             route = Destinations.VerTipoDeNegocio.route,
-            arguments = listOf(
-                navArgument("id") { type = NavType.LongType }
-            )
+            arguments = listOf(navArgument("id") { type = NavType.LongType })
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getLong("id") ?: 0L
             VerTipoDeNegocioScreen(id = id)
+        }
+
+        composable(Destinations.Create_Emprendimiento.route) {
+            EmprendedorCreateScreen()
         }
     }
 }

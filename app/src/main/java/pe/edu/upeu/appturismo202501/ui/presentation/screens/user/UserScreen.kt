@@ -1,78 +1,122 @@
 package pe.edu.upeu.appturismo202501.ui.presentation.screens.user
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ToggleOff
-import androidx.compose.material.icons.filled.ToggleOn
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import pe.edu.upeu.appturismo202501.modelo.UsersDto
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.ChangePasswordCustomDialog
-import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.UserItem  // Importa aquí tu componente reutilizable
-import androidx.compose.material.icons.filled.Key
+import pe.edu.upeu.appturismo202501.ui.presentation.componentsC.SummaryCard
+import pe.edu.upeu.appturismo202501.ui.presentation.componentsC.RoleFilterDropdown
+import pe.edu.upeu.appturismo202501.ui.presentation.componentsC.UserTableWithHeaderPaginated
+import pe.edu.upeu.appturismo202501.ui.presentation.componentsC.SearchToggleField
 
 @Composable
-fun UserScreen(
-    viewModel: UserViewModel = hiltViewModel()
-) {
+fun UserScreen(viewModel: UserViewModel = hiltViewModel()) {
     val users by viewModel.users.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 
+    var selectedRole by remember { mutableStateOf<String?>(null) }
+    var searchQuery by remember { mutableStateOf("") }
     var showChangePasswordDialog by remember { mutableStateOf(false) }
     var selectedUserId by remember { mutableStateOf<Long?>(null) }
 
-    LaunchedEffect(Unit) {
-        viewModel.loadUsers()
+    // Cargar usuarios al cambiar rol
+    LaunchedEffect(selectedRole) {
+        viewModel.loadUsers(role = selectedRole)
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        when {
-            isLoading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+    // Filtrado por búsqueda local
+    val filteredUsers = users.filter {
+        it.name.contains(searchQuery, ignoreCase = true) ||
+                it.email.contains(searchQuery, ignoreCase = true)
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+    ) {
+        // 🔷 Tarjetas de resumen
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            item {
+                SummaryCard("Usuarios", users.size.toString(), Icons.Default.Group)
             }
-            errorMessage != null -> {
-                Text(
-                    text = errorMessage ?: "",
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.align(Alignment.Center)
+            item {
+                SummaryCard(
+                    "Emprendedores",
+                    users.count { it.roles.any { r -> r.name == "Emprendedor" } }.toString(),
+                    Icons.Default.People
                 )
             }
-            users.isEmpty() -> {
-                Text(
-                    text = "No hay usuarios disponibles",
-                    modifier = Modifier.align(Alignment.Center)
+            item {
+                SummaryCard(
+                    "Administradores",
+                    users.count { it.roles.any { r -> r.name == "Administrador" } }.toString(),
+                    Icons.Default.Person
                 )
-            }
-            else -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(users) { user ->
-                        UserItem(
-                            user = user,
-                            onToggleActive = {
-                                val newActiveState = user.is_active == 0
-                                viewModel.toggleUserActive(user.id, newActiveState)
-                            },
-                            onChangePasswordClick = {
-                                selectedUserId = user.id
-                                showChangePasswordDialog = true
-                            }
-                        )
-                    }
-                }
             }
         }
 
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // 🔽 Filtro por rol (100%)
+        RoleFilterDropdown(
+            selectedRole = selectedRole,
+            onRoleSelected = { selectedRole = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 12.dp)
+        )
+
+        // 🔍 Buscador (100%)
+        SearchToggleField(
+            onQueryChanged = { searchQuery = it },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // 🔄 Estado o tabla paginada
+        when {
+            isLoading -> {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            errorMessage != null -> {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Error: $errorMessage", color = MaterialTheme.colorScheme.error)
+                }
+            }
+
+            else -> {
+                UserTableWithHeaderPaginated(
+                    users = filteredUsers,
+                    onToggleActive = { user ->
+                        viewModel.toggleUserActive(user.id, user.is_active == 0)
+                    },
+                    onChangePassword = { user ->
+                        selectedUserId = user.id
+                        showChangePasswordDialog = true
+                    }
+                )
+            }
+        }
+
+        // 🔐 Diálogo para cambio de contraseña
         if (showChangePasswordDialog && selectedUserId != null) {
             ChangePasswordCustomDialog(
                 userId = selectedUserId!!,

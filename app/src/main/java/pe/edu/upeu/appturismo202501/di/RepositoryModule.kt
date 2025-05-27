@@ -6,6 +6,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import pe.edu.upeu.appturismo202501.repository.CategoryRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.CategoryRespository
+import pe.edu.upeu.appturismo202501.repository.EmprendimientoRepository
+import pe.edu.upeu.appturismo202501.repository.EmprendimientoRepositoryImpl
 import pe.edu.upeu.appturismo202501.repository.LoginUserRepository
 import pe.edu.upeu.appturismo202501.repository.LoginUserRespositoryImp
 import pe.edu.upeu.appturismo202501.repository.RegisterRepository
@@ -58,5 +60,11 @@ abstract class RepositoryModule {
     abstract fun bindTipoDeNegocioRepository(
         tipoDeNegocioRepositoryImpl: TipoDeNegocioRepositoryImpl
     ): TipoDeNegocioRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindEmprendimientoRepository(
+        emprendimientoRepositoryImpl: EmprendimientoRepositoryImpl
+    ): EmprendimientoRepository
 
 }

@@ -27,7 +27,9 @@ import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.SidebarDrawer
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.TipoDeNegocioScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.VerTipoDeNegocioScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.ajustes.AjustesScreen
 import pe.edu.upeu.appturismo202501.utils.SessionManager
+
 @Composable
 fun AdministradorScreen(
     navController: NavHostController,
@@ -72,9 +74,7 @@ fun AdministradorScreen(
                 TipoDeNegocioScreen(navController = adminNavController)
             }
             composable(Destinations.Ajustes.route) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Ajustes de la App")
-                }
+                AjustesScreen()
             }
             composable(
                 route = "ver_tipo_de_negocio_screen/{id}",

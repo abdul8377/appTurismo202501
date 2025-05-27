@@ -72,4 +72,10 @@ class DataSourceModule {
         return retrofit.create(RestTipoDeNegocio::class.java)
     }
 
+    @Singleton
+    @Provides
+    fun provideRestEmprendimiento(retrofit: Retrofit): RestEmprendimiento {
+        return retrofit.create(RestEmprendimiento::class.java)
+    }
+
 }

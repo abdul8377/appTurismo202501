@@ -14,13 +14,14 @@ import javax.inject.Inject
 
 data class UserState(
     val name: String = "",
-    val lastName: String = "",
+    val lastName: String = "",  // <-- valor por defecto para evitar null
     val email: String = "",
     val role: String = "",
     val isLoading: Boolean = false,
     val error: String? = null,
-    val isLoggedIn: Boolean = false   // <-- Nuevo campo para estado de sesión
+    val isLoggedIn: Boolean = false
 )
+
 
 @HiltViewModel
 class PerfilViewModel @Inject constructor(
@@ -51,7 +52,7 @@ class PerfilViewModel @Inject constructor(
                     response.body()?.let { user ->
                         _userState.value = UserState(
                             name = user.name,
-                            lastName = "",  // Si tienes lastName, inclúyelo aquí
+                            lastName = user.lastName ?: "",  // <-- Aquí usas ?: ""
                             email = user.email,
                             role = user.roles.firstOrNull()?.name ?: "Invitado",
                             isLoading = false,
@@ -80,6 +81,7 @@ class PerfilViewModel @Inject constructor(
             }
         }
     }
+
 
     fun logout() {
         viewModelScope.launch {

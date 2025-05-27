@@ -17,7 +17,8 @@ import pe.edu.upeu.appturismo202501.ui.presentation.screens.forgotpassword.Forgo
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.SearchScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.administrador.AdministradorScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.EmprendedorScreen
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.register.RegisterScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedorcreate.EmprendedorCreateScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.register.RegisterScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.VerTipoDeNegocioScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.main.WelcomeMain
@@ -145,6 +146,10 @@ fun NavigationHost(
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getLong("id") ?: 0L
             VerTipoDeNegocioScreen(id = id)
+        }
+
+        composable(Destinations.Create_Emprendimiento.route) {
+            EmprendedorCreateScreen()
         }
     }
 }

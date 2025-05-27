@@ -5,6 +5,7 @@ import com.squareup.moshi.Json
 data class UsersDto(
     val id: Long,
     val name: String,
+    val lastName: String,
     val email: String,
     val roleId: Long,
     val roles: List<Role>,  // roles como lista
@@ -19,8 +20,9 @@ data class UsersDto(
 data class UserResp(
     val id: Long,
     val name: String,
+    val lastName: String, // <- agregar
     val email: String,
-    val roles: List<Role>,  // lista de roles desde JSON
+    val roles: List<Role>,
     @Json(name = "is_active")
     val isActive: Int,
     val motivo_inactivo: String?,
@@ -28,21 +30,15 @@ data class UserResp(
     val updated_at: String,
 )
 
-data class Role(
-    val id: Long,
-    val name: String,
-    val guard_name: String,
-    val created_at: String,
-    val updated_at: String,
-)
 
 fun UserResp.toDto(): UsersDto {
     return UsersDto(
         id = id,
         name = name,
+        lastName = lastName,
         email = email,
         roleId = roles.firstOrNull()?.id ?: 0L,
-        roles = roles, // lista completa
+        roles = roles,
         is_active = isActive,
         motivo_inactivo = motivo_inactivo,
         created_at = created_at,

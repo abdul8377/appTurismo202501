@@ -1,4 +1,4 @@
-package pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.perfil
+package pe.edu.upeu.appturismo202501.ui.presentation.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,15 +10,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsB.MonedaSelector
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsPerfil.SectionWithButtons
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.LoginScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.perfil.PerfilViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PerfilScreen(
     navControllerGlobal: NavController,
+    navControllerLocal: NavHostController,
     viewModel: PerfilViewModel = hiltViewModel()
 ) {
     var showSheet by remember { mutableStateOf(false) }
@@ -155,7 +158,11 @@ fun PerfilScreen(
                 }
             }
 
-            if (userState.isLoggedIn && userState.name.isNotEmpty() && !userState.role.equals("Emprendedor", ignoreCase = true)) {
+            if (userState.isLoggedIn
+                && userState.name.isNotEmpty()
+                && !userState.role.equals("Emprendedor", ignoreCase = true)
+
+            ) {
                 item {
                     SectionWithButtons(
                         title = "¿Eres emprendedor?",
@@ -164,13 +171,13 @@ fun PerfilScreen(
                                 "Activa tu perfil como emprendedor",
                                 "Publica tus negocios turísticos y llega a más personas"
                             ) {
-                                navControllerGlobal.navigate(Destinations.Emprendedor.route)
-                            }
+                                navControllerLocal.navigate("emprendimiento_create")                            }
                         ),
                         icons = listOf(Icons.Default.Star)
                     )
                 }
             }
+
 
             item {
                 val ajustesItems = mutableListOf(

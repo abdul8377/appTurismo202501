@@ -7,11 +7,13 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.ProductionQuantityLimits
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.ProductionQuantityLimits
 import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -21,9 +23,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.NavItem
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.TurismoNavigationBar
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.PerfilScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedorcreate.EmprendedorCreateScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.carrito.CarritoScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.ExplorarScreen
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.perfil.PerfilScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.productos.ProductosScreen
 
 enum class BottomDestination(
@@ -38,6 +41,7 @@ enum class BottomDestination(
     RESERVAS("Reservas", "reservas", Icons.Filled.Favorite, Icons.Outlined.FavoriteBorder),
     PERFIL("Perfil", "perfil", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle),
 }
+
 
 @Composable
 fun WelcomeMain(
@@ -91,9 +95,22 @@ fun WelcomeMain(
             composable(BottomDestination.RESERVAS.route) {
                 // ReservasScreen() si tienes
             }
+            // En WelcomeMain NavHost:
             composable(BottomDestination.PERFIL.route) {
-                PerfilScreen(navControllerGlobal)
+                PerfilScreen(
+                    navControllerGlobal = navControllerGlobal,
+                    navControllerLocal = navControllerLocal
+                )
             }
+
+
+
+            // Agregar aquí la ruta para EmprendedorCreateScreen
+            composable("emprendimiento_create") {
+                EmprendedorCreateScreen()
+            }
+
+
         }
     }
 }

@@ -1,4 +1,4 @@
-package pe.edu.upeu.appturismo202501.ui.presentation.screens.register
+package pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.register
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*

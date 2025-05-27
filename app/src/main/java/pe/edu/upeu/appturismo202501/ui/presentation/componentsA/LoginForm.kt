@@ -24,6 +24,7 @@ fun LoginForm(
     modifier: Modifier = Modifier,
     onCheckEmail: (String) -> Unit,
     onLogin: (String, String) -> Unit,
+    onRegister: (String, String, String) -> Unit, // Acción para registro
     isLoading: Boolean = false,
     emailExists: Boolean? = null,
     errorMessage: String? = null,
@@ -31,9 +32,11 @@ fun LoginForm(
     userRoles: List<String> = emptyList(),
     onClearError: () -> Unit = {},
     onForgotPassword: () -> Unit = {},
+    isLogin: Boolean = true // Condición para decidir si es Login o Registro
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordConfirm by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -63,7 +66,7 @@ fun LoginForm(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Bienvenido",
+                text = if (isLogin) "Bienvenido" else "Registro",
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
@@ -78,7 +81,7 @@ fun LoginForm(
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
                 singleLine = true,
-                enabled = emailExists != true,
+                enabled = emailExists != true || !isLogin,
                 shape = MaterialTheme.shapes.medium
             )
 
@@ -102,28 +105,30 @@ fun LoginForm(
                 }
 
                 true -> {
-                    // Saludo según rol
-                    val rolSaludo = when {
-                        "Administrador" in userRoles -> "Administrador"
-                        "Emprendedor" in userRoles -> "Emprendedor"
-                        "Usuario" in userRoles -> "Usuario"
-                        else -> ""
+                    // Saludo según rol (solo si es login)
+                    if (isLogin) {
+                        val rolSaludo = when {
+                            "Administrador" in userRoles -> "Administrador"
+                            "Emprendedor" in userRoles -> "Emprendedor"
+                            "Usuario" in userRoles -> "Usuario"
+                            else -> ""
+                        }
+
+                        Text(
+                            text = if (rolSaludo.isNotEmpty())
+                                "Bienvenido $rolSaludo, qué bueno verte de vuelta"
+                            else
+                                "Bienvenido",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        if (userName.isNotBlank()) {
+                            Text("Nombre: $userName", style = MaterialTheme.typography.bodyMedium)
+                        }
                     }
 
-                    Text(
-                        text = if (rolSaludo.isNotEmpty())
-                            "Bienvenido $rolSaludo, qué bueno verte de vuelta"
-                        else
-                            "Bienvenido",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    if (userName.isNotBlank()) {
-                        Text("Nombre: $userName", style = MaterialTheme.typography.bodyMedium)
-                    }
-                    Text("Correo: $email", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(bottom = 12.dp))
-
+                    // Mostrar campos de contraseña
                     OutlinedTextField(
                         value = password,
                         onValueChange = {
@@ -145,29 +150,65 @@ fun LoginForm(
                         shape = MaterialTheme.shapes.medium
                     )
 
+                    if (!isLogin) {
+                        // Campo de confirmación de contraseña (solo para registro)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = passwordConfirm,
+                            onValueChange = {
+                                passwordConfirm = it
+                                if (errorMessage != null) onClearError()
+                            },
+                            label = { Text("Confirmar Contraseña") },
+                            modifier = Modifier.fillMaxWidth(),
+                            visualTransformation = PasswordVisualTransformation(),
+                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
+                            singleLine = true,
+                            shape = MaterialTheme.shapes.medium
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(8.dp))
+
+                    if (isLogin) {
+                        // Botón de login
+                        Button(
+                            onClick = {
+                                if (password.isNotBlank()) {
+                                    onLogin(email.trim(), password)
+                                } else {
+                                    Toast.makeText(context, "Ingrese su contraseña", Toast.LENGTH_SHORT).show()
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium
+                        ) {
+                            Text("Ingresar")
+                        }
+                    } else {
+                        // Botón de registro
+                        Button(
+                            onClick = {
+                                if (password.isNotBlank() && password == passwordConfirm) {
+                                    onRegister(email.trim(), password, passwordConfirm)
+                                } else {
+                                    Toast.makeText(context, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium
+                        ) {
+                            Text("Registrar")
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     TextButton(
                         onClick = onForgotPassword,
                         modifier = Modifier.align(Alignment.End)
                     ) {
                         Text("¿Olvidaste tu contraseña?", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Button(
-                        onClick = {
-                            if (password.isNotBlank()) {
-                                onLogin(email.trim(), password)
-                            } else {
-                                Toast.makeText(context, "Ingrese su contraseña", Toast.LENGTH_SHORT).show()
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = MaterialTheme.shapes.medium
-                    ) {
-                        Text("Ingresar")
                     }
                 }
 

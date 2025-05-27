@@ -30,4 +30,10 @@ sealed class Destinations(
         "Detalle Negocio",
         Icons.Filled.Info
     )
+    object Create_Emprendimiento : Destinations(
+
+        "emprendimiento_create",
+        "Emprendimiento_Create",
+        Icons.Filled.Accessibility
+    )
 }

@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import pe.edu.upeu.appturismo202501.modelo.LoginDto
+import pe.edu.upeu.appturismo202501.modelo.RegisterDto
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.LoginForm
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,13 +29,13 @@ fun LoginScreen(
     val userName by viewModel.userName.observeAsState("")
     val userRoles by viewModel.userRoles.observeAsState(emptyList())
     val userRole by viewModel.userRole.observeAsState()
-    val isLogin by viewModel.islogin.observeAsState(false)
+    val isAuthSuccess by viewModel.isAuthSuccess.observeAsState(false) // Cambié `isLogin` por `isAuthSuccess`
 
     val context = LocalContext.current
 
-    // Navegación cuando login es exitoso
-    LaunchedEffect(isLogin) {
-        if (isLogin) {
+    // Navegación cuando login o registro es exitoso
+    LaunchedEffect(isAuthSuccess) {
+        if (isAuthSuccess) {
             when (userRole) {
                 "Emprendedor" -> navToEmprendedor()
                 "Usuario" -> navToUsuario()   // Aquí navega a PerfilScreen (ruta perfilWelcome)
@@ -51,9 +52,18 @@ fun LoginScreen(
         }
     }
 
+    // LoginForm ajustado para aceptar el parámetro isLogin
     LoginForm(
+        isLogin = true,  // Aquí le estamos diciendo que está en el flujo de login
         onCheckEmail = { email -> viewModel.checkEmail(email) },
-        onLogin = { email, password -> viewModel.loginSys(LoginDto(email, password)) },
+        onLogin = { email, password ->
+            // Aseguramos de pasar los valores correctos de email y password al login
+            viewModel.loginUser(LoginDto(email, password))
+        },
+        onRegister = { email, password, passwordConfirm ->
+            // Pasamos los valores de email, password y passwordConfirm al registro
+            viewModel.registerUser(RegisterDto(name = "", last_name = "", email = email, password = password, password_confirmation = passwordConfirm, country = null, zip_code = null))
+        },
         isLoading = isLoading,
         emailExists = emailExists,
         errorMessage = errorMessage,

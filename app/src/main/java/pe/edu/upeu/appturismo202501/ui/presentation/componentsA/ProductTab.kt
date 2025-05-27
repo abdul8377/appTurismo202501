@@ -52,26 +52,27 @@ import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
 import pe.edu.upeu.appturismo202501.R
 
-data class Producto(
-    val id: Long = 0L,
+data class ProductoUi(
+    val id: Long,
+    val categoryId: Long,     // <-- nuevo campo
     val imageUrl: String,
     val title: String,
     val subtitle: String,
-    val price: String,
+    val price: Double,        // para filtrar numéricamente
+    val priceFormatted: String,
     val rating: Double,
     val isFavorite: Boolean = false // Si quieres manejar el corazón
 )
-
 @Composable
 fun ProductItem(
-    producto: Producto,
+    producto: ProductoUi,
     isFavorite: Boolean,
     onItemClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier,
     cardWidth: Dp = 180.dp,
     imageHeight: Dp = 120.dp
-) {
+){
     Column(
         modifier = modifier
             .width(cardWidth)
@@ -140,7 +141,7 @@ fun ProductItem(
 
         // 4) Precio
         Text(
-            text = producto.price,
+            text = producto.priceFormatted,
             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium)
         )
 

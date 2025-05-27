@@ -52,13 +52,13 @@ fun NavigationHost(
         composable(Destinations.Welcome.route) {
             WelcomeMain(navControllerGlobal = navController)
         }
-
         composable(Destinations.Search.route) {
             SearchScreen(
                 navController = navController,
-                suggestions = listOf("Isla Taquile", "Isla Amantaní", "Lago Titicaca", "Puno", "Cusco")
+                suggestions   = listOf("Isla Taquile", "Amantaní", "Titicaca")
             )
         }
+
 
         // Login
         composable(Destinations.Login.route) {

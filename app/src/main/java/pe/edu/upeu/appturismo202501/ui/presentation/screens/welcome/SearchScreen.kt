@@ -3,6 +3,7 @@ package pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -26,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.foundation.lazy.items
 
 @Composable
 
@@ -143,42 +145,75 @@ fun SearchScreen(
 ) {
     var query by rememberSaveable { mutableStateOf("") }
 
-    Column(Modifier.fillMaxSize().padding(16.dp)) {
-        TopSearchBar(
-            query = query,
-            onQueryChange = { query = it },
-            onBack = { navController.popBackStack() }
-        )
+    LazyColumn (
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
 
-        Spacer(Modifier.height(24.dp))
-
-        // Búsquedas recientes header
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text("Búsquedas recientes", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.weight(1f))
-            TextButton(onClick = { recent.clear() }) {
-                Text("Borrar")
-            }
+        item {
+            TopSearchBar(
+                query = query,
+                onQueryChange = { query = it },
+                onBack = { navController.popBackStack() }
+            )
+            Spacer(Modifier.height(24.dp))
         }
-        Column(Modifier.verticalScroll(rememberScrollState())) {
-            recent.forEach { item ->
-                RecentRow(
-                    text = item,
-                    onRemove = { recent.remove(item) },
-                    onClick = { query = item }
+
+
+        item {
+            // Búsquedas recientes header
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Búsquedas recientes",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleMedium
                 )
+                Spacer(Modifier.weight(1f))
+                TextButton(onClick = { recent.clear() }) {
+                    Text("Borrar")
+                }
             }
         }
-
-        Spacer(Modifier.height(24.dp))
-
-        Text("Sugerencias", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-        Column(Modifier.verticalScroll(rememberScrollState())) {
-            SuggestionRow("Usar ubicación actual", useLocation = true, onClick = {})
-            suggestions.forEach { city ->
-                SuggestionRow(city, sub = "Ciudad en Francia", onClick = { query = city })
-            }
+        items(
+            items = recent,
+            key = { it }
+        ) { item ->
+            RecentRow(
+                text = item,
+                onRemove = { recent.remove(item) },
+                onClick  = { query = item }
+            )
         }
+
+
+        item {
+            Text("Sugerencias", fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMedium)
+        }
+        item {
+            SuggestionRow(
+                text = "Usar ubicación actual",
+                useLocation = true,
+                onClick = { /*…*/ }
+            )
+        }
+        items(
+            items = suggestions,
+            key = { it }
+        ) { city ->
+            SuggestionRow(
+                text = city,
+                sub = "Ciudad en Puno",
+                onClick = { query = city }
+            )
+        }
+
+
     }
 }
 

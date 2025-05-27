@@ -4,12 +4,16 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import pe.edu.upeu.appturismo202501.repository.CategoryProductsRepositoryImp
+import pe.edu.upeu.appturismo202501.repository.CategoryProductsRespository
 import pe.edu.upeu.appturismo202501.repository.CategoryRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.CategoryRespository
 import pe.edu.upeu.appturismo202501.repository.EmprendimientoRepository
 import pe.edu.upeu.appturismo202501.repository.EmprendimientoRepositoryImpl
 import pe.edu.upeu.appturismo202501.repository.LoginUserRepository
 import pe.edu.upeu.appturismo202501.repository.LoginUserRespositoryImp
+import pe.edu.upeu.appturismo202501.repository.ProductoRepositoryImp
+import pe.edu.upeu.appturismo202501.repository.ProductoRespository
 import pe.edu.upeu.appturismo202501.repository.RegisterRepository
 import pe.edu.upeu.appturismo202501.repository.RegisterRepositoryImpl
 import pe.edu.upeu.appturismo202501.repository.TipoDeNegocioRepository
@@ -66,5 +70,17 @@ abstract class RepositoryModule {
     abstract fun bindEmprendimientoRepository(
         emprendimientoRepositoryImpl: EmprendimientoRepositoryImpl
     ): EmprendimientoRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindProductoRepository(
+        productoRepositoryImpl: ProductoRepositoryImp
+    ): ProductoRespository
+
+    @Binds
+    @Singleton
+    abstract fun bindCategoryProductsRepository(
+        CategoryProductsRepositoryImpl: CategoryProductsRepositoryImp
+    ): CategoryProductsRespository
 
 }

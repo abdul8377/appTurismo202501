@@ -58,13 +58,15 @@ class DataSourceModule {
 
     @Singleton
     @Provides
-    fun provideRestZonaTuristica(retrofit: Retrofit): RestZonaTuristica =
-        retrofit.create(RestZonaTuristica::class.java)
+    fun provideRestZonaTuristica(retrofit: Retrofit): RestZonaTuristica {
+        return retrofit.create(RestZonaTuristica::class.java)
+    }
 
     @Singleton
     @Provides
-    fun provideRestUser(retrofit: Retrofit): RestUser =
-        retrofit.create(RestUser::class.java)
+    fun provideRestUser(retrofit: Retrofit): RestUser {
+        return retrofit.create(RestUser::class.java)
+    }
 
     @Singleton
     @Provides
@@ -78,4 +80,19 @@ class DataSourceModule {
         return retrofit.create(RestEmprendimiento::class.java)
     }
 
+
+    @Singleton
+    @Provides
+    fun provideRestProducto(retrofit: Retrofit): RestProductos {
+        return retrofit.create(RestProductos::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideRestCategoryProducts(retrofit: Retrofit): RestCategoryProducts {
+        return retrofit.create(RestCategoryProducts::class.java)
+    }
 }
+
+
+

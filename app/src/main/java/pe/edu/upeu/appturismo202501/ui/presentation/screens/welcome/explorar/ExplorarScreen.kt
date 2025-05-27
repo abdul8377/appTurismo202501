@@ -38,9 +38,13 @@ import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.CategoryTabs
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.CulturalBanner
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.CulturalSpacesSection
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.SimpleSearchBar
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.SearchScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.AlojamientoContent
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.CulturaContent
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.ExperienciasContent
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.GastronomiaContent
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.GastronomiaTab
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.GuiasContent
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.ProductosContent
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.viewModel.CategoryViewModel
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.viewModel.ZonaTuristicaViewModel
@@ -62,8 +66,11 @@ fun ExplorarScreen(
     val tabs = listOf(
         Destinations.CulturaTab,
         Destinations.ProductosTab,
-        Destinations.GastronomiaTab
-        // …más si necesitas
+        Destinations.GastronomiaTab,
+        Destinations.ExperienciasTab,
+        Destinations.AlojamientoTab,
+        Destinations.GuiasTab,
+
     )
     // 2) Tu tab estático como CategoryResp "fake"
     val staticTabs = listOf(
@@ -211,20 +218,32 @@ fun ExplorarScreen(
                             composable (Destinations.GastronomiaTab.route) {
                                 GastronomiaContent()
                             }
-
+                            composable (Destinations.ExperienciasTab.route){
+                                ExperienciasContent()
+                            }
+                            composable (Destinations.AlojamientoTab.route){
+                                AlojamientoContent()
+                            }
+                            composable (Destinations.GuiasTab.route){
+                                GuiasContent()
+                            }
+                            composable(Destinations.Search.route) {
+                                SearchScreen(
+                                    navController = navController,
+                                    suggestions = listOf("Isla Taquile", "Isla Amantaní", "Lago Titicaca", "Puno", "Cusco")
+                                )
+                            }
 
                         }
                     }
 
                 }
 
-
-
             }
 
             /* ---------- BUSCADOR FLOTANTE ---------- */
             SimpleSearchBar(
-                onClick = { navController.navigate("search") },
+                onClick = { navController.navigate(Destinations.Search.route) },
                 modifier = Modifier
                     //.align(Alignment.TopCenter)   // encima del resto
                     .align(Alignment.TopCenter)

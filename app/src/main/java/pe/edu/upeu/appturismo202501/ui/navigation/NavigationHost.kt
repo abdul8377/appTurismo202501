@@ -149,7 +149,8 @@ fun NavigationHost(
         }
 
         composable(Destinations.Create_Emprendimiento.route) {
-            EmprendedorCreateScreen()
+            EmprendedorCreateScreen(navController = navController)
         }
+
     }
 }

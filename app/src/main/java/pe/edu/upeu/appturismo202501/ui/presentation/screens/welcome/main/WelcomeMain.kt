@@ -107,7 +107,7 @@ fun WelcomeMain(
 
             // Agregar aquí la ruta para EmprendedorCreateScreen
             composable("emprendimiento_create") {
-                EmprendedorCreateScreen()
+                EmprendedorCreateScreen(navController = navControllerLocal)
             }
 
 

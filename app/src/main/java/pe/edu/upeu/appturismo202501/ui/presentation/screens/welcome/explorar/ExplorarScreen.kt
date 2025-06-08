@@ -43,7 +43,7 @@ import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.con
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.CulturaContent
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.ExperienciasContent
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.GastronomiaContent
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.GastronomiaTab
+
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.GuiasContent
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.ProductosContent
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.viewModel.CategoryViewModel
@@ -222,7 +222,8 @@ fun ExplorarScreen(
                                 ExperienciasContent()
                             }
                             composable (Destinations.AlojamientoTab.route){
-                                AlojamientoContent()
+                                AlojamientoContent(navController = navController)
+
                             }
                             composable (Destinations.GuiasTab.route){
                                 GuiasContent()
@@ -233,6 +234,7 @@ fun ExplorarScreen(
                                     suggestions = listOf("Isla Taquile", "Isla Amantaní", "Lago Titicaca", "Puno", "Cusco")
                                 )
                             }
+
 
                         }
                     }

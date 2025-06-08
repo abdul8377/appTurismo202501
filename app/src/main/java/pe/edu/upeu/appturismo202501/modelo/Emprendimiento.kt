@@ -1,5 +1,6 @@
 package pe.edu.upeu.appturismo202501.modelo
 
+import com.google.gson.annotations.SerializedName
 import com.squareup.moshi.Json
 
 data class Emprendimiento(
@@ -71,3 +72,32 @@ data class EstadoSolicitudResponse(
     val tieneEmprendimientoActivo: Boolean,
     val estadoSolicitud: String? = null
 )
+
+data class EmprendimientoDto(
+    val emprendimientosId: Long,
+    val codigoUnico: String,
+    val nombre: String,
+    val descripcion: String?,
+    val tipoNegocioId: Long?,
+    val direccion: String?,
+    val telefono: String?,
+    val estado: String,
+    val fechaRegistro: String,
+    @SerializedName("imagenes_url")
+    val imagenesUrl: List<String>? = null,
+)
+
+data class EmprendimientoResp(
+    val emprendimientosId: Long,
+    val codigoUnico: String,
+    val nombre: String,
+    val descripcion: String?,
+    val tipoNegocioId: Long?,
+    val direccion: String?,
+    val telefono: String?,
+    val estado: String,
+    val fechaRegistro: String,
+    @SerializedName("imagenes_url")
+    val imagenesUrl: List<String>? = null,
+)
+

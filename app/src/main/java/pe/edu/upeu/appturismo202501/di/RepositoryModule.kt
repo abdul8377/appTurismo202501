@@ -16,6 +16,8 @@ import pe.edu.upeu.appturismo202501.repository.ProductoRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.ProductoRespository
 import pe.edu.upeu.appturismo202501.repository.RegisterRepository
 import pe.edu.upeu.appturismo202501.repository.RegisterRepositoryImpl
+import pe.edu.upeu.appturismo202501.repository.ServicioRepository
+import pe.edu.upeu.appturismo202501.repository.ServicioRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.TipoDeNegocioRepository
 import pe.edu.upeu.appturismo202501.repository.TipoDeNegocioRepositoryImpl
 import pe.edu.upeu.appturismo202501.repository.UserRepository
@@ -82,5 +84,11 @@ abstract class RepositoryModule {
     abstract fun bindCategoryProductsRepository(
         CategoryProductsRepositoryImpl: CategoryProductsRepositoryImp
     ): CategoryProductsRespository
+
+    @Binds
+    @Singleton
+    abstract fun bindServicioRepository(
+        ServicioRepositoryImpl: ServicioRepositoryImp
+    ): ServicioRepository
 
 }

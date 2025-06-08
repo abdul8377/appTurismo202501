@@ -44,9 +44,16 @@ sealed class Destinations(
     object CulturaTab : Destinations("explorar/cultura", "Cultura", Icons.Filled.Museum)
     object ProductosTab : Destinations("explorar/productos", "Productos", Icons.Filled.ShoppingCart)
     object GastronomiaTab : Destinations("explorar/gastronomia", "Gastronomia", Icons.Filled.Cable)
-    object ExperienciasTab : Destinations("explorar/experiencia", "Experiencias", Icons.Filled.Cable)
+    object ExperienciasTab :
+        Destinations("explorar/experiencia", "Experiencias", Icons.Filled.Cable)
+
     object AlojamientoTab : Destinations("explorar/alojamiento", "Alojamientos", Icons.Filled.Cable)
     object GuiasTab : Destinations("explorar/guias", "Guias", Icons.Filled.Cable)
+    object Alojamientos : Destinations(
+        "explorar/alojamiento/alojamientoDetalle/{id}",  // con {id}
+        "AlojamientosDetalle",
+        Icons.Filled.Hotel
+    )
+
+
 }
-
-

@@ -21,6 +21,8 @@ import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedorcreate.Em
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.register.RegisterScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.VerTipoDeNegocioScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.ExplorarScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.AlojamientoDetailWrapper
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.main.WelcomeMain
 import pe.edu.upeu.appturismo202501.utils.SessionManager
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
@@ -150,6 +152,19 @@ fun NavigationHost(
 
         composable(Destinations.Create_Emprendimiento.route) {
             EmprendedorCreateScreen()
+        }
+
+        composable(Destinations.Welcome.route) {
+            ExplorarScreen(navController = navController)
+        }
+
+
+        composable(
+            route = "explorar/alojamiento/alojamientoDetalle/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val alojamientoId = backStackEntry.arguments?.getLong("id") ?: 0L
+            AlojamientoDetailWrapper(alojamientoId, navController)
         }
     }
 }

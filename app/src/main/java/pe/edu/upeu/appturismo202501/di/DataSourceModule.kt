@@ -92,6 +92,12 @@ class DataSourceModule {
     fun provideRestCategoryProducts(retrofit: Retrofit): RestCategoryProducts {
         return retrofit.create(RestCategoryProducts::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun provideRestServicio(retrofit: Retrofit): RestServicio {
+        return retrofit.create(RestServicio::class.java)
+    }
 }
 
 

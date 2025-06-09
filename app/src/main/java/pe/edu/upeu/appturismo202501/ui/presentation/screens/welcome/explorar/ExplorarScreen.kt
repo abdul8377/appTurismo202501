@@ -93,16 +93,11 @@ fun ExplorarScreen(
     val headerH = screenH * 0.65f + topInset
 
     Scaffold(
-        contentWindowInsets = WindowInsets(0),
-        bottomBar = {
-            // En ExplorarScreen normalmente no va barra inferior, la maneja WelcomeMain
-            // Si quieres, aquí puedes poner otra barra o nada
-        }
+
     ) { innerPadding ->
         Box(
             Modifier
                 .fillMaxSize()
-                // solo inset inferior (para tu bottomBar)
                 .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
                 .padding(bottom = innerPadding.calculateBottomPadding())
         ) {

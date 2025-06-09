@@ -37,6 +37,10 @@ class EmprendedorCreateViewModel @Inject constructor(
     private val _message = MutableStateFlow<String?>(null)
     val message: StateFlow<String?> = _message
 
+    // Estado para controlar el éxito de la creación
+    private val _creationSuccess = MutableStateFlow(false)
+    val creationSuccess: StateFlow<Boolean> = _creationSuccess
+
     fun onNombreChange(value: String) { _nombre.value = value }
     fun onDescripcionChange(value: String) { _descripcion.value = value }
     fun onTipoNegocioIdChange(value: String) { _tipoNegocioId.value = value }
@@ -62,10 +66,12 @@ class EmprendedorCreateViewModel @Inject constructor(
 
         viewModelScope.launch {
             _isLoading.value = true
+            _creationSuccess.value = false
             try {
                 val response = emprendimientoRepository.crearEmprendimiento(tokenBearer, request)
                 if (response.isSuccessful && response.body() != null) {
                     _message.value = "Emprendimiento creado con éxito"
+                    _creationSuccess.value = true
                     // Limpiar formulario si quieres
                     _nombre.value = ""
                     _descripcion.value = ""

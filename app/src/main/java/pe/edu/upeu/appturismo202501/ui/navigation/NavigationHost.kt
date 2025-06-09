@@ -27,7 +27,7 @@ import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.main.Welcome
 import pe.edu.upeu.appturismo202501.utils.SessionManager
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
 
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+
 @Composable
 fun NavigationHost(
     navController: NavHostController,
@@ -44,6 +44,7 @@ fun NavigationHost(
         role.equals("EMPRENDEDOR", ignoreCase = true) -> Destinations.Emprendedor.route
         else -> Destinations.Welcome.route
     }
+
 
     NavHost(
         navController = navController,
@@ -151,12 +152,10 @@ fun NavigationHost(
         }
 
         composable(Destinations.Create_Emprendimiento.route) {
-            EmprendedorCreateScreen()
+            EmprendedorCreateScreen(navController = navController)
         }
 
-        composable(Destinations.Welcome.route) {
-            ExplorarScreen(navController = navController)
-        }
+
 
 
         composable(

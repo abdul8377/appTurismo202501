@@ -84,7 +84,7 @@ fun WelcomeMain(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomDestination.EXPLORAR.route) {
-                ExplorarScreen(navControllerLocal)
+                ExplorarScreen(navControllerGlobal)
             }
             composable(BottomDestination.PRODUCTOS.route) {
                 ProductosScreen()
@@ -107,7 +107,7 @@ fun WelcomeMain(
 
             // Agregar aquí la ruta para EmprendedorCreateScreen
             composable("emprendimiento_create") {
-                EmprendedorCreateScreen()
+                EmprendedorCreateScreen(navController = navControllerLocal)
             }
 
 

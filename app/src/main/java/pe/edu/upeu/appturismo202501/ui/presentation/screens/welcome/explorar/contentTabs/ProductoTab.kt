@@ -1,6 +1,7 @@
 package pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,8 +27,12 @@ import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.ProductItem
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.ViewModel.ProductoViewModel
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
+import pe.edu.upeu.appturismo202501.ui.presentation.alertas.AlertDialogComponent
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.ProductoUi
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.ProductsFilterPanel
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.ViewModel.CategoryUi
@@ -39,20 +44,25 @@ fun ProductosContent(
     navController: NavController,
     prodVm: ProductoViewModel = hiltViewModel(),
     catVm: CategoryViewModel = hiltViewModel()
-
 ) {
+    // 1) Estados desde el ViewModel
     val productos  by prodVm.productosUi.collectAsState(initial = emptyList())
     val categorias by catVm.categoriesUi.collectAsState(initial = emptyList())
-    val favorites  = remember { mutableStateMapOf<Long, Boolean>() }
+    val favoritosIds by prodVm.favoritosIds.collectAsState()
+    val isLoggedIn   by prodVm.isLoggedIn.collectAsState()
+
+    // 2) Dialog para invitar a login
+    val showLoginDialog = remember { mutableStateOf(false) }
+    val context        = LocalContext.current
+    val scope          = rememberCoroutineScope()
 
     var filtroCatId  by remember { mutableStateOf<Long?>(null) }
     var minPrice     by remember { mutableStateOf("") }
     var maxPrice     by remember { mutableStateOf("") }
     var filtroRating by remember { mutableStateOf<Int?>(null) }
 
-    // Solo lazyColumn afuera: aquí un Column
     Column {
-        // Panel de filtros con categorías reales
+        // Panel de filtros
         ProductsFilterPanel(
             categories         = categorias,
             selectedCategoryId = filtroCatId,
@@ -70,9 +80,7 @@ fun ProductosContent(
         // Listado en 2 columnas sin scroll interno
         Column(modifier = Modifier.fillMaxWidth()) {
             productos
-                // Filtrar por categoría
                 .filter { filtroCatId == null || it.categoryId == filtroCatId }
-                // Filtrar por precio numérico
                 .filter {
                     val valor = it.price
                     val min   = minPrice.toDoubleOrNull() ?: Double.MIN_VALUE
@@ -80,7 +88,6 @@ fun ProductosContent(
                     valor in min..max
                 }
                 .filter { filtroRating == null || it.rating >= filtroRating!! }
-
                 .chunked(2)
                 .forEach { fila ->
                     Row(
@@ -91,11 +98,23 @@ fun ProductosContent(
                     ) {
                         fila.forEach { prod ->
                             ProductItem(
-                                producto        = prod,
-                                isFavorite      = favorites[prod.id] == true,
-                                onItemClick     = { /* navegar */ },
+                                producto    = prod,
+                                isFavorite  = favoritosIds.contains(prod.id),
+                                onItemClick = {
+                                },
                                 onFavoriteClick = {
-                                    favorites[prod.id] = !(favorites[prod.id] ?: false)
+                                    if (!isLoggedIn) {
+                                        showLoginDialog.value = true
+                                    } else {
+                                        val wasFav = favoritosIds.contains(prod.id)
+                                        prodVm.toggleFavorito(prod.id)
+                                        if (wasFav) {
+                                            // Notificar solo al eliminar
+                                            Toast
+                                                .makeText(context, "Producto eliminado de favoritos", Toast.LENGTH_SHORT)
+                                                .show()
+                                        }
+                                    }
                                 }
                             )
                         }
@@ -106,4 +125,15 @@ fun ProductosContent(
         }
     }
 
+    // Alerta de login si intenta gestionar sin sesión
+    AlertDialogComponent(
+        isOpen       = showLoginDialog,
+        title        = "Inicia sesión",
+        message      = "Debes iniciar sesión para gestionar favoritos.",
+        onConfirm    = { navController.navigate(Destinations.Login.route) },
+        onDismiss    = { /* no-op */ },
+        confirmText  = "Iniciar sesión",
+        dismissText  = "Cancelar",
+        isSuccess    = true
+    )
 }

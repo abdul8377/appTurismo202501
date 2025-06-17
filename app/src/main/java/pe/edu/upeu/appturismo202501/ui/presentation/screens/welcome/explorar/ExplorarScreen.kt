@@ -37,6 +37,7 @@ import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.ExperiencesSecti
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.CategoryTabs
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.CulturalBanner
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.CulturalSpacesSection
+import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.NotificationButton
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.SimpleSearchBar
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.SearchScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.AlojamientoContent
@@ -239,16 +240,25 @@ fun ExplorarScreen(
             }
 
             /* ---------- BUSCADOR FLOTANTE ---------- */
-            SimpleSearchBar(
-                onClick = { navController.navigate(Destinations.Search.route) },
+            Row(
                 modifier = Modifier
-                    //.align(Alignment.TopCenter)   // encima del resto
                     .align(Alignment.TopCenter)
                     .padding(top = 35.dp, start = 20.dp, end = 20.dp)
                     .fillMaxWidth()
-                    .padding(top = 16.dp)         // distancia al borde
-                    .zIndex(1f)                   // garantiza prioridad de dibujo
-            )
+                    .zIndex(1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SimpleSearchBar(
+                    onClick = { navController.navigate(Destinations.Search.route) },
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                NotificationButton(
+                    unreadCount = 3, // usa tu valor real aquí
+                    onClick = { navController.navigate(Destinations.Notifications.route) }
+                )
+            }
+
         }
     }
 }

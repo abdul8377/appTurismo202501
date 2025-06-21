@@ -28,6 +28,9 @@ sealed class Destinations(
     object Negocios : Destinations("negocios", "Negocios", Icons.Filled.Person)
     object Ajustes : Destinations("ajustes", "Ajustes", Icons.Filled.Settings)
 
+    object Notifications : Destinations("notifications", "Notificaciones", Icons.Filled.Notifications)
+
+
     object VerTipoDeNegocio : Destinations(
         "ver_tipo_de_negocio_screen/{id}",
         "Detalle Negocio",

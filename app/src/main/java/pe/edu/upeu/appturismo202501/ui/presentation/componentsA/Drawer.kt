@@ -1,15 +1,13 @@
 package pe.edu.upeu.appturismo202501.ui.presentation.componentsA
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -17,11 +15,10 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import pe.edu.upeu.appturismo202501.utils.SessionManager
 
-
 data class DrawerNavItem(
     val label: String,
     val icon: ImageVector,
-    val route: String     // ahora ruta en vez de id genérico
+    val route: String
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,9 +33,10 @@ fun SidebarDrawer(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    // Datos de usuario
-    val userId = SessionManager.getUserId()
-    val userRole = SessionManager.getUserRole() ?: "No asignado"
+    // Recuperamos los datos de sesión
+    val userId   = SessionManager.getUserId()
+    val userRole = SessionManager.getUserRole().orEmpty()
+    val token    = SessionManager.getToken().orEmpty()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -73,6 +71,21 @@ fun SidebarDrawer(
                             text = "Rol: $userRole",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = "Token:",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Text(
+                            text = token,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .fillMaxWidth()
+                                .wrapContentHeight()
                         )
                     }
                 }

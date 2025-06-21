@@ -1,3 +1,4 @@
+// app/src/main/java/pe/edu/upeu/appturismo202501/di/DataSourceModule.kt
 package pe.edu.upeu.appturismo202501.di
 
 import dagger.Module
@@ -5,6 +6,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import pe.edu.upeu.appturismo202501.data.network.AuthInterceptor
 import pe.edu.upeu.appturismo202501.data.remote.*
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
 import retrofit2.Retrofit
@@ -17,88 +20,89 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class DataSourceModule {
 
-    @Singleton
     @Provides
+    @Singleton
     @Named("BaseUrl")
-    fun provideBaseUrl() = TokenUtils.API_URL
+    fun provideBaseUrl(): String = TokenUtils.API_URL
 
-    @Singleton
     @Provides
-    fun provideRetrofit(@Named("BaseUrl") baseUrl: String): Retrofit {
-        val okHttpClient = OkHttpClient.Builder()
+    @Singleton
+    fun provideLoggingInterceptor(): HttpLoggingInterceptor =
+        HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+    @Provides
+    @Singleton
+    fun provideAuthInterceptor(): AuthInterceptor = AuthInterceptor()
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(
+        authInterceptor: AuthInterceptor,
+        logging: HttpLoggingInterceptor
+    ): OkHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .addInterceptor(logging)
             .connectTimeout(1, TimeUnit.MINUTES)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)
             .build()
 
-        return Retrofit.Builder()
+    @Provides
+    @Singleton
+    fun provideRetrofit(
+        client: OkHttpClient,
+        @Named("BaseUrl") baseUrl: String
+    ): Retrofit =
+        Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .client(okHttpClient)
+            .client(client)
             .baseUrl(baseUrl)
             .build()
-    }
 
-    @Singleton
-    @Provides
-    fun restLoginUser(retrofit: Retrofit): RestLoginUsuario {
-        return retrofit.create(RestLoginUsuario::class.java)
-    }
+    @Provides @Singleton
+    fun provideRestLoginUser(retrofit: Retrofit): RestLoginUsuario =
+        retrofit.create(RestLoginUsuario::class.java)
 
-    @Singleton
-    @Provides
-    fun restRegister(retrofit: Retrofit): RestRegister {
-        return retrofit.create(RestRegister::class.java)
-    }
+    @Provides @Singleton
+    fun provideRestRegister(retrofit: Retrofit): RestRegister =
+        retrofit.create(RestRegister::class.java)
 
-    @Singleton
-    @Provides
-    fun restCategory(retrofit: Retrofit): RestCategory {
-        return retrofit.create(RestCategory::class.java)
-    }
+    @Provides @Singleton
+    fun provideRestCategory(retrofit: Retrofit): RestCategory =
+        retrofit.create(RestCategory::class.java)
 
-    @Singleton
-    @Provides
-    fun provideRestZonaTuristica(retrofit: Retrofit): RestZonaTuristica {
-        return retrofit.create(RestZonaTuristica::class.java)
-    }
+    @Provides @Singleton
+    fun provideRestZonaTuristica(retrofit: Retrofit): RestZonaTuristica =
+        retrofit.create(RestZonaTuristica::class.java)
 
-    @Singleton
-    @Provides
-    fun provideRestUser(retrofit: Retrofit): RestUser {
-        return retrofit.create(RestUser::class.java)
-    }
+    @Provides @Singleton
+    fun provideRestUser(retrofit: Retrofit): RestUser =
+        retrofit.create(RestUser::class.java)
 
-    @Singleton
-    @Provides
-    fun restTipoDeNegocio(retrofit: Retrofit): RestTipoDeNegocio {
-        return retrofit.create(RestTipoDeNegocio::class.java)
-    }
+    @Provides @Singleton
+    fun provideRestTipoDeNegocio(retrofit: Retrofit): RestTipoDeNegocio =
+        retrofit.create(RestTipoDeNegocio::class.java)
 
-    @Singleton
-    @Provides
-    fun provideRestEmprendimiento(retrofit: Retrofit): RestEmprendimiento {
-        return retrofit.create(RestEmprendimiento::class.java)
-    }
+    @Provides @Singleton
+    fun provideRestEmprendimiento(retrofit: Retrofit): RestEmprendimiento =
+        retrofit.create(RestEmprendimiento::class.java)
 
+    @Provides @Singleton
+    fun provideRestProductos(retrofit: Retrofit): RestProductos =
+        retrofit.create(RestProductos::class.java)
 
-    @Singleton
-    @Provides
-    fun provideRestProducto(retrofit: Retrofit): RestProductos {
-        return retrofit.create(RestProductos::class.java)
-    }
+    @Provides @Singleton
+    fun provideRestCategoryProducts(retrofit: Retrofit): RestCategoryProducts =
+        retrofit.create(RestCategoryProducts::class.java)
 
-    @Singleton
-    @Provides
-    fun provideRestCategoryProducts(retrofit: Retrofit): RestCategoryProducts {
-        return retrofit.create(RestCategoryProducts::class.java)
-    }
+    @Provides @Singleton
+    fun provideRestServicio(retrofit: Retrofit): RestServicio =
+        retrofit.create(RestServicio::class.java)
 
-    @Singleton
-    @Provides
-    fun provideRestServicio(retrofit: Retrofit): RestServicio {
-        return retrofit.create(RestServicio::class.java)
-    }
+    @Provides @Singleton
+    fun provideRestFavorito(retrofit: Retrofit): RestFavorito =
+        retrofit.create(RestFavorito::class.java)
 }
-
-
-

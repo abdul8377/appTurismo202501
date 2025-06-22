@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -35,7 +36,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+
 import pe.edu.upeu.appturismo202501.R
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import pe.edu.upeu.appturismo202501.utils.SessionManager
+import pe.edu.upeu.appturismo202501.ui.presentation.alertas.AlertDialogComponent
+import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
+import androidx.navigation.NavController
+import android.widget.Toast
 
 data class AlojamientoDetalleUi(
     val id: Long,
@@ -50,6 +59,7 @@ data class AlojamientoDetalleUi(
     val isFavorite: Boolean,
     val emprendimientoName: String,
     val emprendimientoImageUrl: String
+
 )
 
 @Composable
@@ -59,149 +69,165 @@ fun ServicioDetailScreen(
     onBackClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     onCheckAvailabilityClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isLoggedIn: Boolean,
+    navController: NavController
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
-        Column (
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 72.dp)  // espacio para la BottomBar
-        ) {
-            // 1) Header con imagen
-            Box {
+    val showLoginDialog = remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    Column(modifier = modifier.fillMaxSize()) {
+
+        Box(modifier = Modifier.fillMaxWidth()) {
+            AsyncImage(
+                model = servicio.imageUrl,
+                contentDescription = servicio.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(280.dp)
+                    .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Volver",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                            .padding(6.dp)
+                    )
+                }
+
+                IconButton(onClick = {
+                    if (isLoggedIn) {
+                        onFavoriteClick()
+                        val msg = if (!isFavorite) "Agregado a favoritos" else "Eliminado de favoritos"
+                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                    } else {
+                        showLoginDialog.value = true
+                    }
+                }) {
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = "Favorito",
+                        tint = if (isFavorite) Color.Red else Color.White,
+                        modifier = Modifier
+                            .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                            .padding(6.dp)
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Text(
+                text = servicio.title,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                repeat(servicio.rating.toInt()) {
+                    Icon(
+                        Icons.Filled.Star,
+                        contentDescription = "Estrella",
+                        tint = Color(0xFFFFA000),
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    "${servicio.rating} (${servicio.opiniones} opiniones)",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = servicio.description,
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                InfoChip(label = "Duración", value = servicio.duracionServicio)
+                InfoChip(label = "Capacidad", value = "${servicio.capacidadMaxima} personas")
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 AsyncImage(
-                    model = servicio.imageUrl,
-                    contentDescription = servicio.title,
+                    model = servicio.emprendimientoImageUrl,
+                    contentDescription = "Emprendimiento",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp)
+                        .size(50.dp)
+                        .clip(CircleShape)
                 )
-
-                Row (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
-                ) {
-                    IconButton (onClick = onBackClick) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_launcher_background), // icono personalizado
-                            contentDescription = "Volver",
-                            tint = Color.White
-                        )
-                    }
-                    IconButton(onClick = onFavoriteClick) {
-                        Icon(
-                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                            contentDescription = "Favorito",
-                            tint = if (isFavorite) Color.Red else Color.White
-                        )
-                    }
-                }
-            }
-
-            // 2) Contenido Principal
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                Spacer(modifier = Modifier.width(10.dp))
                 Text(
-                    text = servicio.title,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    servicio.emprendimientoName,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
                 )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Calificación
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    repeat(servicio.rating.toInt()) {
-                        Icon(
-                            imageVector = Icons.Filled.Star,
-                            contentDescription = "Estrella",
-                            tint = Color(0xFFFFD700),
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        text = "${servicio.rating} (${servicio.opiniones} opiniones)",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Descripción
-                Text(
-                    text = servicio.description,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Detalles (Duración y Capacidad)
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Text(
-                        text = "Duración: ${servicio.duracionServicio}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Text(
-                        text = "Capacidad: ${servicio.capacidadMaxima} personas",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Emprendimiento
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    AsyncImage(
-                        model = servicio.emprendimientoImageUrl,
-                        contentDescription = "Emprendimiento",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .border(1.dp, Color.Gray, CircleShape)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = servicio.emprendimientoName,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
-                    )
-                }
             }
         }
 
-        // 3) BottomBar Fija
+        Spacer(modifier = Modifier.weight(1f))
+
         Box(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .background(Color.White)
-                .padding(16.dp)
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Button(
+                onClick = onCheckAvailabilityClick,
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = "Desde ${servicio.priceFormatted} por adulto",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
-                )
-                Button (
-                    onClick = onCheckAvailabilityClick,
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(text = "Comprobar disponibilidad")
-                }
+                Text(text = "Consultar disponibilidad")
             }
         }
+    }
+
+    AlertDialogComponent(
+        isOpen = showLoginDialog,
+        title = "Inicia sesión",
+        message = "Debes iniciar sesión para gestionar favoritos.",
+        onConfirm = { navController.navigate(Destinations.Login.route) },
+        onDismiss = { showLoginDialog.value = false },
+        confirmText = "Iniciar sesión",
+        dismissText = "Cancelar",
+        isSuccess = true
+    )
+}
+
+@Composable
+fun InfoChip(label: String, value: String) {
+    Column(
+        modifier = Modifier
+            .background(Color(0xFFE0E0E0), RoundedCornerShape(8.dp))
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(label, style = MaterialTheme.typography.labelSmall)
+        Text(value, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold))
     }
 }

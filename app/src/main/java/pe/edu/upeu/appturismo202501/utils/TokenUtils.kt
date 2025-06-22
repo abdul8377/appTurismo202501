@@ -14,7 +14,7 @@ object TokenUtils {
     fun isLoggedIn(): Boolean {
         return TOKEN_CONTENT.isNotEmpty()
     }
-    var API_URL="http://10.80.97.18:8000/api/"
+    var API_URL="http://192.168.0.198:8000/api/"
     lateinit var CONTEXTO_APPX: Context
     var USER_LOGIN=""
     var ID_ASIS_ACT=0L

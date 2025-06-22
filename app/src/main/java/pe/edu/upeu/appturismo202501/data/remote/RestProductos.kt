@@ -3,6 +3,7 @@ package pe.edu.upeu.appturismo202501.data.remote
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import pe.edu.upeu.appturismo202501.modelo.ProductResp
+import pe.edu.upeu.appturismo202501.modelo.ProductoDetalleResponse
 import pe.edu.upeu.appturismo202501.modelo.ZonaTuristicaResp
 import retrofit2.Response
 import retrofit2.http.DELETE
@@ -17,6 +18,9 @@ import retrofit2.http.Path
 interface RestProductos {
     @GET("productos")
     suspend fun getProductos(): Response<List<ProductResp>>
+
+    @GET("productos/{id}")
+    suspend fun getProductoDetalle(@Path("id") productoId: Long): Response<ProductoDetalleResponse>
 
 
     @GET("api/productos/{id}")

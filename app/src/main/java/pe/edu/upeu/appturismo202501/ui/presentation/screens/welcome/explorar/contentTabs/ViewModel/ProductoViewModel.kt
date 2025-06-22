@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import pe.edu.upeu.appturismo202501.modelo.ProductResp
+import pe.edu.upeu.appturismo202501.modelo.ProductoDetalleResponse
 import pe.edu.upeu.appturismo202501.repository.ProductoRespository
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.ProductoUi
 import javax.inject.Inject
@@ -37,8 +38,11 @@ class ProductoViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
+    private val _productoDetalle = MutableStateFlow<ProductoDetalleResponse?>(null)
+    val productoDetalle: StateFlow<ProductoDetalleResponse?> = _productoDetalle
+
     init {
-        loadProductos() // ✅ Esto hace que cargue al iniciar
+        loadProductos()
     }
 
     fun loadProductos() = viewModelScope.launch {
@@ -46,5 +50,13 @@ class ProductoViewModel @Inject constructor(
             _productos.value = it
         }
     }
-}
 
+    fun fetchProductoDetalle(productoId: Long) = viewModelScope.launch {
+        val response = repo.productoDetalle(productoId)
+        if (response.isSuccessful) {
+            _productoDetalle.value = response.body()
+        } else {
+            _productoDetalle.value = null
+        }
+    }
+}

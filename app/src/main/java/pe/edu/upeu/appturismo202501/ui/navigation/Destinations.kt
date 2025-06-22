@@ -58,5 +58,12 @@ sealed class Destinations(
         Icons.Filled.Hotel
     )
 
+    object ProductoDetalle : Destinations(
+        "explorar/producto/productoDetalle/{id}",
+        "ProductoDetalle",
+        Icons.Filled.ShoppingCart
+    )
+
+
 
 }

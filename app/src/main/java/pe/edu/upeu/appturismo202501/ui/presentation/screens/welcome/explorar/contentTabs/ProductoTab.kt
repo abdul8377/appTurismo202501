@@ -86,7 +86,10 @@ fun ProductosContent(
                             ProductItem(
                                 producto = prod,
                                 isFavorite = isFavoriteVisual,
-                                onItemClick = {},
+                                onItemClick = {
+                                    val route = Destinations.ProductoDetalle.route.replace("{id}", prod.id.toString())
+                                    navController.navigate(route)
+                                },
                                 onFavoriteClick = {
                                     if (!isLoggedIn) {
                                         showLoginDialog.value = true

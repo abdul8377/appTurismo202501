@@ -105,4 +105,14 @@ class DataSourceModule {
     @Provides @Singleton
     fun provideRestFavorito(retrofit: Retrofit): RestFavorito =
         retrofit.create(RestFavorito::class.java)
+
+    @Provides
+    @Singleton
+    fun provideRestMetodoPago(retrofit: Retrofit): RestMetodoPago =
+        retrofit.create(RestMetodoPago::class.java)
+
+    @Provides
+    @Singleton
+    fun provideRestCarrito(retrofit: Retrofit): RestCarrito =
+        retrofit.create(RestCarrito::class.java)
 }

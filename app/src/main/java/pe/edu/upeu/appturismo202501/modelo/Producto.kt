@@ -80,6 +80,7 @@ data class ImageResp(
 /**
  * Representa la respuesta completa para el detalle específico de un producto desde la API.
  */
+
 data class ProductoDetalleResponse(
     @SerializedName("status")
     val status: String,

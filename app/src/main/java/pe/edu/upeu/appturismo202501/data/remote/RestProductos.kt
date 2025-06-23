@@ -7,6 +7,8 @@ import pe.edu.upeu.appturismo202501.modelo.ZonaTuristicaResp
 import retrofit2.Response
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -18,32 +20,30 @@ interface RestProductos {
     @GET("productos")
     suspend fun getProductos(): Response<List<ProductResp>>
 
+    @GET("emprendedor/productos")
+    suspend fun listarMios(): Response<List<ProductResp>>
 
-    @GET("api/productos/{id}")
-    suspend fun getProduct(@Path("id") id: Long): ProductResp
-
-    /*@Multipart
-    @POST("api/productos")
-    suspend fun createProduct(
-        @Part("emprendimientos_id") emprendimientosId: RequestBody,
-        @Part("categorias_productos_id") categoriaId: RequestBody,
+    @Multipart
+    @POST("emprendedor/productos")
+    suspend fun crear(
         @Part("nombre") nombre: RequestBody,
-        @Part("descripcion") descripcion: RequestBody?,
+        @Part("descripcion") descripcion: RequestBody,
         @Part("precio") precio: RequestBody,
         @Part("stock") stock: RequestBody,
-        @Part("estado") estado: RequestBody,
         @Part imagen: MultipartBody.Part?
-    ): Response<ProductResp>
-*/
-    /*@Multipart
-    @PUT("api/productos/{id}")
-    suspend fun updateProduct(
+    ): Response<Void>
+
+    @Multipart
+    @PUT("emprendedor/productos/{id}")
+    suspend fun actualizar(
         @Path("id") id: Long,
-        @PartMap fields: Map<String, @JvmSuppressWildcards RequestBody>,
+        @Part("nombre") nombre: RequestBody,
+        @Part("descripcion") descripcion: RequestBody,
+        @Part("precio") precio: RequestBody,
+        @Part("stock") stock: RequestBody,
         @Part imagen: MultipartBody.Part?
-    ): Response<ProductResp>
-*/
-    /*@DELETE("api/productos/{id}")
-    suspend fun deleteProduct(@Path("id") id: Long): Response<DeleteResponse>
-    */
+    ): Response<Void>
+
+    @DELETE("emprendedor/productos/{id}")
+    suspend fun eliminar(@Path("id") id: Long): Response<Void>
 }

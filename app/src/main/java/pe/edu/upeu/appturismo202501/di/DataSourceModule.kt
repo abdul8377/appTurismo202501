@@ -1,14 +1,17 @@
 // app/src/main/java/pe/edu/upeu/appturismo202501/di/DataSourceModule.kt
 package pe.edu.upeu.appturismo202501.di
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import pe.edu.upeu.appturismo202501.data.network.AuthInterceptor
 import pe.edu.upeu.appturismo202501.data.remote.*
+import pe.edu.upeu.appturismo202501.utils.SessionManager
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -34,13 +37,15 @@ class DataSourceModule {
 
     @Provides
     @Singleton
-    fun provideAuthInterceptor(): AuthInterceptor = AuthInterceptor()
+    fun provideAuthInterceptor(
+        @ApplicationContext ctx: Context
+    ): AuthInterceptor = AuthInterceptor(ctx)
 
     @Provides
     @Singleton
     fun provideOkHttpClient(
         authInterceptor: AuthInterceptor,
-        logging: HttpLoggingInterceptor
+        logging: HttpLoggingInterceptor,
     ): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(authInterceptor)

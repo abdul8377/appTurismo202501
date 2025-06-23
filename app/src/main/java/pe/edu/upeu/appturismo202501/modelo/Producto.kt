@@ -3,17 +3,20 @@ package pe.edu.upeu.appturismo202501.modelo
 import com.google.gson.annotations.SerializedName
 
 data class ProductDto(
+    @SerializedName("productos_id")
+    val id: Long,
+
     @SerializedName("emprendimientos_id")
-    val emprendimientosId: Long,
+    val emprendimientoId: Long,
 
     @SerializedName("categorias_productos_id")
-    val categoriasProductosId: Long,
+    val categoriaProductoId: Long,
 
     @SerializedName("nombre")
     val nombre: String,
 
     @SerializedName("descripcion")
-    val descripcion: String? = null,
+    val descripcion: String?,
 
     @SerializedName("precio")
     val precio: Double,
@@ -21,9 +24,21 @@ data class ProductDto(
     @SerializedName("stock")
     val stock: Int,
 
-    /** opcional, por defecto “activo” */
     @SerializedName("estado")
-    val estado: String = "activo"
+    val estado: String?,
+
+    @SerializedName("created_at")
+    val createdAt: String?,
+
+    @SerializedName("updated_at")
+    val updatedAt: String?,
+
+    /** Lista de imágenes asociadas */
+    @SerializedName("imagen_url")
+    val imagenUrl: String?,          // URL completa: "http://localhost:8000/storage/…"
+
+    @SerializedName("images")
+    val images: List<ImageResp>
 )
 
 

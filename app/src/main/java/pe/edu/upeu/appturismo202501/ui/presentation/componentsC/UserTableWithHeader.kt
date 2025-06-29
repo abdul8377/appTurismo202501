@@ -69,9 +69,9 @@ fun UserTableWithHeaderPaginated(
                     Text(user.name, Modifier.width(200.dp), style = MaterialTheme.typography.bodyLarge)
                     Text(user.email, Modifier.width(200.dp), style = MaterialTheme.typography.bodyMedium)
                     Text(
-                        text = if (user.is_active == 1) "🟢 Activo" else "🔴 Inactivo",
+                        text = if (user.is_active) "🟢 Activo" else "🔴 Inactivo",
                         modifier = Modifier.width(100.dp),
-                        color = if (user.is_active == 1)
+                        color = if (user.is_active)
                             MaterialTheme.colorScheme.primary
                         else
                             MaterialTheme.colorScheme.error,
@@ -83,7 +83,7 @@ fun UserTableWithHeaderPaginated(
                     ) {
                         IconButton(onClick = { onToggleActive(user) }) {
                             Icon(
-                                imageVector = if (user.is_active == 1) Icons.Default.ToggleOn else Icons.Default.ToggleOff,
+                                imageVector = if (user.is_active) Icons.Default.ToggleOn else Icons.Default.ToggleOff,
                                 contentDescription = "Cambiar estado"
                             )
                         }

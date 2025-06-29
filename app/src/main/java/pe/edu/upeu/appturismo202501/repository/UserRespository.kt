@@ -1,9 +1,9 @@
 package pe.edu.upeu.appturismo202501.repository
 
 import pe.edu.upeu.appturismo202501.data.remote.RestUser
-import pe.edu.upeu.appturismo202501.data.remote.ToggleActiveRequest
-import pe.edu.upeu.appturismo202501.data.remote.ChangePasswordRequest
 import pe.edu.upeu.appturismo202501.modelo.ApiResponse
+import pe.edu.upeu.appturismo202501.modelo.ChangePasswordRequest
+import pe.edu.upeu.appturismo202501.modelo.ToggleActiveRequest
 import pe.edu.upeu.appturismo202501.modelo.UsersDto
 import retrofit2.Response
 import javax.inject.Inject

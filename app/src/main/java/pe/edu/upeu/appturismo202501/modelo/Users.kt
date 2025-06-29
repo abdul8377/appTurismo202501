@@ -8,9 +8,9 @@ data class UsersDto(
     val lastName: String,
     val email: String,
     val roleId: Long,
-    val roles: List<Role>,  // roles como lista
+    val roles: List<Role>,
     @Json(name = "is_active")
-    val is_active: Int,
+    val is_active: Boolean, // <- Cambia a Boolean
     val motivo_inactivo: String?,
     val created_at: String,
     val updated_at: String,
@@ -20,16 +20,15 @@ data class UsersDto(
 data class UserResp(
     val id: Long,
     val name: String,
-    val lastName: String, // <- agregar
+    val lastName: String,
     val email: String,
     val roles: List<Role>,
     @Json(name = "is_active")
-    val isActive: Int,
+    val isActive: Boolean, // <- Cambia a Boolean
     val motivo_inactivo: String?,
     val created_at: String,
     val updated_at: String,
 )
-
 
 fun UserResp.toDto(): UsersDto {
     return UsersDto(
@@ -47,6 +46,12 @@ fun UserResp.toDto(): UsersDto {
 }
 
 
+
+
+data class ToggleActiveRequest(
+    val is_active: Boolean,
+    val motivo_inactivo: String? = null
+)
 
 data class ChangePasswordRequest(
     val password: String,

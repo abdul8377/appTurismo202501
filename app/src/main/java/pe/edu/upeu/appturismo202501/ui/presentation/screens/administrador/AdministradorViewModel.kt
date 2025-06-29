@@ -20,20 +20,19 @@ class AdministradorViewModel @Inject constructor(
     var isLoading by mutableStateOf(false)
 
     fun logout(
-        token: String,
         onLogoutSuccess: () -> Unit,
         onLogoutFailed: (String) -> Unit
     ) {
         viewModelScope.launch {
             isLoading = true
             try {
-                val response = loginRepo.logout(token)
+                val response = loginRepo.logout() // ✅ Aquí está la corrección
                 if (response.isSuccessful) {
                     SessionManager.clearSession()
                     TokenUtils.clearToken()
                     onLogoutSuccess()
                 } else {
-                    onLogoutFailed("Error al cerrar sesión")
+                    onLogoutFailed("Error al cerrar sesión: ${response.message()}")
                 }
             } catch (e: Exception) {
                 onLogoutFailed(e.localizedMessage ?: "Error inesperado")

@@ -14,7 +14,7 @@ interface LoginUserRepository {
     suspend fun loginUsuario(userLogin: LoginDto): Response<LoginResp>
     suspend fun checkEmail(checkEmailDto: CheckEmailDto): Response<CheckEmailResp>
     suspend fun sendResetPasswordEmail(request: ResetPasswordRequest): Response<ApiResponse>
-    suspend fun logout(token: String): Response<ApiResponse>   // Agregado método logout
+    suspend fun logout(): Response<ApiResponse>  // ✅ sin token explícito
 }
 
 class LoginUserRespositoryImp @Inject constructor(
@@ -33,8 +33,7 @@ class LoginUserRespositoryImp @Inject constructor(
         return restLoginUsuario.sendResetPasswordEmail(request)
     }
 
-    override suspend fun logout(token: String): Response<ApiResponse> {
-        val bearerToken = "Bearer $token"  // Aquí agregas el prefijo Bearer
-        return restLoginUsuario.logout(bearerToken)
+    override suspend fun logout(): Response<ApiResponse> {  // ✅ corregido
+        return restLoginUsuario.logout()
     }
 }

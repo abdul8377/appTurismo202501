@@ -13,6 +13,6 @@ data class LoginResp(
     val name: String,
     val email: String,
     val roles: List<String>,
-    val is_active: Int,
+    val is_active: Boolean,  // ✅ Corregido a Boolean
     val motivo_inactivo: String?
 )

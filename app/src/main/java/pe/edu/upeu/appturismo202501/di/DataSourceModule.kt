@@ -1,14 +1,18 @@
-// app/src/main/java/pe/edu/upeu/appturismo202501/di/DataSourceModule.kt
 package pe.edu.upeu.appturismo202501.di
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import pe.edu.upeu.appturismo202501.data.local.storage.CarritoLocalStorage
 import pe.edu.upeu.appturismo202501.data.network.AuthInterceptor
 import pe.edu.upeu.appturismo202501.data.remote.*
+import pe.edu.upeu.appturismo202501.repository.FavoritoRepository
+import pe.edu.upeu.appturismo202501.repository.FavoritoRepositoryImp
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -115,4 +119,16 @@ class DataSourceModule {
     @Singleton
     fun provideRestCarrito(retrofit: Retrofit): RestCarrito =
         retrofit.create(RestCarrito::class.java)
+
+    @Provides
+    @Singleton
+    fun provideCarritoLocalStorage(
+        @ApplicationContext context: Context
+    ): CarritoLocalStorage = CarritoLocalStorage(context)
+
+    @Provides
+    @Singleton
+    fun provideFavoritoRepository(
+        impl: FavoritoRepositoryImp
+    ): FavoritoRepository = impl
 }

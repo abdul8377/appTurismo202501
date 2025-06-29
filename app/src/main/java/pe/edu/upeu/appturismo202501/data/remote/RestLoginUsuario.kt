@@ -22,5 +22,5 @@ interface RestLoginUsuario {
     suspend fun sendResetPasswordEmail(@Body request: ResetPasswordRequest): Response<ApiResponse>
 
     @POST("auth/logout")
-    suspend fun logout(@Header("Authorization") token: String): Response<ApiResponse>
+    suspend fun logout(): Response<ApiResponse>  // ✅ Sin el header explícito
 }

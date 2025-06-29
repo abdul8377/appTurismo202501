@@ -6,24 +6,26 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import pe.edu.upeu.appturismo202501.modelo.CarritoDto
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.DetalleProducto
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.carrito.CarritoViewModel
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.ViewModel.ProductoViewModel
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.favorito.FavoritosViewModel
+import pe.edu.upeu.appturismo202501.utils.SessionManager
 
 @Composable
 fun ProductoDetailWrapper(
     productoId: Long,
     navController: NavController,
     viewModel: ProductoViewModel = hiltViewModel(),
-    favViewModel: FavoritosViewModel = hiltViewModel()
+    favViewModel: FavoritosViewModel = hiltViewModel(),
+    carritoViewModel: CarritoViewModel = hiltViewModel() // ← Agrega esta línea
 ) {
-    // Llama el método una sola vez al inicio para cargar el producto
     LaunchedEffect(productoId) {
         viewModel.fetchProductoDetalle(productoId)
     }
 
     val productoDetalle by viewModel.productoDetalle.collectAsState()
-
     val favUiState by favViewModel.uiState.collectAsState()
 
     productoDetalle?.let { detalle ->
@@ -41,7 +43,17 @@ fun ProductoDetailWrapper(
                     favViewModel.agregarProductoFavoritoConDelay(detalle.producto.id)
                 }
             },
-            onAddToCartClick = { /* implementar lógica del carrito */ },
+            onAddToCartClick = {
+                val carritoDto = CarritoDto(
+                    userId = SessionManager.getUserId().toLong(),
+                    productosId = detalle.producto.id,
+                    cantidad = 1,
+                    precioUnitario = detalle.producto.precio ?: 0.0,
+                    subtotal = detalle.producto.precio ?: 0.0,
+                    estado = "en proceso"
+                )
+                carritoViewModel.agregarAlCarrito(carritoDto)
+            },
             onCommentClick = { /* implementar comentarios */ }
         )
     }

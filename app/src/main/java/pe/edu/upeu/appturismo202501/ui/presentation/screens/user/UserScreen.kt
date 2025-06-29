@@ -106,13 +106,14 @@ fun UserScreen(viewModel: UserViewModel = hiltViewModel()) {
                 UserTableWithHeaderPaginated(
                     users = filteredUsers,
                     onToggleActive = { user ->
-                        viewModel.toggleUserActive(user.id, user.is_active == 0)
+                        viewModel.toggleUserActive(user.id, !user.is_active)
                     },
                     onChangePassword = { user ->
                         selectedUserId = user.id
                         showChangePasswordDialog = true
                     }
                 )
+
             }
         }
 

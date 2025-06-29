@@ -55,4 +55,8 @@ object SessionManager {
     fun setColorScheme(color: String) {
         prefs.edit().putString(KEY_COLOR_SCHEME, color).apply()
     }
+
+    // ------------------ Utilidad de Sesión ------------------
+
+    fun isLoggedIn(): Boolean = !getToken().isNullOrEmpty()
 }

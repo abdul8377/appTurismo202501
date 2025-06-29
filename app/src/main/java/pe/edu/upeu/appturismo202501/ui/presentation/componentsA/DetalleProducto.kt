@@ -125,21 +125,19 @@ fun DetalleProducto(
                 /* Botón Carrito: discreto, alineado a la derecha */
                 IconButton(
                     onClick = onAddToCartClick,
-                    enabled = isLoggedIn, // Desactiva si el usuario no ha iniciado sesión
+                    enabled = true, // ← siempre activo, haya o no sesión iniciada ✅
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(
-                            if (isLoggedIn) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-                        )
+                        .background(MaterialTheme.colorScheme.primary)
                 ) {
                     Icon(
                         Icons.Default.AddShoppingCart,
                         contentDescription = "Añadir al carrito",
-                        tint = if (isLoggedIn) MaterialTheme.colorScheme.onPrimary else Color.Gray
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
+
             }
 
             Spacer(modifier = Modifier.height(12.dp))

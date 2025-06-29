@@ -60,5 +60,15 @@ data class CarritoResp(
     val createdAt: String?,
 
     @SerializedName("updated_at")
-    val updatedAt: String?
+    val updatedAt: String?,
+
+    @SerializedName("stock_disponible")
+    val stockDisponible: Int?
+
+)
+
+data class CarritoRespUi(
+    val carritoResp: CarritoResp,
+    val producto: ProductResp? = null,
+    val servicio: ServicioResp? = null
 )

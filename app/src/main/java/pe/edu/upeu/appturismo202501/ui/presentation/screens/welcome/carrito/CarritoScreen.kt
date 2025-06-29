@@ -10,7 +10,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -20,17 +19,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import pe.edu.upeu.appturismo202501.modelo.CarritoResp
+import pe.edu.upeu.appturismo202501.modelo.CarritoRespUi
 
 @Composable
 fun CarritoScreen(
     viewModel: CarritoViewModel = hiltViewModel()
 ) {
-    val carritoItems by viewModel.carritoState.collectAsState()
+    val carritoItems by viewModel.carritoItemsUi.collectAsState()
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    DisposableEffect (lifecycleOwner) {
+    DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 viewModel.cargarCarrito()
@@ -74,9 +73,8 @@ fun CarritoScreen(
     }
 }
 
-
 @Composable
-fun CarritoList(carritoItems: List<CarritoResp>) {
+fun CarritoList(carritoItems: List<CarritoRespUi>) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -89,10 +87,15 @@ fun CarritoList(carritoItems: List<CarritoResp>) {
 
 @Composable
 fun CarritoItemCard(
-    item: CarritoResp,
-    viewModel: CarritoViewModel = hiltViewModel(),
-    stockDisponible: Int = 10 // Cambia dinámicamente según tu lógica del stock
+    itemUi: CarritoRespUi,
+    viewModel: CarritoViewModel = hiltViewModel()
 ) {
+    val item = itemUi.carritoResp
+    val nombre = itemUi.producto?.nombre ?: itemUi.servicio?.nombre ?: "Sin nombre"
+    val imagenUrl = itemUi.producto?.imagenUrl ?: itemUi.servicio?.imagenUrl
+    val descripcion = itemUi.producto?.descripcion ?: itemUi.servicio?.descripcion ?: "Sin descripción"
+    val stockDisponible = itemUi.producto?.stock ?: itemUi.servicio?.capacidadMaxima ?: Int.MAX_VALUE
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(4.dp),
@@ -100,10 +103,16 @@ fun CarritoItemCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Producto ID: ${item.productosId ?: item.serviciosId}",
+                text = nombre,
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = descripcion,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 2
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = {
                     viewModel.actualizarCantidad(item, item.cantidad - 1, stockDisponible)
@@ -141,7 +150,11 @@ fun CarritoItemCard(
                 text = "Subtotal: S/ ${item.subtotal}",
                 style = MaterialTheme.typography.bodyMedium
             )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Stock disponible: $stockDisponible",
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }
-

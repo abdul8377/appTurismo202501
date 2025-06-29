@@ -23,26 +23,48 @@ class CarritoLocalStorage(private val context: Context) {
         } ?: emptyList()
     }
 
-    suspend fun guardarItemCarritoLocal(carritoDto: CarritoDto) {
+    suspend fun guardarItemCarritoLocal(carritoDto: CarritoDto, stockDisponible: Int? = null) {
         val carritoActual = obtenerCarritoLocal().toMutableList()
-        val nuevoItem = CarritoResp(
-            carritoId = System.currentTimeMillis(),
-            userId = carritoDto.userId,
-            productosId = carritoDto.productosId,
-            serviciosId = carritoDto.serviciosId,
-            cantidad = carritoDto.cantidad,
-            precioUnitario = carritoDto.precioUnitario,
-            subtotal = carritoDto.subtotal,
-            totalCarrito = carritoDto.totalCarrito,
-            estado = carritoDto.estado,
-            createdAt = null,
-            updatedAt = null
-        )
-        carritoActual.add(nuevoItem)
+
+        val productoExistente = carritoActual.find {
+            it.productosId == carritoDto.productosId && it.serviciosId == carritoDto.serviciosId
+        }
+
+        if (productoExistente != null) {
+            val nuevaCantidad = (productoExistente.cantidad + carritoDto.cantidad).let { cantidad ->
+                if (stockDisponible != null) minOf(cantidad, stockDisponible) else cantidad
+            }
+
+            val itemActualizado = productoExistente.copy(
+                cantidad = nuevaCantidad,
+                subtotal = nuevaCantidad * carritoDto.precioUnitario,
+                stockDisponible = stockDisponible
+            )
+
+            carritoActual[carritoActual.indexOf(productoExistente)] = itemActualizado
+        } else {
+            val nuevoItem = CarritoResp(
+                carritoId = System.currentTimeMillis(),
+                userId = carritoDto.userId,
+                productosId = carritoDto.productosId,
+                serviciosId = carritoDto.serviciosId,
+                cantidad = carritoDto.cantidad,
+                precioUnitario = carritoDto.precioUnitario,
+                subtotal = carritoDto.subtotal,
+                totalCarrito = carritoDto.totalCarrito,
+                estado = carritoDto.estado,
+                createdAt = null,
+                updatedAt = null,
+                stockDisponible = stockDisponible
+            )
+            carritoActual.add(nuevoItem)
+        }
+
         context.dataStore.edit { prefs ->
             prefs[key] = gson.toJson(carritoActual)
         }
     }
+
 
     suspend fun limpiarCarritoLocal() {
         context.dataStore.edit { prefs ->
@@ -56,5 +78,4 @@ class CarritoLocalStorage(private val context: Context) {
             prefs[key] = gson.toJson(carritoActual)
         }
     }
-
 }

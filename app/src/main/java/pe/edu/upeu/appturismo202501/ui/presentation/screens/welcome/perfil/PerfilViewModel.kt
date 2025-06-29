@@ -6,7 +6,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import pe.edu.upeu.appturismo202501.modelo.UserResp
 import pe.edu.upeu.appturismo202501.repository.LoginUserRepository
 import pe.edu.upeu.appturismo202501.repository.UserRepository
 import pe.edu.upeu.appturismo202501.utils.SessionManager
@@ -18,17 +17,16 @@ data class UserState(
     val isLoading: Boolean = false,
     val isLoggedIn: Boolean = false,
     val name: String = "",
-    val lastName: String? = "", // ✅ Cambia a nullable
+    val lastName: String? = "",
     val email: String = "",
     val role: String = "",
     val error: String? = null
 )
 
-
 @HiltViewModel
 class PerfilViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val loginRepo: LoginUserRepository // ✅ añade esta inyección
+    private val loginRepo: LoginUserRepository
 ) : ViewModel() {
 
     private val _userState = MutableStateFlow(UserState())
@@ -39,7 +37,6 @@ class PerfilViewModel @Inject constructor(
         if (!token.isNullOrEmpty()) {
             loadUserData(SessionManager.getUserId().toLong())
         } else {
-            // No hay token, actualiza claramente a estado no logueado
             _userState.value = UserState(isLoggedIn = false, isLoading = false)
         }
     }
@@ -49,7 +46,7 @@ class PerfilViewModel @Inject constructor(
             _userState.value = _userState.value.copy(isLoading = true, error = null)
             try {
                 val response = userRepository.getUserById(userId)
-                if (response.isSuccessful) {
+                if (response.isSuccessful && response.body() != null) {
                     response.body()?.let { user ->
                         _userState.value = UserState(
                             isLoggedIn = true,
@@ -59,36 +56,33 @@ class PerfilViewModel @Inject constructor(
                             role = user.roles.firstOrNull()?.name ?: "",
                             isLoading = false
                         )
-                    } ?: run {
-                        _userState.value = UserState(error = "Usuario vacío", isLoading = false)
                     }
                 } else {
-                    _userState.value = UserState(
-                        error = "Error: ${response.message()}",
-                        isLoading = false
-                    )
+                    clearInvalidSession()
                 }
             } catch (e: Exception) {
-                _userState.value = UserState(
-                    error = e.localizedMessage ?: "Error inesperado",
-                    isLoading = false
-                )
+                clearInvalidSession()
             }
         }
     }
 
+    private fun clearInvalidSession() {
+        SessionManager.clearSession()
+        TokenUtils.TOKEN_CONTENT = ""
+        _userState.value = UserState(
+            isLoggedIn = false,
+            error = "Tu sesión expiró o es inválida. Por favor vuelve a iniciar sesión.",
+            isLoading = false
+        )
+    }
 
     fun logout() {
         viewModelScope.launch {
             try {
                 val response = loginRepo.logout()
-
                 if (response.isSuccessful) {
-                    // Elimina token local y limpia datos del usuario
                     SessionManager.clearSession()
                     TokenUtils.TOKEN_CONTENT = ""
-
-                    // Actualiza estado a deslogueado
                     _userState.value = UserState(isLoggedIn = false)
                 } else {
                     _userState.value = _userState.value.copy(
@@ -102,7 +96,4 @@ class PerfilViewModel @Inject constructor(
             }
         }
     }
-
 }
-
-

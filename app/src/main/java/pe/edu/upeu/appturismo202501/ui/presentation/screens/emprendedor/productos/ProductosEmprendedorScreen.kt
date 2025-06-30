@@ -1,5 +1,6 @@
 package pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.productos
 
+import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -35,7 +36,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -44,38 +47,34 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.sp
 import pe.edu.upeu.appturismo202501.R
-import androidx.compose.material3.TopAppBar
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.getValue
 
 
-/**
- * @param token Bearer token sin la palabra "Bearer ".
- * @param onCreate lambda que se invoca al pulsar el botón de agregar.
- * @param onEdit lambda que se invoca al pulsar un producto (para editar).
- */
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ProductosEmprendedorScreen(
     viewModel: EmprendedorProductoViewModel = hiltViewModel(),
     onCreate: () -> Unit,
     onEdit:   (ProductResp) -> Unit,
-    onDelete: (ProductResp) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // 1. Estados
-    val productos by remember { viewModel::productos }
-    val isLoading by remember { viewModel::isLoading }
-    val errorMsg by remember   { viewModel::errorMsg }
+    // 1. Lee directamente las propiedades respaldadas por mutableStateOf
+    val productos = viewModel.productos
+    val isLoading = viewModel.isLoading
+    val errorMsg = viewModel.errorMsg
 
-    // 2. Cuando aparezca la pantalla, dispara la carga
+    // 2. Estado local de confirmación de borrado
+    var productoAEliminar by remember { mutableStateOf<ProductResp?>(null) }
+    val ctx = LocalContext.current
+
+    // 3. Al iniciar, carga tu lista
     LaunchedEffect(Unit) {
         viewModel.cargarMisProductos()
     }
 
-    // 3. Layout
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = onCreate) {
@@ -84,7 +83,6 @@ fun ProductosEmprendedorScreen(
         }
     ) { innerPadding ->
         Box(modifier.fillMaxSize()) {
-            // tu LazyColumn + placeholder + loading + error
             LazyColumn(
                 modifier = modifier
                     .fillMaxSize()
@@ -92,12 +90,11 @@ fun ProductosEmprendedorScreen(
                 contentPadding = PaddingValues(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-
-                items(productos) { producto ->
+                items(productos, key = { it.id }) { producto ->
                     ProductoModernCard(
-                        producto      = producto,
-                        onEditClick   = { onEdit(producto) },
-                        onDeleteClick = { onDelete(producto) }
+                        producto = producto,
+                        onEditClick = { onEdit(producto) },
+                        onDeleteClick = { productoAEliminar = producto }
                     )
                 }
 
@@ -129,21 +126,51 @@ fun ProductosEmprendedorScreen(
                 }
             }
 
-            // Sobreponer loading / error
-            if (isLoading) {
-                CircularProgressIndicator(Modifier.align(Alignment.Center))
-            }
+            // Overlay: loader o mensaje de error
+            if (isLoading) CircularProgressIndicator(Modifier.align(Alignment.Center))
             errorMsg?.let { msg ->
                 Text(
-                    msg,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.align(Alignment.Center)
+                    text = msg,
+                    modifier = Modifier.align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.error
                 )
             }
         }
+
+        // — Diálogo de confirmación de borrado —
+        productoAEliminar?.let { prod ->
+            AlertDialog(
+                onDismissRequest = { productoAEliminar = null },
+                title = { Text("Eliminar “${prod.nombre}”") },
+                text = { Text("¿Estás seguro de que deseas eliminar este producto?") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        productoAEliminar = null
+                        // ← Llamada directa al ViewModel
+                        viewModel.eliminarProducto(prod.id) { success ->
+                            if (success) {
+                                Toast.makeText(ctx, "Producto eliminado", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(
+                                    ctx,
+                                    viewModel.errorMsg ?: "Error al eliminar",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }) {
+                        Text("Eliminar")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { productoAEliminar = null }) {
+                        Text("Cancelar")
+                    }
+                }
+            )
+        }
     }
 }
-
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ProductoModernCard(

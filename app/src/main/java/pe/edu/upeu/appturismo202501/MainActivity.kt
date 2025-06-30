@@ -21,6 +21,8 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import pe.edu.upeu.appturismo202501.ui.navigation.NavigationHost
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.paquetes.EditTourPackageScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.detalleServicios.ServiceDetailScreen
 import pe.edu.upeu.appturismo202501.ui.theme.AppTurismo202501Theme
 import pe.edu.upeu.appturismo202501.ui.theme.DarkGreenColors
 import pe.edu.upeu.appturismo202501.ui.theme.DarkPurpleColors
@@ -30,12 +32,6 @@ import pe.edu.upeu.appturismo202501.ui.theme.LightPurpleColors
 import pe.edu.upeu.appturismo202501.ui.theme.LightRedColors
 import pe.edu.upeu.appturismo202501.ui.theme.ThemeType
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
-import pe.edu.upeu.appturismo202501.utils.isNight
-import androidx.compose.ui.graphics.Color
-
-
-
-
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -74,6 +70,10 @@ class MainActivity : ComponentActivity() {
                     innerPadding = paddingValues
                 )
             }
+
+
+
+
         }
     }
 }

@@ -20,6 +20,8 @@ import pe.edu.upeu.appturismo202501.repository.LoginUserRepository
 import pe.edu.upeu.appturismo202501.repository.LoginUserRespositoryImp
 import pe.edu.upeu.appturismo202501.repository.MetodoPagoRepository
 import pe.edu.upeu.appturismo202501.repository.MetodoPagoRepositoryImp
+import pe.edu.upeu.appturismo202501.repository.PaqueteRepository
+import pe.edu.upeu.appturismo202501.repository.PaqueteRepositoryImpl
 import pe.edu.upeu.appturismo202501.repository.ProductoRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.ProductoRespository
 import pe.edu.upeu.appturismo202501.repository.RegisterRepository
@@ -121,6 +123,11 @@ abstract class RepositoryModule {
         chatRepositoryImp: ChatRepositoryImp // Implementación concreta
     ): ChatRepository // Interfaz que se usará para inyectar la dependencia
 
+    @Binds
+    @Singleton
+    abstract fun binfPaqueteRepository(
+        paqueteRepositoryImpl: PaqueteRepositoryImpl
+    ): PaqueteRepository
 
     // Usamos @Binds para vincular la interfaz con su implementación
     @Binds

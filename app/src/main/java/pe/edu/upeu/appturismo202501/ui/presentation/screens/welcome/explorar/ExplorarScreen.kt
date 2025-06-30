@@ -211,12 +211,11 @@ fun ExplorarScreen(
                             composable (Destinations.ProductosTab.route) {
                                 ProductosContent(navController)
                             }
-                            composable(Destinations.GastronomiaTab.route) {
-                                GastronomiaContent(navController = navController)
+                            composable (Destinations.GastronomiaTab.route) {
+                                GastronomiaContent(navController)
                             }
-
-                            composable(Destinations.ExperienciasTab.route) {
-                                ExperienciasContent(navController = navController)
+                            composable (Destinations.ExperienciasTab.route){
+                                ExperienciasContent(navController)
                             }
 
                             composable (Destinations.AlojamientoTab.route){
@@ -224,7 +223,7 @@ fun ExplorarScreen(
 
                             }
                             composable (Destinations.GuiasTab.route){
-                                GuiasContent(navController = navController)
+                                GuiasContent(navController = navControllernavController)
                             }
 
                             composable(Destinations.Search.route) {

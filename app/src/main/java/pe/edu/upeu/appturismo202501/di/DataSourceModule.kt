@@ -152,4 +152,6 @@ class DataSourceModule {
             .create(RestVenta::class.java)
     }
 
+    fun provideRestPaquetes(retrofit: Retrofit): RestPaquetes =
+        retrofit.create(RestPaquetes::class.java)
 }

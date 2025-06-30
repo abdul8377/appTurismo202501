@@ -108,7 +108,7 @@ fun FavoriteServiceCard(
         ) {
             Column {
                 AsyncImage(
-                    model = servicio.imageUrl,
+                    model = servicio.images,
                     contentDescription = servicio.title,
                     modifier = Modifier
                         .fillMaxWidth()

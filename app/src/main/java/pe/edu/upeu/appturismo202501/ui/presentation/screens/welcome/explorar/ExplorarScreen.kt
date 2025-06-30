@@ -223,7 +223,7 @@ fun ExplorarScreen(
 
                             }
                             composable (Destinations.GuiasTab.route){
-                                GuiasContent(navController = navControllernavController)
+                                GuiasContent(navController = navController)
                             }
 
                             composable(Destinations.Search.route) {

@@ -41,7 +41,10 @@ class DataSourceModule {
 
     @Provides
     @Singleton
-    fun provideAuthInterceptor(): AuthInterceptor = AuthInterceptor()
+
+    fun provideAuthInterceptor(
+        @ApplicationContext ctx: Context
+    ): AuthInterceptor = AuthInterceptor(ctx)
 
     @Provides
     @Singleton
@@ -151,7 +154,8 @@ class DataSourceModule {
             .build()
             .create(RestVenta::class.java)
     }
-
+    @Provides
+    @Singleton
     fun provideRestPaquetes(retrofit: Retrofit): RestPaquetes =
         retrofit.create(RestPaquetes::class.java)
 }

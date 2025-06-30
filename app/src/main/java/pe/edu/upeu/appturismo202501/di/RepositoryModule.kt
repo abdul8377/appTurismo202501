@@ -125,7 +125,7 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun binfPaqueteRepository(
+    abstract fun bindPaqueteRepository(
         paqueteRepositoryImpl: PaqueteRepositoryImpl
     ): PaqueteRepository
 

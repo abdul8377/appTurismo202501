@@ -61,28 +61,12 @@ fun ServicioDetailScreen(
 ) {
     val showLoginDialog = remember { mutableStateOf(false) }
     val context = LocalContext.current
-    Box(modifier = modifier.fillMaxSize()) {
-        Column (
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 72.dp)  // espacio para la BottomBar
-        ) {
-            // 1) Header con imagen
-            Box {
-                AsyncImage(
-                    model = servicio.images,
-                    contentDescription = servicio.title,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp)
-                )
 
     Column(modifier = modifier.fillMaxSize()) {
 
         Box(modifier = Modifier.fillMaxWidth()) {
             AsyncImage(
-                model = servicio.imageUrl,
+                model = servicio.images,
                 contentDescription = servicio.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

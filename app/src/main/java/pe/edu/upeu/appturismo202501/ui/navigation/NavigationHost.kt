@@ -23,6 +23,7 @@ import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.VerTip
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.ExplorarScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.AlojamientoDetailWrapper
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.ProductoDetailWrapper
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.detalleServicios.AlojamientoDetailScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.detalleServicios.ServiceDetailScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.notificaciones.NotificationsScreen

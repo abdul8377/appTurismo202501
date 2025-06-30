@@ -55,7 +55,7 @@ interface ProductoRespository {
  */
 @Singleton
 class ProductoRepositoryImp @Inject constructor(
-    private val restProductos: RestProductos
+    private val restProductos: RestProductos,
     private val rest: RestProductos,
     private val restCat: RestCategoryProducts,
 ) : ProductoRespository {
@@ -66,7 +66,7 @@ class ProductoRepositoryImp @Inject constructor(
 
     override suspend fun productoDetalle(productoId: Long): Response<ProductoDetalleResponse> =
         restProductos.getProductoDetalle(productoId)
-}
+
     override suspend fun productoServicesMios(): Response<List<ProductResp>> =
         rest.listarMios()
 

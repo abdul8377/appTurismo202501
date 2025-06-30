@@ -137,4 +137,9 @@ dependencies {
 
     implementation ("androidx.datastore:datastore-preferences:1.1.1")
 
+    // Stripe Android SDK
+    implementation("com.stripe:stripe-android:21.19.0")
+    // Include the financial connections SDK to support US bank account as a payment method
+    implementation("com.stripe:financial-connections:21.19.0")
+
 }

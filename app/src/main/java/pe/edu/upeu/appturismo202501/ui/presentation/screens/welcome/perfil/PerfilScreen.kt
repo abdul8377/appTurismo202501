@@ -20,6 +20,8 @@ import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsB.MonedaSelector
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsPerfil.SectionWithButtons
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.LoginScreen
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +36,15 @@ fun PerfilScreen(
     val loginSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val monedaSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val userState by viewModel.userState.collectAsState()
+
+    // Detectar el error y esperar 2 segundos para recargar la pantalla
+    LaunchedEffect(userState.error) {
+        if (userState.error != null) {
+            delay(2000) // Esperar 2 segundos
+            navControllerGlobal.popBackStack(Destinations.Welcome.route, inclusive = false)
+            navControllerGlobal.navigate(Destinations.Welcome.route)
+        }
+    }
 
     if (showSheet) {
         ModalBottomSheet(

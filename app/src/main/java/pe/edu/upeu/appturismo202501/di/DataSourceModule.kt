@@ -10,7 +10,10 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import pe.edu.upeu.appturismo202501.data.local.storage.CarritoLocalStorage
 import pe.edu.upeu.appturismo202501.data.network.AuthInterceptor
+import pe.edu.upeu.appturismo202501.data.network.RestChat
 import pe.edu.upeu.appturismo202501.data.remote.*
+import pe.edu.upeu.appturismo202501.repository.ChatRepository
+import pe.edu.upeu.appturismo202501.repository.ChatRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.FavoritoRepository
 import pe.edu.upeu.appturismo202501.repository.FavoritoRepositoryImp
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
@@ -131,4 +134,22 @@ class DataSourceModule {
     fun provideFavoritoRepository(
         impl: FavoritoRepositoryImp
     ): FavoritoRepository = impl
+
+    @Provides
+    @Singleton
+    fun provideChatRepository(
+        restChat: RestChat // Proveedor del cliente Retrofit
+    ): ChatRepository = ChatRepositoryImp(restChat) // Implementación de ChatRepository
+
+    // Provisión de RestVenta (Retrofit)
+    @Provides
+    @Singleton
+    fun provideRestVenta(): RestVenta {
+        return Retrofit.Builder()
+            .baseUrl("https://api.tuservidor.com/") // Reemplaza con la URL de tu servidor
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(RestVenta::class.java)
+    }
+
 }

@@ -10,6 +10,8 @@ import pe.edu.upeu.appturismo202501.repository.CategoryProductsRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.CategoryProductsRespository
 import pe.edu.upeu.appturismo202501.repository.CategoryRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.CategoryRespository
+import pe.edu.upeu.appturismo202501.repository.ChatRepository
+import pe.edu.upeu.appturismo202501.repository.ChatRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.EmprendimientoRepository
 import pe.edu.upeu.appturismo202501.repository.EmprendimientoRepositoryImpl
 import pe.edu.upeu.appturismo202501.repository.FavoritoRepository
@@ -28,6 +30,8 @@ import pe.edu.upeu.appturismo202501.repository.TipoDeNegocioRepository
 import pe.edu.upeu.appturismo202501.repository.TipoDeNegocioRepositoryImpl
 import pe.edu.upeu.appturismo202501.repository.UserRepository
 import pe.edu.upeu.appturismo202501.repository.UserRepositoryImpl
+import pe.edu.upeu.appturismo202501.repository.VentaRepository
+import pe.edu.upeu.appturismo202501.repository.VentaRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.ZonaTuristicaRepository
 import pe.edu.upeu.appturismo202501.repository.ZonaTuristicaRepositoryImpl
 import javax.inject.Singleton
@@ -111,4 +115,17 @@ abstract class RepositoryModule {
         carritoRepositoryImpl: CarritoRepositoryImpl
     ): CarritoRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindChatRepository(
+        chatRepositoryImp: ChatRepositoryImp // Implementación concreta
+    ): ChatRepository // Interfaz que se usará para inyectar la dependencia
+
+
+    // Usamos @Binds para vincular la interfaz con su implementación
+    @Binds
+    @Singleton
+    abstract fun bindVentaRepository(
+        ventaRepositoryImp: VentaRepositoryImp
+    ): VentaRepository
 }

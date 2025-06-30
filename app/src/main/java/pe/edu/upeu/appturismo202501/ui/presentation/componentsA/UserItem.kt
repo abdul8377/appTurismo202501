@@ -17,14 +17,14 @@ import androidx.compose.ui.unit.dp
 import pe.edu.upeu.appturismo202501.modelo.UsersDto
 
 @Composable
-
 fun UserItem(
     user: UsersDto,
     onToggleActive: () -> Unit,
     onChangePasswordClick: () -> Unit,
     modifier: Modifier = Modifier
-)
-{ val rolesText = user.roles.joinToString(", ") { it.name } // si roles es List<Role>
+) {
+    val rolesText = user.roles.joinToString(", ") { it.name }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -69,16 +69,21 @@ fun UserItem(
                     )
                 }
 
-                // Estado activo con chip
-                val isActive = user.is_active == 1
+                // Estado activo con chip (ahora directamente con Boolean)
                 Surface(
                     shape = CircleShape,
-                    color = if (isActive) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
+                    color = if (user.is_active)
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                    else
+                        MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
                     modifier = Modifier.padding(top = 4.dp)
                 ) {
                     Text(
-                        text = if (isActive) "Activo" else "Inactivo",
-                        color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                        text = if (user.is_active) "Activo" else "Inactivo",
+                        color = if (user.is_active)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
                     )
@@ -99,15 +104,15 @@ fun UserItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Toggle activo/inactivo con tooltip
+                // Toggle activo/inactivo con tooltip (directamente con Boolean)
                 IconButton(
                     onClick = onToggleActive,
                     modifier = Modifier.size(40.dp)
                 ) {
                     Icon(
-                        imageVector = if (user.is_active == 1) Icons.Filled.ToggleOn else Icons.Filled.ToggleOff,
-                        contentDescription = if (user.is_active == 1) "Desactivar usuario" else "Activar usuario",
-                        tint = if (user.is_active == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                        imageVector = if (user.is_active) Icons.Filled.ToggleOn else Icons.Filled.ToggleOff,
+                        contentDescription = if (user.is_active) "Desactivar usuario" else "Activar usuario",
+                        tint = if (user.is_active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(32.dp)
                     )
                 }
@@ -117,7 +122,10 @@ fun UserItem(
                     onClick = onChangePasswordClick,
                     modifier = Modifier
                         .size(40.dp)
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), shape = CircleShape)
+                        .background(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            shape = CircleShape
+                        )
                         .clip(CircleShape)
                 ) {
                     Icon(

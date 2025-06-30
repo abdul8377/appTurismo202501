@@ -2,6 +2,8 @@ package pe.edu.upeu.appturismo202501.data.remote
 
 import pe.edu.upeu.appturismo202501.modelo.UsersDto
 import pe.edu.upeu.appturismo202501.modelo.ApiResponse
+import pe.edu.upeu.appturismo202501.modelo.ChangePasswordRequest
+import pe.edu.upeu.appturismo202501.modelo.ToggleActiveRequest
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -35,12 +37,4 @@ interface RestUser {
 
 // Clases para request bodies:
 
-data class ToggleActiveRequest(
-    val is_active: Boolean,
-    val motivo_inactivo: String? = null
-)
 
-data class ChangePasswordRequest(
-    val password: String,
-    val password_confirmation: String
-)

@@ -6,9 +6,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import pe.edu.upeu.appturismo202501.data.remote.ChangePasswordRequest
-import pe.edu.upeu.appturismo202501.data.remote.ToggleActiveRequest
 import pe.edu.upeu.appturismo202501.modelo.ApiResponse
+import pe.edu.upeu.appturismo202501.modelo.ChangePasswordRequest
+import pe.edu.upeu.appturismo202501.modelo.ToggleActiveRequest
 import pe.edu.upeu.appturismo202501.modelo.UsersDto
 import pe.edu.upeu.appturismo202501.repository.UserRepository
 import retrofit2.Response

@@ -23,6 +23,7 @@ import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.VerTip
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.ExplorarScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.AlojamientoDetailWrapper
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.ProductoDetailWrapper
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.notificaciones.NotificationsScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.main.WelcomeMain
 import pe.edu.upeu.appturismo202501.utils.SessionManager
@@ -166,6 +167,16 @@ fun NavigationHost(
             val alojamientoId = backStackEntry.arguments?.getLong("id") ?: 0L
             AlojamientoDetailWrapper(alojamientoId, navController)
         }
+
+
+        composable(
+            route = "explorar/producto/productoDetalle/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val productoId = backStackEntry.arguments?.getLong("id") ?: 0L
+            ProductoDetailWrapper(productoId, navController)
+        }
+
 
         // 🔥 Pantalla Notificaciones 🔥
         composable(Destinations.Notifications.route) {

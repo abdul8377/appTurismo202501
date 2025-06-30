@@ -113,7 +113,7 @@ dependencies {
     val room_version = "2.7.0"
 
     implementation("androidx.room:room-runtime:$room_version")
-//
+
     // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
     // See Add the KSP plugin to your project
     ksp("androidx.room:room-compiler:$room_version")
@@ -133,16 +133,13 @@ dependencies {
 
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
-    implementation ("androidx.activity:activity-compose:1.7.2")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.34.0")
 
-    implementation ("androidx.compose.ui:ui-tooling-preview:1.5.0")
+    implementation ("androidx.datastore:datastore-preferences:1.1.1")
 
-    implementation ("androidx.compose.animation:animation:1.5.0")
-    
-    // ViewModel
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    // Stripe Android SDK
+    implementation("com.stripe:stripe-android:21.19.0")
+    // Include the financial connections SDK to support US bank account as a payment method
+    implementation("com.stripe:financial-connections:21.19.0")
 
-    // Pager (para el carrusel)
-    implementation ("com.google.accompanist:accompanist-pager:0.28.0")
-    implementation ("com.google.accompanist:accompanist-pager-indicators:0.28.0")
 }

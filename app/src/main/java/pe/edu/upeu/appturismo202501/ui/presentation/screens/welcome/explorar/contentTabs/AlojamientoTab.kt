@@ -1,54 +1,79 @@
 package pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs
 
-import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import android.widget.Toast
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
+import pe.edu.upeu.appturismo202501.ui.presentation.alertas.AlertDialogComponent
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.AlojamientoGrid
-import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.ServicioGrid
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.ViewModel.AlojamientoViewModel
-
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.ViewModel.ServiciosViewModel
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.favorito.FavoritosViewModel
 
 @Composable
 fun AlojamientoContent(
     navController: NavController,
-    viewModel: AlojamientoViewModel = hiltViewModel()
+    viewModel: AlojamientoViewModel = hiltViewModel(),
+    favVm: FavoritosViewModel = hiltViewModel()
 ) {
     val alojamientos = viewModel.alojamientos.value
-    val favorites = remember { mutableStateMapOf<Long, Boolean>() }
+    val favUiState by favVm.uiState.collectAsState()
+
+    val favoritosIds = favUiState.serviciosFav.map { it.id }.toSet()
+    val favoritosPendientes = remember { mutableStateMapOf<Long, Boolean>() }
+
+    val showLoginDialog = remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        viewModel.servicioFetch() // ✅ Ajuste aquí
+        viewModel.servicioFetch()
+        favVm.loadFavoritos()
+    }
+
+    val favoritesVisual = alojamientos.associate { alojamiento ->
+        val favoritoBackend = alojamiento.id in favoritosIds
+        val favoritoTemporal = favoritosPendientes[alojamiento.id] ?: favoritoBackend
+        alojamiento.id to favoritoTemporal
     }
 
     AlojamientoGrid(
-        items = alojamientos, // ✅ Ajuste aquí
-        favorites = favorites,
+        items = alojamientos,
+        favorites = favoritesVisual,
         onFavoriteClick = { id ->
-            favorites[id] = !(favorites[id] ?: false)
+            if (!favUiState.isLoggedIn) {
+                showLoginDialog.value = true
+            } else {
+                val isCurrentlyFavorite = favoritosPendientes[id] ?: (id in favoritosIds)
+                val newFavorite = !isCurrentlyFavorite
+
+                favoritosPendientes[id] = newFavorite
+
+                if (newFavorite) {
+                    favVm.agregarServicioFavoritoConDelay(id)
+                    Toast.makeText(context, "Agregando a favoritos...", Toast.LENGTH_SHORT).show()
+                } else {
+                    favVm.eliminarServicioFavorito(id)
+                    Toast.makeText(context, "Eliminado de favoritos", Toast.LENGTH_SHORT).show()
+                }
+            }
         },
         onItemClick = { id ->
             if (id != 0L) {
                 val route = Destinations.Alojamientos.route.replace("{id}", id.toString())
                 navController.navigate(route)
-
-            } else {
-                Log.e("AlojamientoGrid", "ID inválido para alojamiento: $id")
             }
         }
+    )
+
+    AlertDialogComponent(
+        isOpen = showLoginDialog,
+        title = "Inicia sesión",
+        message = "Debes iniciar sesión para gestionar favoritos.",
+        onConfirm = { navController.navigate(Destinations.Login.route) },
+        onDismiss = { showLoginDialog.value = false },
+        confirmText = "Iniciar sesión",
+        dismissText = "Cancelar",
+        isSuccess = true
     )
 }

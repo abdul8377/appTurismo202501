@@ -36,9 +36,9 @@ fun UserRowItem(
             }
 
             Text(
-                text = if (user.is_active == 1) "🟢 Activo" else "🔴 Inactivo",
+                text = if (user.is_active) "🟢 Activo" else "🔴 Inactivo",
                 modifier = Modifier.weight(1f),
-                color = if (user.is_active == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                color = if (user.is_active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.labelLarge
             )
 
@@ -48,7 +48,7 @@ fun UserRowItem(
             ) {
                 IconButton(onClick = onToggleActive) {
                     Icon(
-                        imageVector = if (user.is_active == 1) Icons.Default.ToggleOn else Icons.Default.ToggleOff,
+                        imageVector = if (user.is_active) Icons.Default.ToggleOn else Icons.Default.ToggleOff,
                         contentDescription = "Cambiar estado"
                     )
                 }

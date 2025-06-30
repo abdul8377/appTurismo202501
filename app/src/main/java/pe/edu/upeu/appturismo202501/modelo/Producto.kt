@@ -41,7 +41,6 @@ data class ProductDto(
     val images: List<ImageResp>
 )
 
-
 data class ProductResp(
     @SerializedName("productos_id")
     val id: Long,
@@ -73,10 +72,11 @@ data class ProductResp(
     @SerializedName("updated_at")
     val updatedAt: String?,
 
-    /** Lista de imágenes asociadas */
+    /** URL principal del producto */
     @SerializedName("imagen_url")
-    val imagenUrl: String?,          // URL completa: "http://localhost:8000/storage/…"
+    val imagenUrl: String?,
 
+    /** Lista de imágenes asociadas */
     @SerializedName("images")
     val images: List<ImageResp>
 )
@@ -86,8 +86,20 @@ data class ImageResp(
     val id: Long,
 
     @SerializedName("url")
-    val url: String,                 // En tu JSON es ya la URL completa
+    val url: String,
 
     @SerializedName("titulo")
     val titulo: String
+)
+
+/**
+ * Representa la respuesta completa para el detalle específico de un producto desde la API.
+ */
+
+data class ProductoDetalleResponse(
+    @SerializedName("status")
+    val status: String,
+
+    @SerializedName("producto")
+    val producto: ProductResp
 )

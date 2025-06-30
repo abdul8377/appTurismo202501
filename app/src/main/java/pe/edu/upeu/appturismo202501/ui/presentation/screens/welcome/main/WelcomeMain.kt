@@ -20,11 +20,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.NavItem
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.TurismoNavigationBar
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.PerfilScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedorcreate.EmprendedorCreateScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.carrito.CarritoScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.ExplorarScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.favorito.FavoritosScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.perfil.PerfilScreen
 
 enum class BottomDestination(
     val label: String,

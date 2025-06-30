@@ -6,88 +6,94 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import pe.edu.upeu.appturismo202501.modelo.UsersDto
+import pe.edu.upeu.appturismo202501.repository.LoginUserRepository
 import pe.edu.upeu.appturismo202501.repository.UserRepository
 import pe.edu.upeu.appturismo202501.utils.SessionManager
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
 import javax.inject.Inject
 
+// Estado del usuario para la pantalla PerfilScreen
 data class UserState(
+    val isLoading: Boolean = false,
+    val isLoggedIn: Boolean = false,
     val name: String = "",
-    val lastName: String = "",  // <-- valor por defecto para evitar null
+    val lastName: String? = "",
     val email: String = "",
     val role: String = "",
-    val isLoading: Boolean = false,
-    val error: String? = null,
-    val isLoggedIn: Boolean = false
+    val error: String? = null
 )
-
 
 @HiltViewModel
 class PerfilViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val loginRepo: LoginUserRepository
 ) : ViewModel() {
 
     private val _userState = MutableStateFlow(UserState())
     val userState: StateFlow<UserState> = _userState
 
     init {
-        // Solo intenta cargar si hay token e id válido
         val token = SessionManager.getToken()
-        val userId = SessionManager.getUserId().takeIf { it != -1 }?.toLong()
-        if (token != null && userId != null) {
-            fetchUserData(userId)
+        if (!token.isNullOrEmpty()) {
+            loadUserData(SessionManager.getUserId().toLong())
         } else {
-            // No hay sesión guardada, estado inicial no logueado
             _userState.value = UserState(isLoggedIn = false, isLoading = false)
         }
     }
 
-    private fun fetchUserData(userId: Long) {
+    fun loadUserData(userId: Long) {
         viewModelScope.launch {
-            _userState.value = _userState.value.copy(isLoading = true)
+            _userState.value = _userState.value.copy(isLoading = true, error = null)
             try {
                 val response = userRepository.getUserById(userId)
-                if (response.isSuccessful) {
+                if (response.isSuccessful && response.body() != null) {
                     response.body()?.let { user ->
                         _userState.value = UserState(
-                            name = user.name,
-                            lastName = user.lastName ?: "",  // <-- Aquí usas ?: ""
-                            email = user.email,
-                            role = user.roles.firstOrNull()?.name ?: "Invitado",
-                            isLoading = false,
-                            isLoggedIn = true
-                        )
-                    } ?: run {
-                        _userState.value = UserState(
-                            error = "Usuario no encontrado",
-                            isLoading = false,
-                            isLoggedIn = false
+                            isLoggedIn = true,
+                            name = user.name ?: "",
+                            lastName = user.lastName ?: "",
+                            email = user.email ?: "",
+                            role = user.roles.firstOrNull()?.name ?: "",
+                            isLoading = false
                         )
                     }
                 } else {
-                    _userState.value = UserState(
-                        error = "Error al obtener datos: ${response.code()}",
-                        isLoading = false,
-                        isLoggedIn = false
-                    )
+                    clearInvalidSession()
                 }
             } catch (e: Exception) {
-                _userState.value = UserState(
-                    error = e.localizedMessage ?: "Error desconocido",
-                    isLoading = false,
-                    isLoggedIn = false
-                )
+                clearInvalidSession()
             }
         }
     }
 
+    private fun clearInvalidSession() {
+        SessionManager.clearSession()
+        TokenUtils.TOKEN_CONTENT = ""
+        _userState.value = UserState(
+            isLoggedIn = false,
+            error = "Tu sesión expiró o es inválida. Por favor vuelve a iniciar sesión.",
+            isLoading = false
+        )
+    }
 
     fun logout() {
         viewModelScope.launch {
-            TokenUtils.clearToken()
-            SessionManager.clearSession()
-            _userState.value = UserState(isLoggedIn = false) // Resetear estado
+            try {
+                val response = loginRepo.logout()
+                if (response.isSuccessful) {
+                    SessionManager.clearSession()
+                    TokenUtils.TOKEN_CONTENT = ""
+                    _userState.value = UserState(isLoggedIn = false)
+                } else {
+                    _userState.value = _userState.value.copy(
+                        error = "Error al cerrar sesión: ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                _userState.value = _userState.value.copy(
+                    error = e.localizedMessage ?: "Error inesperado"
+                )
+            }
         }
     }
 }

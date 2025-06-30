@@ -1,5 +1,9 @@
 package pe.edu.upeu.appturismo202501.modelo
 
+import android.net.Uri
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Category
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.google.gson.annotations.SerializedName
 
 data class ProductDto(
@@ -91,3 +95,27 @@ data class ImageResp(
     @SerializedName("titulo")
     val titulo: String
 )
+
+data class CrearProductoResponse(
+    @SerializedName("message")
+    val message: String,
+
+    @SerializedName("producto")
+    val producto: ProductDto
+)
+
+
+data class CategoryUi(val id: Long, val name: String, val icon: ImageVector? = Icons.Outlined.Category)
+
+data class ProductUi(
+    val id: Long? = null,
+    val name: String,
+    val description: String,
+    val price: Double,
+    val stock: Int,
+    val estado: Boolean,
+    val categoryId: Long,
+    val images: List<Uri>
+)
+
+data class ExistingImage(val id: Long, val url: String)

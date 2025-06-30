@@ -110,4 +110,9 @@ class DataSourceModule {
     @Provides @Singleton
     fun provideRestFavorito(retrofit: Retrofit): RestFavorito =
         retrofit.create(RestFavorito::class.java)
+
+    @Provides
+    @Singleton
+    fun provideRestPaquetes(retrofit: Retrofit): RestPaquetes =
+        retrofit.create(RestPaquetes::class.java)
 }

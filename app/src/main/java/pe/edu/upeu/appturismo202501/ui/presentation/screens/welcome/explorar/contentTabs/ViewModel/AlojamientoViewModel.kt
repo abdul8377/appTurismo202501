@@ -11,13 +11,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import pe.edu.upeu.appturismo202501.modelo.AlojamientoDetalleUi
 import pe.edu.upeu.appturismo202501.modelo.ServicioUi
 import pe.edu.upeu.appturismo202501.modelo.toAlojamientoDetalleUi
 import pe.edu.upeu.appturismo202501.modelo.toAlojamientoUi
 
 import pe.edu.upeu.appturismo202501.modelo.toServicioUi
 import pe.edu.upeu.appturismo202501.repository.ServicioRepository
-import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.AlojamientoDetalleUi
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.AlojamientoUi
 
 

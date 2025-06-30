@@ -36,21 +36,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import pe.edu.upeu.appturismo202501.R
+import pe.edu.upeu.appturismo202501.modelo.AlojamientoDetalleUi
 
-data class AlojamientoDetalleUi(
-    val id: Long,
-    val title: String,
-    val description: String,
-    val priceFormatted: String,
-    val rating: Double = 4.5,
-    val opiniones: Int = 0,
-    val duracionServicio: String,
-    val capacidadMaxima: Int,
-    val imageUrl: String,
-    val isFavorite: Boolean,
-    val emprendimientoName: String,
-    val emprendimientoImageUrl: String
-)
 
 @Composable
 fun ServicioDetailScreen(
@@ -70,7 +57,7 @@ fun ServicioDetailScreen(
             // 1) Header con imagen
             Box {
                 AsyncImage(
-                    model = servicio.imageUrl,
+                    model = servicio.images,
                     contentDescription = servicio.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier

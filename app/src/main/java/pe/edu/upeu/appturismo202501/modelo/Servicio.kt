@@ -1,66 +1,114 @@
 package pe.edu.upeu.appturismo202501.modelo
 
 import com.google.gson.annotations.SerializedName
-import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.AlojamientoDetalleUi
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.AlojamientoUi
 
 
 data class ServicioDto(
-    @SerializedName("servicios_id")
-    val serviciosId: Long,
-    @SerializedName("emprendimientos_id")
-    val emprendimientosId: Long,
+    @SerializedName("servicios_id")       val serviciosId: Long,
+    @SerializedName("emprendimientos_id") val emprendimientosId: Long,
     val nombre: String,
     val descripcion: String,
     val precio: Double,
-    @SerializedName("capacidad_maxima")
-    val capacidadMaxima: Int,
-    @SerializedName("duracion_servicio")
-    val duracionServicio: String?,
-    @SerializedName("created_at")
-    val createdAt: String,
-    @SerializedName("updated_at")
-    val updatedAt: String,
-    @SerializedName("imagenes_url")
-    val imagenesUrl: List<String>? = null,
-    @SerializedName("imagen_url")
-    val imagenUrl: String? = null,
+    @SerializedName("capacidad_maxima")   val capacidadMaxima: Int,
+    @SerializedName("duracion_servicio")  val duracionServicio: String?,
+    @SerializedName("estado")             val estado: String?,
+    @SerializedName("images")             val images: List<ImagenDto>? = null,
+    @SerializedName("imagenes_url")       val imagenesUrl: List<String>? = null,
+    @SerializedName("imagen_url")         val imagenUrl: String? = null,
     val emprendimiento: EmprendimientoDto? = null
 )
 
+
 data class ServicioResp(
-    @SerializedName("servicios_id")
-    val serviciosId: Long,
-    @SerializedName("emprendimientos_id")
-    val emprendimientosId: Long,
+    @SerializedName("servicios_id")       val serviciosId: Long,
+    @SerializedName("emprendimientos_id") val emprendimientosId: Long,
     val nombre: String,
     val descripcion: String,
     val precio: Double,
-    @SerializedName("capacidad_maxima")
-    val capacidadMaxima: Int,
-    @SerializedName("duracion_servicio")
-    val duracionServicio: String?,
-    @SerializedName("created_at")
-    val createdAt: String,
-    @SerializedName("updated_at")
-    val updatedAt: String,
-    @SerializedName("imagenes_url")
-    val imagenesUrl: List<String>? = null,
-    @SerializedName("imagen_url")
-    val imagenUrl: String? = null,
+    @SerializedName("capacidad_maxima")   val capacidadMaxima: Int,
+    @SerializedName("duracion_servicio")  val duracionServicio: String?,
+    @SerializedName("estado")             val estado: String?,
+    @SerializedName("images") val images: List<ImagenDto>? = null,
+    @SerializedName("imagenes_url")       val imagenesUrl: List<String>? = null,
+    @SerializedName("imagen_url")         val imagenUrl: String? = null,
     val emprendimiento: EmprendimientoDto? = null
-    )
+)
 
-fun ServicioResp.toServicioUi(): ServicioUi {
-    return ServicioUi(
-        id = serviciosId,
-        title = nombre,
-        subtitle = descripcion,
-        priceFormatted = "Desde S/ ${"%.2f".format(precio)}",
-        rating = 5.0, // O ajusta según tu modelo de rating
-        imageUrl = imagenUrl ?: imagenesUrl?.firstOrNull() ?: "https://via.placeholder.com/150"
-    )
-}
+data class CreateServicioRequest(
+    @SerializedName("nombre")               val nombre: String,
+    @SerializedName("descripcion")          val descripcion: String?,
+    @SerializedName("precio")               val precio: Double,
+    @SerializedName("capacidad_maxima")     val capacidadMaxima: Int,
+    @SerializedName("duracion_servicio")    val duracionServicio: String?,
+    @SerializedName("estado")             val estado: String?,
+
+)
+
+data class UpdateServicioRequest(
+    @SerializedName("servicios_id")       val serviciosId: Long,
+    @SerializedName("nombre")               val nombre: String,
+    @SerializedName("descripcion")          val descripcion: String?,
+    @SerializedName("precio")               val precio: Double,
+    @SerializedName("capacidad_maxima")     val capacidadMaxima: Int,
+    @SerializedName("duracion_servicio")    val duracionServicio: String?,
+    @SerializedName("estado")             val estado: String?,
+)
+
+
+
+fun String.toReqBody() = this.toRequestBody("text/plain".toMediaType())
+fun Double.toReqBody() = this.toString().toRequestBody("text/plain".toMediaType())
+fun Int.toReqBody() = this.toString().toRequestBody("text/plain".toMediaType())
+
+data class UpdateServicioParts(
+    val method: RequestBody,
+    val nombre: RequestBody,
+    val descripcion: RequestBody?,
+    val precio: RequestBody,
+    val capacidad: RequestBody,
+    val duracion: RequestBody?,
+    val estado: RequestBody?
+)
+
+fun UpdateServicioRequest.toParts(): UpdateServicioParts = UpdateServicioParts(
+    method      = "PUT".toReqBody(),
+    nombre      = nombre.toReqBody(),
+    descripcion = descripcion?.toReqBody(),
+    precio      = precio.toReqBody(),
+    capacidad   = capacidadMaxima.toReqBody(),
+    duracion    = duracionServicio?.toReqBody(),
+    estado      = estado?.toReqBody()
+)
+
+
+data class ImagenDto(
+    val id: Long,
+    val url: String
+)
+
+
+
+
+
+data class AlojamientoDetalleUi(
+    val id: Long,
+    val title: String,
+    val description: String,
+    val priceFormatted: String,
+    val rating: Double = 4.5,
+    val opiniones: Int = 0,
+    val duracionServicio: String,
+    val capacidadMaxima: Int,
+    val images: List<ImagenDto>?,
+    val isFavorite: Boolean,
+    val emprendimientoName: String,
+    val emprendimientoImageUrl: String,
+    val emprendimientoLocation: String
+)
 
 fun ServicioResp.toAlojamientoUi(): AlojamientoUi {
     return AlojamientoUi(
@@ -75,27 +123,89 @@ fun ServicioResp.toAlojamientoUi(): AlojamientoUi {
 }
 
 fun ServicioResp.toAlojamientoDetalleUi(): AlojamientoDetalleUi {
+    val urlsFromRelation = images?.map { it.url }
+    val urlsFromAppend   = imagenesUrl
+    val fallbackSingle   = listOfNotNull(imagenUrl)
+    val allUrls = urlsFromRelation
+        ?: urlsFromAppend
+        ?: fallbackSingle
     return AlojamientoDetalleUi(
-        id = serviciosId,
-        title = nombre,
-        description = descripcion,
-        priceFormatted = "Desde S/ ${"%.2f".format(precio)} / ${duracionServicio ?: "1 noche"}",
-        rating = 4.5,  // Valor temporal por defecto
-        opiniones = 0,  // Valor temporal por defecto
-        duracionServicio = duracionServicio ?: "No especificado",
-        capacidadMaxima = capacidadMaxima,
-        imageUrl = imagenUrl ?: imagenesUrl?.firstOrNull() ?: "",
-        isFavorite = false,  // Local (hasta que implementes favoritos)
-        emprendimientoName = emprendimiento?.nombre ?: "Sin nombre",
-        emprendimientoImageUrl = emprendimiento?.imagenesUrl?.firstOrNull() ?: ""
+        id                     = serviciosId,
+        title                  = nombre,
+        description            = descripcion,
+        priceFormatted         = "Desde S/ ${"%.2f".format(precio)} / ${duracionServicio ?: "—"}",
+        duracionServicio       = duracionServicio.orEmpty(),
+        capacidadMaxima        = capacidadMaxima,
+        images = this.images,                            // ← aquí la lista
+        isFavorite             = false,
+        emprendimientoName     = emprendimiento?.nombre.orEmpty(),
+        emprendimientoImageUrl = emprendimiento?.imagenesUrl?.firstOrNull().orEmpty(),
+        emprendimientoLocation = emprendimiento?.direccion.orEmpty()   // ← sitio real
     )
 }
 data class ServicioUi(
     val id: Long,
     val title: String,
-    val subtitle: String,
+    val description: String,
     val priceFormatted: String,
-    val rating: Double,
-    val imageUrl: String,
-    val isFavorite: Boolean = false
+    val rating: Double = 4.5,
+    val opiniones: Int = 0,
+    val duracionServicio: String,
+    val capacidadMaxima: Int,
+    val images: List<ImagenDto>?,
+    val isFavorite: Boolean,
+    val emprendimientoName: String,
+    val emprendimientoImageUrl: String,
+    val emprendimientoLocation: String
 )
+
+fun ServicioResp.toServicioUi(): ServicioUi {
+    val urlsFromRelation = images?.map { it.url }
+    val urlsFromAppend   = imagenesUrl
+    val fallbackSingle   = listOfNotNull(imagenUrl)
+    val allUrls = urlsFromRelation
+        ?: urlsFromAppend
+        ?: fallbackSingle
+    return ServicioUi(
+        id                     = serviciosId,
+        title                  = nombre,
+        description            = descripcion,
+        priceFormatted         = "Desde S/ ${"%.2f".format(precio)}",
+        duracionServicio       = duracionServicio.orEmpty(),
+        capacidadMaxima        = capacidadMaxima,
+        images = this.images,                            // ← aquí la lista
+        isFavorite             = false,
+        emprendimientoName     = emprendimiento?.nombre.orEmpty(),
+        emprendimientoImageUrl = emprendimiento?.imagenesUrl?.firstOrNull().orEmpty(),
+        emprendimientoLocation = emprendimiento?.direccion.orEmpty()
+    )
+}
+
+data class ServicioEmprendedorUi(
+    val id: Long,
+    val name: String,
+    val description: String,
+    val price: Double,
+    val capacity: Int,
+    val duration: String,
+    val images: List<ImagenDto> = emptyList(),
+    val estado: String?,
+    val isActive: Boolean,
+
+)
+
+
+
+fun ServicioDto.toServicioEmprendedorUi(): ServicioEmprendedorUi {
+    return ServicioEmprendedorUi(
+        id          = serviciosId,
+        name        = nombre,
+        description = descripcion,
+        price       = precio,
+        capacity    = capacidadMaxima,
+        duration    = duracionServicio.orEmpty(),
+        images      = images ?: emptyList(),
+        estado      = estado,
+        isActive    = estado == "activo" // Mapear correctamente el estado
+    )
+}

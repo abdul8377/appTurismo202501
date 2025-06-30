@@ -14,6 +14,8 @@ import pe.edu.upeu.appturismo202501.repository.FavoritoRepository
 import pe.edu.upeu.appturismo202501.repository.FavoritoRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.LoginUserRepository
 import pe.edu.upeu.appturismo202501.repository.LoginUserRespositoryImp
+import pe.edu.upeu.appturismo202501.repository.PaqueteRepository
+import pe.edu.upeu.appturismo202501.repository.PaqueteRepositoryImpl
 import pe.edu.upeu.appturismo202501.repository.ProductoRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.ProductoRespository
 import pe.edu.upeu.appturismo202501.repository.RegisterRepository
@@ -99,5 +101,10 @@ abstract class RepositoryModule {
         favoritoRepositoryImpl: FavoritoRepositoryImp
     ): FavoritoRepository
 
+    @Binds
+    @Singleton
+    abstract fun binfPaqueteRepository(
+        paqueteRepositoryImpl: PaqueteRepositoryImpl
+    ): PaqueteRepository
 
 }

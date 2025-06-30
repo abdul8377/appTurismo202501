@@ -27,6 +27,8 @@ sealed class Destinations(
 
     object Negocios : Destinations("negocios", "Negocios", Icons.Filled.Person)
     object Ajustes : Destinations("ajustes", "Ajustes", Icons.Filled.Settings)
+    object ZonasTuristicasAdministrador : Destinations("ZonasTuristicasAdministrador", "ZonasTuristicasAdministrador", Icons.Filled.Place)
+
 
     object Notifications : Destinations("notifications", "Notificaciones", Icons.Filled.Notifications)
 
@@ -54,6 +56,11 @@ sealed class Destinations(
     object GuiasTab : Destinations("explorar/guias", "Guias", Icons.Filled.Cable)
     object Alojamientos : Destinations(
         "explorar/alojamiento/alojamientoDetalle/{id}",  // con {id}
+        "AlojamientosDetalle",
+        Icons.Filled.Hotel
+    )
+    object Servicios : Destinations(
+        "explorar/Servicio/ServicioDetalle/{id}",  // con {id}
         "AlojamientosDetalle",
         Icons.Filled.Hotel
     )

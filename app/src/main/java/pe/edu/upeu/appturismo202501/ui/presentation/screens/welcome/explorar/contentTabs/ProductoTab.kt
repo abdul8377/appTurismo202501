@@ -45,13 +45,12 @@ fun ProductosContent(
     prodVm: ProductoViewModel = hiltViewModel(),
     catVm: CategoryViewModel = hiltViewModel()
 ) {
-    // 1) Estados desde el ViewModel
+
     val productos  by prodVm.productosUi.collectAsState(initial = emptyList())
     val categorias by catVm.categoriesUi.collectAsState(initial = emptyList())
     val favoritosIds by prodVm.favoritosIds.collectAsState()
     val isLoggedIn   by prodVm.isLoggedIn.collectAsState()
 
-    // 2) Dialog para invitar a login
     val showLoginDialog = remember { mutableStateOf(false) }
     val context        = LocalContext.current
     val scope          = rememberCoroutineScope()
@@ -62,7 +61,7 @@ fun ProductosContent(
     var filtroRating by remember { mutableStateOf<Int?>(null) }
 
     Column {
-        // Panel de filtros
+
         ProductsFilterPanel(
             categories         = categorias,
             selectedCategoryId = filtroCatId,

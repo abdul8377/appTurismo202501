@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -24,6 +25,7 @@ import androidx.navigation.navArgument
 import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.DrawerNavItem
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.SidebarDrawer
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.administrador.zonasTuriticas.ZonasTuristicasList
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.TipoDeNegocioScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.VerTipoDeNegocioScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
@@ -41,7 +43,8 @@ fun AdministradorScreen(
         DrawerNavItem("Inicio",   Icons.Default.Home,     Destinations.Administrador.route),
         DrawerNavItem("Usuarios", Icons.Default.Person,   Destinations.User.route),
         DrawerNavItem("Negocios", Icons.Default.Person,   Destinations.Negocios.route),
-        DrawerNavItem("Ajustes",  Icons.Default.Settings, Destinations.Ajustes.route)
+        DrawerNavItem("Ajustes",  Icons.Default.Settings, Destinations.Ajustes.route),
+        DrawerNavItem("Zonas Turisticas", Icons.Default.Place, Destinations.ZonasTuristicasAdministrador.route),
     )
 
     SidebarDrawer(
@@ -82,6 +85,9 @@ fun AdministradorScreen(
             ) { backStack ->
                 val id = backStack.arguments?.getLong("id") ?: 0L
                 VerTipoDeNegocioScreen(id)
+            }
+            composable(Destinations.ZonasTuristicasAdministrador.route){
+                ZonasTuristicasList()
             }
         }
     }

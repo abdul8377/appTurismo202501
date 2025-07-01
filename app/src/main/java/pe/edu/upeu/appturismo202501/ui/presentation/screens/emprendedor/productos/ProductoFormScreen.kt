@@ -69,7 +69,7 @@ import pe.edu.upeu.appturismo202501.modelo.CategoryResp
 import pe.edu.upeu.appturismo202501.modelo.CategoryUi
 import pe.edu.upeu.appturismo202501.modelo.ProductDto
 import pe.edu.upeu.appturismo202501.modelo.ProductUi
-import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.ProductoUi
+
 import androidx.compose.foundation.lazy.grid.items
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

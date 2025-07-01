@@ -17,6 +17,7 @@ import pe.edu.upeu.appturismo202501.ui.presentation.alertas.AlertDialogComponent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import pe.edu.upeu.appturismo202501.modelo.ProductoUi
 
 @Composable
 fun FavoriteProductCard(

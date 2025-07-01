@@ -7,7 +7,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import pe.edu.upeu.appturismo202501.modelo.*
 import pe.edu.upeu.appturismo202501.repository.*
-import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.ProductoUi
+
 import pe.edu.upeu.appturismo202501.utils.SessionManager
 import javax.inject.Inject
 

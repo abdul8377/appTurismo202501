@@ -21,8 +21,8 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import pe.edu.upeu.appturismo202501.ui.navigation.NavigationHost
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.paquetes.EditTourPackageScreen
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.detalleServicios.ServiceDetailScreen
+
+
 import pe.edu.upeu.appturismo202501.ui.theme.AppTurismo202501Theme
 import pe.edu.upeu.appturismo202501.ui.theme.DarkGreenColors
 import pe.edu.upeu.appturismo202501.ui.theme.DarkPurpleColors

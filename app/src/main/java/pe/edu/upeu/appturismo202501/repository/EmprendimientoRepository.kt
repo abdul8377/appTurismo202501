@@ -1,11 +1,10 @@
 package pe.edu.upeu.appturismo202501.repository
 
-import pe.edu.upeu.appturismo202501.data.remote.RestEmprendimiento
 import pe.edu.upeu.appturismo202501.data.remote.EmprendimientoRequest
 import pe.edu.upeu.appturismo202501.data.remote.GenericResponse
-import pe.edu.upeu.appturismo202501.data.remote.SolicitudEmprendimientoRequest
 import pe.edu.upeu.appturismo202501.data.remote.ResponderSolicitudRequest
-import pe.edu.upeu.appturismo202501.modelo.Emprendimiento
+import pe.edu.upeu.appturismo202501.data.remote.RestEmprendimiento
+import pe.edu.upeu.appturismo202501.data.remote.SolicitudEmprendimientoRequest
 import pe.edu.upeu.appturismo202501.modelo.EmprendimientoResponse
 import pe.edu.upeu.appturismo202501.modelo.EstadoSolicitudResponse
 import pe.edu.upeu.appturismo202501.modelo.SolicitudEmprendimiento
@@ -20,7 +19,7 @@ interface EmprendimientoRepository {
     suspend fun enviarSolicitud(token: String, request: SolicitudEmprendimientoRequest): Response<GenericResponse>
     suspend fun listarSolicitudesPendientes(token: String, emprendimientoId: Long): Response<List<SolicitudEmprendimiento>>
     suspend fun responderSolicitud(token: String, solicitudId: Long, request: ResponderSolicitudRequest): Response<GenericResponse>
-    suspend fun getEstadoSolicitud(token: String): Response<EstadoSolicitudResponse>   // <-- Aquí
+    suspend fun getEstadoSolicitud(token: String): Response<EstadoSolicitudResponse>
     suspend fun solicitudesUsuario(token: String): Response<List<SolicitudEmprendimiento>>
 }
 
@@ -64,4 +63,3 @@ class EmprendimientoRepositoryImpl @Inject constructor(
         return restEmprendimiento.estadoSolicitudEmprendedor(token)
     }
 }
-

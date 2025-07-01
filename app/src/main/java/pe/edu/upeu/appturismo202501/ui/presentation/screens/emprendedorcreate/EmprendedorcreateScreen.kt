@@ -18,10 +18,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 
 @Composable
-fun EmprendedorCreateScreen(
+fun EmprendimientoCreateScreen(
     navController: NavHostController,
     viewModel: EmprendedorCreateViewModel = hiltViewModel()
-){
+) {
     val nombre by viewModel.nombre.collectAsState()
     val descripcion by viewModel.descripcion.collectAsState()
     val tipoNegocioId by viewModel.tipoNegocioId.collectAsState()
@@ -30,6 +30,7 @@ fun EmprendedorCreateScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val message by viewModel.message.collectAsState()
     val creationSuccess by viewModel.creationSuccess.collectAsState()
+    val tiposDeNegocio by viewModel.tiposDeNegocio.collectAsState()
 
     // Navegar cuando la creación sea exitosa
     LaunchedEffect(creationSuccess) {
@@ -40,12 +41,16 @@ fun EmprendedorCreateScreen(
         }
     }
 
+    // Cargar los tipos de negocio cuando la pantalla se cargue
+    LaunchedEffect(Unit) {
+        viewModel.cargarTiposDeNegocio()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Fila con el título y botón "X"
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -71,7 +76,9 @@ fun EmprendedorCreateScreen(
             direccion = direccion,
             onDireccionChange = viewModel::onDireccionChange,
             telefono = telefono,
-            onTelefonoChange = viewModel::onTelefonoChange
+            onTelefonoChange = viewModel::onTelefonoChange,
+            tiposDeNegocio = tiposDeNegocio,
+            isLoading = isLoading
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -97,4 +104,3 @@ fun EmprendedorCreateScreen(
         }
     }
 }
-

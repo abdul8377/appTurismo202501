@@ -1,12 +1,12 @@
 package pe.edu.upeu.appturismo202501.data.remote
 
-import pe.edu.upeu.appturismo202501.modelo.Emprendimiento
 import pe.edu.upeu.appturismo202501.modelo.EmprendimientoResponse
 import pe.edu.upeu.appturismo202501.modelo.EstadoSolicitudResponse
 import pe.edu.upeu.appturismo202501.modelo.SolicitudEmprendimiento
 import retrofit2.Response
 import retrofit2.http.*
 
+// Interfaz Retrofit para interactuar con la API
 interface RestEmprendimiento {
 
     // --- Rutas públicas ---
@@ -70,10 +70,7 @@ interface RestEmprendimiento {
     suspend fun estadoSolicitudEmprendedor(
         @Header("Authorization") token: String
     ): Response<EstadoSolicitudResponse>
-
 }
-
-
 // Request para crear emprendimiento (puedes ajustar campos según backend)
 data class EmprendimientoRequest(
     val nombre: String,

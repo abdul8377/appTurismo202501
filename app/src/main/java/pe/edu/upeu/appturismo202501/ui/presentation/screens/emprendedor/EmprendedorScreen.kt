@@ -30,6 +30,7 @@ import androidx.navigation.navArgument
 import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.DrawerNavItem
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.SidebarDrawer
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.Disponibilidad.ServiceAvailabilityApp
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.paquetes.CreateTourPackageScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.paquetes.EditTourPackageScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.paquetes.TourPackageListScreen
@@ -201,13 +202,11 @@ fun EmprendedorScreen(
             }
 
             composable("disponibilidad") {
-                Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Pantalla disponibilidad")
-                }
+                // Importa tu Composable raíz de Disponibilidad:
+                ServiceAvailabilityApp()
             }
+
+
 
         }
     }

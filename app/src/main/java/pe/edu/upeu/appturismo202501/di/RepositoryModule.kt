@@ -12,10 +12,10 @@ import pe.edu.upeu.appturismo202501.repository.CategoryRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.CategoryRespository
 import pe.edu.upeu.appturismo202501.repository.ChatRepository
 import pe.edu.upeu.appturismo202501.repository.ChatRepositoryImp
+import pe.edu.upeu.appturismo202501.repository.DisponibilidadRepository
+import pe.edu.upeu.appturismo202501.repository.DisponibilidadRepositoryImpl
 import pe.edu.upeu.appturismo202501.repository.EmprendimientoRepository
 import pe.edu.upeu.appturismo202501.repository.EmprendimientoRepositoryImpl
-import pe.edu.upeu.appturismo202501.repository.FavoritoRepository
-import pe.edu.upeu.appturismo202501.repository.FavoritoRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.LoginUserRepository
 import pe.edu.upeu.appturismo202501.repository.LoginUserRespositoryImp
 import pe.edu.upeu.appturismo202501.repository.MetodoPagoRepository
@@ -146,4 +146,10 @@ abstract class RepositoryModule {
     abstract fun bindPaymentIntentRepository(
         PaymentIntentRepositoryImpl: PaymentIntentRepositoryImpl
     ): PaymentIntentRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDisponibilidadRepository(
+        DisponibilidadRepositoryImpl: DisponibilidadRepositoryImpl
+    ): DisponibilidadRepository
 }

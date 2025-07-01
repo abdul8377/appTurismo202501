@@ -156,4 +156,10 @@ dependencies {
     // Pager (para el carrusel)
     implementation ("com.google.accompanist:accompanist-pager:0.28.0")
     implementation ("com.google.accompanist:accompanist-pager-indicators:0.28.0")
+
+
+    implementation ("io.github.boguszpawlowski.composecalendar:composecalendar:1.0.0")
+
+// Selector de fecha/hora
+    implementation ("com.maxkeppeler.sheets-compose-dialogs:core:1.0.3")
 }

@@ -28,6 +28,13 @@ sealed class Destinations(
     object Negocios : Destinations("negocios", "Negocios", Icons.Filled.Person)
     object Ajustes : Destinations("ajustes", "Ajustes", Icons.Filled.Settings)
     object ZonasTuristicasAdministrador : Destinations("ZonasTuristicasAdministrador", "ZonasTuristicasAdministrador", Icons.Filled.Place)
+    object EmprendimientosAdministrador : Destinations("EmprendimientosAdministrador", "EmprendimientosAdministrador", Icons.Filled.Place)
+    object CatServiciosAdministrador : Destinations("CatServiciosAdministrador", "CatServiciosAdministrador", Icons.Filled.Place)
+    object BlogsAdministrador : Destinations("BlogsAdministrador", "BlogsAdministrador", Icons.Filled.Place)
+
+
+
+
 
 
     object Notifications : Destinations("notifications", "Notificaciones", Icons.Filled.Notifications)

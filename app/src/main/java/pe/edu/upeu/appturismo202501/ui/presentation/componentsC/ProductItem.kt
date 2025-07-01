@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import pe.edu.upeu.appturismo202501.R
-import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.ProductoUi
+import pe.edu.upeu.appturismo202501.modelo.ProductoUi
 
 @Composable
 fun ProductItem(

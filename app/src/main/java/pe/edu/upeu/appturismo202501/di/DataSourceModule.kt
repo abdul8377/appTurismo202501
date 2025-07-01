@@ -167,4 +167,9 @@ class DataSourceModule {
     @Singleton
     fun provideRestPaymentIntent(retrofit: Retrofit): RestPaymentIntent =
         retrofit.create(RestPaymentIntent::class.java)
+
+    @Provides
+    @Singleton
+    fun provideRestDisponibilidad(retrofit: Retrofit): RestDisponibilidad =
+        retrofit.create(RestDisponibilidad::class.java)
 }

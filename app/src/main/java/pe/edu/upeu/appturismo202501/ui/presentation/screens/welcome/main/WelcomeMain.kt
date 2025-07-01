@@ -1,5 +1,6 @@
 package pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.main
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -21,7 +22,7 @@ import androidx.navigation.compose.*
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.NavItem
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.TurismoNavigationBar
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedorcreate.EmprendedorCreateScreen
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.carrito.CarritoScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.carrito.ShoppingCartScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.ExplorarScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.favorito.FavoritosScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.perfil.PerfilScreen
@@ -76,13 +77,13 @@ fun WelcomeMain(
                 }
             )
         }
-    ) { innerPadding ->
-
-        // Usamos Modifier.fillMaxSize() en lugar de Modifier.padding(innerPadding) para evitar problemas con el padding
+    ) { innerPadding: PaddingValues ->
         NavHost(
-            navController = navControllerLocal,
+            navController  = navControllerLocal,
             startDestination = initialRoute,
-            modifier = Modifier.fillMaxSize()
+            modifier       = Modifier
+                .padding(innerPadding)      // <— aquí lo aplicas
+                .fillMaxSize()
         ) {
             composable(BottomDestination.EXPLORAR.route) {
                 ExplorarScreen(navControllerGlobal)
@@ -91,7 +92,7 @@ fun WelcomeMain(
                 FavoritosScreen(navController = navControllerGlobal)
             }
             composable(BottomDestination.CARRITO.route) {
-                CarritoScreen()
+                ShoppingCartScreen()
             }
             composable(BottomDestination.RESERVAS.route) {
                 // ReservasScreen()

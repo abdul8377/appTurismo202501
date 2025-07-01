@@ -8,8 +8,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import pe.edu.upeu.appturismo202501.data.local.storage.CarritoLocalStorage
 import pe.edu.upeu.appturismo202501.modelo.CarritoDto
+import pe.edu.upeu.appturismo202501.modelo.CarritoItemUi
 import pe.edu.upeu.appturismo202501.modelo.CarritoResp
 import pe.edu.upeu.appturismo202501.modelo.CarritoRespUi
+import pe.edu.upeu.appturismo202501.modelo.toCarritoItemUi
+import pe.edu.upeu.appturismo202501.modelo.toProductoUiCart
 import pe.edu.upeu.appturismo202501.repository.CarritoRepository
 import pe.edu.upeu.appturismo202501.repository.ProductoRespository
 import pe.edu.upeu.appturismo202501.repository.ServicioRepository
@@ -24,21 +27,39 @@ class CarritoViewModel @Inject constructor(
     private val servicioRepository: ServicioRepository
 ) : ViewModel() {
 
-    private val _carritoItemsUi = MutableStateFlow<List<CarritoRespUi>>(emptyList())
-    val carritoItemsUi: StateFlow<List<CarritoRespUi>> = _carritoItemsUi
+    // Exponemos la UI pura
+    private val _itemsUi = MutableStateFlow<List<CarritoItemUi>>(emptyList())
+    val itemsUi: StateFlow<List<CarritoItemUi>> = _itemsUi
 
-    init {
-        cargarCarrito()
-    }
+    // Estado de carga
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
-    fun cargarCarrito() {
-        viewModelScope.launch {
-            if (SessionManager.isLoggedIn()) {
-                sincronizarCarritoLocal()
-                obtenerCarritoRemoto()
+    // Mensaje de estado
+    private val _message = MutableStateFlow<String?>(null)
+    val message: StateFlow<String?> = _message
+
+    init { cargarCarrito() }
+
+
+    fun cargarCarrito() = viewModelScope.launch {
+        _isLoading.value = true
+        try {
+            val rawItems = if (SessionManager.isLoggedIn()) {
+                carritoRepository.obtenerCarrito()
+                    .body()
+                    .orEmpty()
+                    .also { sincronizarCarritoLocal() }
             } else {
-                obtenerCarritoLocal()
+                carritoLocalStorage.obtenerCarritoLocal()
             }
+
+            // Sólo aquí: carga y mapea TODOS los items (producto + servicio)
+            cargarDetallesItems(rawItems)
+        } catch (e: Exception) {
+            _message.value = "Error al cargar el carrito: ${e.message}"
+        } finally {
+            _isLoading.value = false
         }
     }
 
@@ -55,64 +76,64 @@ class CarritoViewModel @Inject constructor(
     }
 
     private suspend fun cargarDetallesItems(items: List<CarritoResp>) {
-        val itemsUi = items.map { item ->
+        val itemsUi = items.mapNotNull { resp ->
             try {
                 when {
-                    item.productosId != null -> {
-                        val productoResponse = productoRepository.productoDetalle(item.productosId)
-                        val producto = productoResponse.body()?.producto
-                        CarritoRespUi(carritoResp = item, producto = producto)
+                    resp.productosId != null -> {
+                        val pr = productoRepository.productoDetalle(resp.productosId)
+                            .body()?.producto ?: return@mapNotNull null
+                        resp.toCarritoItemUi(pr.toProductoUiCart())
                     }
-                    item.serviciosId != null -> {
-                        val servicioResponse = servicioRepository.servicioDetalle(item.serviciosId)
-                        val servicio = servicioResponse.body()
-                        CarritoRespUi(carritoResp = item, servicio = servicio)
-                    }
-                    else -> CarritoRespUi(carritoResp = item)
+                    else -> null
                 }
             } catch (e: Exception) {
-                CarritoRespUi(carritoResp = item)
+                null
             }
         }
-        _carritoItemsUi.value = itemsUi
+        _itemsUi.value = itemsUi
     }
 
     fun agregarAlCarrito(carritoDto: CarritoDto, stockDisponible: Int? = null) {
         viewModelScope.launch {
-            val carritoActual = if (SessionManager.isLoggedIn()) {
-                carritoRepository.obtenerCarrito().body().orEmpty()
-            } else {
-                carritoLocalStorage.obtenerCarritoLocal()
-            }
-
-            val productoExistente = carritoActual.find {
-                it.productosId == carritoDto.productosId && it.serviciosId == carritoDto.serviciosId
-            }
-
-            if (productoExistente != null) {
-                val nuevaCantidad = (productoExistente.cantidad + carritoDto.cantidad).let { cantidad ->
-                    if (stockDisponible != null) minOf(cantidad, stockDisponible) else cantidad
-                }
-
-                val dtoActualizado = carritoDto.copy(
-                    cantidad = nuevaCantidad,
-                    subtotal = carritoDto.precioUnitario * nuevaCantidad
-                )
-
-                if (SessionManager.isLoggedIn()) {
-                    carritoRepository.actualizarItemEnCarrito(productoExistente.carritoId, dtoActualizado)
+            try {
+                val carritoActual = if (SessionManager.isLoggedIn()) {
+                    carritoRepository.obtenerCarrito().body().orEmpty()
                 } else {
-                    carritoLocalStorage.eliminarItemCarritoLocal(productoExistente.carritoId)
-                    carritoLocalStorage.guardarItemCarritoLocal(dtoActualizado, stockDisponible)
+                    carritoLocalStorage.obtenerCarritoLocal()
                 }
-            } else {
-                if (SessionManager.isLoggedIn()) {
-                    carritoRepository.agregarItemAlCarrito(carritoDto)
+
+                val productoExistente = carritoActual.find {
+                    it.productosId == carritoDto.productosId && it.serviciosId == carritoDto.serviciosId
+                }
+
+                if (productoExistente != null) {
+                    val nuevaCantidad = (productoExistente.cantidad + carritoDto.cantidad).let { cantidad ->
+                        if (stockDisponible != null) minOf(cantidad, stockDisponible) else cantidad
+                    }
+
+                    val dtoActualizado = carritoDto.copy(
+                        cantidad = nuevaCantidad,
+                        subtotal = carritoDto.precioUnitario * nuevaCantidad
+                    )
+
+                    if (SessionManager.isLoggedIn()) {
+                        carritoRepository.actualizarItemEnCarrito(productoExistente.carritoId, dtoActualizado)
+                    } else {
+                        carritoLocalStorage.eliminarItemCarritoLocal(productoExistente.carritoId)
+                        carritoLocalStorage.guardarItemCarritoLocal(dtoActualizado, stockDisponible)
+                    }
                 } else {
-                    carritoLocalStorage.guardarItemCarritoLocal(carritoDto, stockDisponible)
+                    if (SessionManager.isLoggedIn()) {
+                        carritoRepository.agregarItemAlCarrito(carritoDto)
+                    } else {
+                        carritoLocalStorage.guardarItemCarritoLocal(carritoDto, stockDisponible)
+                    }
                 }
+                cargarCarrito()
+            } catch (e: Exception) {
+                // En caso de error, intentar recargar el carrito
+                cargarCarrito()
             }
-            cargarCarrito()
         }
     }
 
@@ -147,28 +168,56 @@ class CarritoViewModel @Inject constructor(
         }
     }
 
-    fun actualizarCantidad(carritoItem: CarritoResp, nuevaCantidad: Int, stockDisponible: Int) {
-        viewModelScope.launch {
-            if (nuevaCantidad < 1 || nuevaCantidad > stockDisponible) return@launch
 
-            val carritoDto = CarritoDto(
-                userId = carritoItem.userId,
-                productosId = carritoItem.productosId,
-                serviciosId = carritoItem.serviciosId,
-                cantidad = nuevaCantidad,
-                precioUnitario = carritoItem.precioUnitario,
-                subtotal = carritoItem.precioUnitario * nuevaCantidad,
-                estado = carritoItem.estado
+    fun actualizarCantidad(
+        itemUi: CarritoItemUi,
+        nuevaCantidad: Int,
+        stockDisponible: Int
+    ) {
+        viewModelScope.launch {
+            // 1) Construye el DTO usando los campos que tiene CarritoItemUi
+            val dto = CarritoDto(
+                userId          = SessionManager.getUserId().toLong(),
+                productosId     = itemUi.productosId,    // tendrás que añadir estos props a CarritoItemUi
+                cantidad        = nuevaCantidad,
+                precioUnitario  = itemUi.unitPrice,
+                subtotal        = itemUi.unitPrice * nuevaCantidad,
+                totalCarrito    = null,
+                estado          = itemUi.estado
             )
 
             if (SessionManager.isLoggedIn()) {
-                carritoRepository.actualizarItemEnCarrito(carritoItem.carritoId, carritoDto)
+                carritoRepository.actualizarItemEnCarrito(itemUi.carritoId, dto)
             } else {
-                carritoLocalStorage.eliminarItemCarritoLocal(carritoItem.carritoId)
-                carritoLocalStorage.guardarItemCarritoLocal(carritoDto, stockDisponible)
+                carritoLocalStorage.eliminarItemCarritoLocal(itemUi.carritoId)
+                carritoLocalStorage.guardarItemCarritoLocal(dto, stockDisponible)
             }
 
+            // 2) Recarga la lista
             cargarCarrito()
         }
+    }
+
+    fun clearCart() = viewModelScope.launch {
+        _isLoading.value = true
+        try {
+            if (SessionManager.isLoggedIn()) {
+                itemsUi.value.map { it.carritoId }
+                    .forEach { carritoRepository.eliminarItemDelCarrito(it) }
+            } else {
+                carritoLocalStorage.limpiarCarritoLocal()
+            }
+            // Limpiar inmediatamente el estado UI
+            _itemsUi.value = emptyList()
+            _message.value = "Carrito vaciado correctamente"
+        } catch (e: Exception) {
+            _message.value = "Error al vaciar el carrito: ${e.message}"
+        } finally {
+            _isLoading.value = false
+        }
+    }
+
+    fun clearMessage() {
+        _message.value = null
     }
 }

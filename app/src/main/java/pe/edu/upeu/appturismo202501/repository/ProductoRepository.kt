@@ -56,8 +56,6 @@ interface ProductoRespository {
 @Singleton
 class ProductoRepositoryImp @Inject constructor(
     private val restProductos: RestProductos,
-    private val rest: RestProductos,
-    private val restCat: RestCategoryProducts,
 ) : ProductoRespository {
 
 
@@ -68,10 +66,10 @@ class ProductoRepositoryImp @Inject constructor(
         restProductos.getProductoDetalle(productoId)
 
     override suspend fun productoServicesMios(): Response<List<ProductResp>> =
-        rest.listarMios()
+        restProductos.listarMios()
 
     override suspend fun getProductoById(id: Long): Response<ProductResp> =
-        rest.getById(id)
+        restProductos.getById(id)
 
     override suspend fun crearProducto(
         categoriasProductosId: RequestBody,
@@ -82,7 +80,7 @@ class ProductoRepositoryImp @Inject constructor(
         estado: RequestBody,
         imagenes: List<MultipartBody.Part>
     ): Response<CrearProductoResponse> =
-        rest.crear(
+        restProductos.crear(
             categoriasProductosId    = categoriasProductosId,
             nombre                   = nombre,
             descripcion              = descripcion,
@@ -102,7 +100,7 @@ class ProductoRepositoryImp @Inject constructor(
         estado: RequestBody,
         imagenes: List<MultipartBody.Part>
     ): Response<CrearProductoResponse> =
-        rest.actualizar(
+        restProductos.actualizar(
             id                  = id,
             "PUT".toRequestBody("text/plain".toMediaType()),
             categoriasProductosId = categoriasProductosId,
@@ -115,5 +113,5 @@ class ProductoRepositoryImp @Inject constructor(
         )
 
     override suspend fun eliminarProducto(id: Long): Response<Void> =
-        rest.eliminar(id)
+        restProductos.eliminar(id)
 }

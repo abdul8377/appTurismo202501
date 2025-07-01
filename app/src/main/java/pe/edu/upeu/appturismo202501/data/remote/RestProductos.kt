@@ -25,9 +25,6 @@ interface RestProductos {
     suspend fun getProductoDetalle(@Path("id") productoId: Long): Response<ProductoDetalleResponse>
 
 
-    @GET("api/productos/{id}")
-    suspend fun getProduct(@Path("id") id: Long): ProductResp
-
     @GET("emprendedor/productos")
     suspend fun listarMios(): Response<List<ProductResp>>
 

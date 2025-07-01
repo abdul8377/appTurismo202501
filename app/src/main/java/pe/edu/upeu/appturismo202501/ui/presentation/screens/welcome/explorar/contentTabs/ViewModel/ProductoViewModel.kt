@@ -7,8 +7,9 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import pe.edu.upeu.appturismo202501.modelo.ProductResp
 import pe.edu.upeu.appturismo202501.modelo.ProductoDetalleResponse
+import pe.edu.upeu.appturismo202501.modelo.ProductoUi
 import pe.edu.upeu.appturismo202501.repository.ProductoRespository
-import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.ProductoUi
+
 import javax.inject.Inject
 
 @HiltViewModel

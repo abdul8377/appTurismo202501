@@ -51,18 +51,9 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
 import pe.edu.upeu.appturismo202501.R
+import pe.edu.upeu.appturismo202501.modelo.ProductoUi
 
-data class ProductoUi(
-    val id: Long,
-    val categoryId: Long,     // <-- nuevo campo
-    val imageUrl: String,
-    val title: String,
-    val subtitle: String,
-    val price: Double,        // para filtrar numéricamente
-    val priceFormatted: String,
-    val rating: Double,
-    val isFavorite: Boolean = false // Si quieres manejar el corazón
-)
+
 @Composable
 fun ProductItem(
     producto: ProductoUi,

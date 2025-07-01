@@ -116,6 +116,59 @@ data class CrearProductoResponse(
 )
 
 
+data class ProductoUi(
+    val id: Long,
+    val categoryId: Long,     // <-- nuevo campo
+    val imageUrl: String,
+    val title: String,
+    val subtitle: String,
+    val price: Double,        // para filtrar numéricamente
+    val priceFormatted: String,
+    val rating: Double,
+    val isFavorite: Boolean = false // Si quieres manejar el corazón
+)
+
+data class ProductoUiCart(
+    val id: Long,
+    val imageUrl: String,
+    val title: String,
+    val price: Double,
+)
+
+data class CarritoItemUi(
+    val carritoId: Long,
+    val userId: Long,
+    val productosId: Long?,
+    val imageUrl: String,
+    val title: String,
+    val unitPrice: Double,
+    val quantity: Int,
+    val subtotal: Double,
+    val stockDisponible: Int,
+    val estado: String
+)
+
+fun ProductResp.toProductoUiCart(): ProductoUiCart =
+    ProductoUiCart(
+        id       = this.id,
+        imageUrl = this.imagenUrl.orEmpty(),
+        title    = this.nombre,
+        price    = this.precio
+    )
+
+fun CarritoResp.toCarritoItemUi(prodUi: ProductoUiCart): CarritoItemUi =
+    CarritoItemUi(
+        carritoId       = carritoId,
+        userId          = userId,
+        productosId     = productosId,
+        imageUrl        = prodUi.imageUrl,
+        title           = prodUi.title,
+        unitPrice       = precioUnitario,
+        quantity        = cantidad,
+        subtotal        = subtotal,
+        stockDisponible = stockDisponible ?: 0,
+        estado          = estado
+    )
 data class CategoryUi(val id: Long, val name: String, val icon: ImageVector? = Icons.Outlined.Category)
 
 data class ProductUi(

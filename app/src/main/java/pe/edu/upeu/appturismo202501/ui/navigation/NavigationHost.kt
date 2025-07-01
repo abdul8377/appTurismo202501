@@ -17,7 +17,7 @@ import pe.edu.upeu.appturismo202501.ui.presentation.screens.forgotpassword.Forgo
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.SearchScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.administrador.AdministradorScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.EmprendedorScreen
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedorcreate.EmprendedorCreateScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedorcreate.EmprendimientoCreateScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.register.RegisterScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.VerTipoDeNegocioScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
@@ -156,7 +156,7 @@ fun NavigationHost(
         }
 
         composable(Destinations.Create_Emprendimiento.route) {
-            EmprendedorCreateScreen(navController = navController)
+            EmprendimientoCreateScreen(navController = navController)
         }
 
 

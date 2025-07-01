@@ -20,7 +20,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.NavItem
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.TurismoNavigationBar
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedorcreate.EmprendedorCreateScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedorcreate.EmprendimientoCreateScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.carrito.CarritoScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.ExplorarScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.favorito.FavoritosScreen
@@ -103,7 +103,7 @@ fun WelcomeMain(
                 )
             }
             composable("emprendimiento_create") {
-                EmprendedorCreateScreen(navController = navControllerLocal)
+                EmprendimientoCreateScreen(navController = navControllerLocal)
             }
         }
 

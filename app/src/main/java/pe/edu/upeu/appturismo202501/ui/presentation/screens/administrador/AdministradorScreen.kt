@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.HomeRepairService
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Settings
@@ -25,6 +26,10 @@ import androidx.navigation.navArgument
 import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.DrawerNavItem
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.SidebarDrawer
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.administrador.CategoriasServicios.CategoriasScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.administrador.blogs.BlogsScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.administrador.emprendimientos.ListaEmprendimientosScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.administrador.zonasTuriticas.TourismZonesScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.administrador.zonasTuriticas.ZonasTuristicasList
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.TipoDeNegocioScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.VerTipoDeNegocioScreen
@@ -45,7 +50,11 @@ fun AdministradorScreen(
         DrawerNavItem("Negocios", Icons.Default.Person,   Destinations.Negocios.route),
         DrawerNavItem("Ajustes",  Icons.Default.Settings, Destinations.Ajustes.route),
         DrawerNavItem("Zonas Turisticas", Icons.Default.Place, Destinations.ZonasTuristicasAdministrador.route),
-    )
+        DrawerNavItem("Emoprendimeintos", Icons.Default.Person, Destinations.EmprendimientosAdministrador.route),
+        DrawerNavItem("Categorias Servicios", Icons.Default.HomeRepairService, Destinations.CatServiciosAdministrador.route),
+        DrawerNavItem("Blogs", Icons.Default.HomeRepairService, Destinations.BlogsAdministrador.route),
+
+        )
 
     SidebarDrawer(
         items = items,
@@ -86,9 +95,25 @@ fun AdministradorScreen(
                 val id = backStack.arguments?.getLong("id") ?: 0L
                 VerTipoDeNegocioScreen(id)
             }
-            composable(Destinations.ZonasTuristicasAdministrador.route){
-                ZonasTuristicasList()
+
+            composable(Destinations.ZonasTuristicasAdministrador.route) {
+                // Importa tu Composable:
+                TourismZonesScreen()
             }
+
+            composable(Destinations.EmprendimientosAdministrador.route) {
+                // Importa tu Composable:
+                ListaEmprendimientosScreen()
+            }
+
+            composable(Destinations.CatServiciosAdministrador.route) {
+                // Importa tu Composable:
+                CategoriasScreen()
+            }
+            composable(Destinations.BlogsAdministrador.route) {
+                BlogsScreen()
+            }
+
         }
     }
 }

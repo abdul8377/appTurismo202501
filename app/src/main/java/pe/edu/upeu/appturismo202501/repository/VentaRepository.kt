@@ -10,11 +10,11 @@ import javax.inject.Singleton
  * Define las operaciones que podemos hacer sobre las ventas.
  */
 interface VentaRepository {
-    /** Realiza el checkout, crea la venta y los movimientos contables */
-    suspend fun realizarCheckout(ventaRequest: VentaDto): Response<VentaDto>
+    /** Realiza el checkout inicial creando una venta pendiente */
+    suspend fun realizarCheckout(checkoutRequest: CheckoutRequest): Response<VentaDto>
 
-    /** Procesa el pago de una venta */
-    suspend fun procesarPago(ventaId: Long, pagoRequest: PagoDto): Response<PagoDto>
+    /** Procesa el pago usando un PaymentIntent de Stripe */
+    suspend fun procesarPago(ventaId: Long, pagoRequest: PagoRequest): Response<VentaDto>
 
     /** Obtiene el historial de compras del usuario */
     suspend fun listarCompras(): Response<List<VentaDto>>
@@ -29,10 +29,10 @@ class VentaRepositoryImp @Inject constructor(
     private val restVenta: RestVenta
 ) : VentaRepository {
 
-    override suspend fun realizarCheckout(ventaRequest: VentaDto): Response<VentaDto> =
-        restVenta.realizarCheckout(ventaRequest)
+    override suspend fun realizarCheckout(checkoutRequest: CheckoutRequest): Response<VentaDto> =
+        restVenta.realizarCheckout(checkoutRequest)
 
-    override suspend fun procesarPago(ventaId: Long, pagoRequest: PagoDto): Response<PagoDto> =
+    override suspend fun procesarPago(ventaId: Long, pagoRequest: PagoRequest): Response<VentaDto> =
         restVenta.procesarPago(ventaId, pagoRequest)
 
     override suspend fun listarCompras(): Response<List<VentaDto>> =

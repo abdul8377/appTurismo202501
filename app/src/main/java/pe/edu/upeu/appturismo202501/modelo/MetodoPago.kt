@@ -3,14 +3,14 @@ package pe.edu.upeu.appturismo202501.modelo
 import com.google.gson.annotations.SerializedName
 
 data class MetodoPagoDto(
+    @SerializedName("metodo_pago_id")
+    val metodoPagoId: Long,
+
     @SerializedName("nombre")
     val nombre: String,
 
     @SerializedName("descripcion")
-    val descripcion: String? = null,
-
-    @SerializedName("activo")
-    val activo: Boolean = true
+    val descripcion: String?
 )
 
 data class MetodoPagoResp(

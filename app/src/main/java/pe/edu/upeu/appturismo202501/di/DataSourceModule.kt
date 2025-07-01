@@ -146,10 +146,15 @@ class DataSourceModule {
     @Singleton
     fun provideRestVenta(): RestVenta {
         return Retrofit.Builder()
-            .baseUrl("https://api.tuservidor.com/") // Reemplaza con la URL de tu servidor
+            .baseUrl("http://192.168.0.198:8000/") // Reemplaza con la URL de tu servidor
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(RestVenta::class.java)
     }
 
+
+    @Provides
+    @Singleton
+    fun provideRestPaymentIntent(retrofit: Retrofit): RestPaymentIntent =
+        retrofit.create(RestPaymentIntent::class.java)
 }

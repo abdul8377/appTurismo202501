@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -12,28 +13,33 @@ fun SubtotalCompra(
     subtotales: List<Double>,  // Lista de subtotales de los productos en el carrito
     onComprarClick: () -> Unit // Acción a ejecutar cuando se hace click en el botón "Comprar"
 ) {
-    val totalCompra = subtotales.sum()
+    // Sumar los subtotales para calcular el total
+    val total = subtotales.sum()
 
+    // Formatear el total a dos decimales
+    val totalFormatted = "%.2f".format(total)
+
+    // Mostrar el componente
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(16.dp)
     ) {
-        // Mostrar el total de la compra
+        // Subtotal
         Text(
-            text = "Total: S/ ${"%.2f".format(totalCompra)}",
-            style = MaterialTheme.typography.headlineLarge // Cambiado a headlineLarge
+            text = "$totalFormatted AED", // Mostrar el total formateado con moneda
+            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.align(Alignment.End)
         )
+        Spacer(modifier = Modifier.height(8.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Botón "Comprar"
+        // Botón de compra
         Button(
             onClick = onComprarClick,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text(text = "Comprar")
+            Text("Tramitar pedido", style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onPrimary))
         }
     }
 }

@@ -16,7 +16,7 @@ class VentaViewModel @Inject constructor(
 ) : ViewModel() {
 
     // Llamar al método de realizar el checkout
-    fun realizarCheckout(ventaRequest: VentaDto, onResult: (Response<VentaDto>) -> Unit) {
+    fun realizarCheckout(ventaRequest: CheckoutRequest, onResult: (Response<VentaDto>) -> Unit) {
         viewModelScope.launch {
             try {
                 val response = ventaRepository.realizarCheckout(ventaRequest)
@@ -28,19 +28,12 @@ class VentaViewModel @Inject constructor(
         }
     }
 
-    // Procesar pago con el token de Stripe
-    fun procesarPagoConToken(token: String, ventaId: Long, monto: BigDecimal, metodoPagoId: Long, userId: Long, referencia: String, onResult: (Response<PagoDto>) -> Unit) {
+    // Procesar pago con el PaymentIntent ID
+    fun procesarPagoConToken(paymentIntentId: String, ventaId: Long, onResult: (Response<VentaDto>) -> Unit) {
         viewModelScope.launch {
             try {
-                // Crear un objeto PagoDto con el token y otros detalles necesarios
-                val pagoRequest = PagoDto(
-                    pagoId = 0,  // Esto es solo un valor predeterminado, el ID del pago lo genera el backend
-                    metodoPagoId = metodoPagoId,
-                    userId = userId,
-                    monto = monto,
-                    referencia = referencia,
-                    estado = "pendiente",  // El estado podría ser "pendiente" mientras se espera la confirmación del pag
-                )
+                // Crear un objeto PagoRequest con el paymentIntentId y otros detalles necesarios
+                val pagoRequest = PagoRequest(paymentIntentId = paymentIntentId)
 
                 // Llamar al repositorio para procesar el pago
                 val response = ventaRepository.procesarPago(ventaId, pagoRequest)
@@ -50,7 +43,6 @@ class VentaViewModel @Inject constructor(
                 onResult(Response.error(500, "Error en el pago".toResponseBody()))
             }
         }
-
     }
 
     // Obtener el historial de compras del usuario
@@ -65,6 +57,4 @@ class VentaViewModel @Inject constructor(
             }
         }
     }
-
-
 }

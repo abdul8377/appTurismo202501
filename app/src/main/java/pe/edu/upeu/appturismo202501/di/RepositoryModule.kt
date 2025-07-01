@@ -20,6 +20,8 @@ import pe.edu.upeu.appturismo202501.repository.LoginUserRepository
 import pe.edu.upeu.appturismo202501.repository.LoginUserRespositoryImp
 import pe.edu.upeu.appturismo202501.repository.MetodoPagoRepository
 import pe.edu.upeu.appturismo202501.repository.MetodoPagoRepositoryImp
+import pe.edu.upeu.appturismo202501.repository.PaymentIntentRepository
+import pe.edu.upeu.appturismo202501.repository.PaymentIntentRepositoryImpl
 import pe.edu.upeu.appturismo202501.repository.ProductoRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.ProductoRespository
 import pe.edu.upeu.appturismo202501.repository.RegisterRepository
@@ -128,4 +130,11 @@ abstract class RepositoryModule {
     abstract fun bindVentaRepository(
         ventaRepositoryImp: VentaRepositoryImp
     ): VentaRepository
+
+
+    @Binds
+    @Singleton
+    abstract fun bindPaymentIntentRepository(
+        PaymentIntentRepositoryImpl: PaymentIntentRepositoryImpl
+    ): PaymentIntentRepository
 }

@@ -21,19 +21,19 @@ data class VentaDto(
     val estado: String,
 
     @SerializedName("metodo_pago_id")
-    val metodoPagoId: Long?,
+    val metodoPagoId: Long?, // El id del método de pago, en este caso es fijo (1)
 
     @SerializedName("total_pagado")
-    val totalPagado: BigDecimal?,
+    val totalPagado: BigDecimal?, // Pago realizado
 
     @SerializedName("fecha_pago")
-    val fechaPago: String?,
+    val fechaPago: String?, // Fecha del pago si se ha realizado
 
     @SerializedName("metodo_pago")
-    val metodoPago: MetodoPagoDto?,
+    val metodoPago: MetodoPagoDto?, // Información detallada del método de pago, si es necesario
 
     @SerializedName("detalles")
-    val detalles: List<DetalleVentaDto>
+    val detalles: List<DetalleVentaDto> // Detalles de los productos o servicios de la venta
 )
 
 // DTO para detalle de la venta
@@ -45,13 +45,13 @@ data class DetalleVentaDto(
     val ventaId: Long,
 
     @SerializedName("emprendimientos_id")
-    val emprendimientosId: Long?,
+    val emprendimientosId: Long?, // El id del emprendimiento al que pertenece el producto o servicio
 
     @SerializedName("productos_id")
-    val productosId: Long?,
+    val productosId: Long?, // El id del producto, si es un producto
 
     @SerializedName("servicios_id")
-    val serviciosId: Long?,
+    val serviciosId: Long?, // El id del servicio, si es un servicio
 
     @SerializedName("cantidad")
     val cantidad: Int,
@@ -60,13 +60,13 @@ data class DetalleVentaDto(
     val precioUnitario: BigDecimal,
 
     @SerializedName("subtotal")
-    val subtotal: BigDecimal,
+    val subtotal: BigDecimal, // Subtotal por producto/servicio
 
     @SerializedName("producto")
-    val producto: ProductoDto?,
+    val producto: ProductoDto?, // Información del producto
 
     @SerializedName("servicio")
-    val servicio: ServicioDto?
+    val servicio: ServicioDto? // Información del servicio
 )
 
 // DTO para Producto
@@ -78,15 +78,14 @@ data class ProductoDto(
     val nombre: String,
 
     @SerializedName("descripcion")
-    val descripcion: String?,
+    val descripcion: String?, // Descripción del producto
 
     @SerializedName("precio")
-    val precio: BigDecimal,
+    val precio: BigDecimal, // Precio unitario
 
     @SerializedName("stock")
-    val stock: Int
+    val stock: Int // Cantidad en inventario
 )
-
 
 // DTO para el Pago
 data class PagoDto(
@@ -103,10 +102,10 @@ data class PagoDto(
     val monto: BigDecimal,
 
     @SerializedName("referencia")
-    val referencia: String,
+    val referencia: String, // Referencia de pago (Stripe o algún otro sistema)
 
     @SerializedName("estado")
-    val estado: String
+    val estado: String // Estado del pago
 )
 
 // DTO para Movimiento Cuenta
@@ -124,28 +123,27 @@ data class MovimientoCuentaDto(
     val detalleVentaId: Long,
 
     @SerializedName("tipo")
-    val tipo: String,
+    val tipo: String, // Tipo de movimiento (venta o comisión)
 
     @SerializedName("monto")
-    val monto: BigDecimal,
+    val monto: BigDecimal, // Monto del movimiento
 
     @SerializedName("estado")
-    val estado: String,
+    val estado: String, // Estado del movimiento (pendiente, liberado, etc.)
 
     @SerializedName("stripe_id")
-    val stripeId: String?
+    val stripeId: String? // ID de Stripe, si es aplicable
 )
-
-// ↓↓↓↓↓ **Estas dos clases van separadas claramente (no anidadas)** ↓↓↓↓↓
 
 // DTO específico para el checkout inicial
 data class CheckoutRequest(
-    @SerializedName("metodo_pago_id")
-    val metodoPagoId: Long
+    val token: String
 )
+
+
 
 // DTO específico para procesar el pago
 data class PagoRequest(
     @SerializedName("payment_intent_id")
-    val paymentIntentId: String
+    val paymentIntentId: String // ID del intento de pago (para procesar el pago)
 )

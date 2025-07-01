@@ -21,7 +21,8 @@ import androidx.navigation.compose.*
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.NavItem
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.TurismoNavigationBar
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedorcreate.EmprendimientoCreateScreen
-import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.carrito.CarritoScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedorcreate.UnirseEmprendimientoScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.carrito.ShoppingCartScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.ExplorarScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.favorito.FavoritosScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.perfil.PerfilScreen
@@ -91,7 +92,7 @@ fun WelcomeMain(
                 FavoritosScreen(navController = navControllerGlobal)
             }
             composable(BottomDestination.CARRITO.route) {
-                CarritoScreen()
+                ShoppingCartScreen()
             }
             composable(BottomDestination.RESERVAS.route) {
                 // ReservasScreen()
@@ -104,6 +105,10 @@ fun WelcomeMain(
             }
             composable("emprendimiento_create") {
                 EmprendimientoCreateScreen(navController = navControllerLocal)
+            }
+            // Define la ruta unirse_emprendimiento
+            composable("unirse_emprendimiento") {
+                UnirseEmprendimientoScreen(navController = navControllerLocal)
             }
         }
 

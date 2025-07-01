@@ -9,7 +9,6 @@ import kotlinx.coroutines.launch
 import pe.edu.upeu.appturismo202501.repository.PaymentIntentRepository
 import javax.inject.Inject
 
-@HiltViewModel
 class TarjetaViewModel @Inject constructor(
     private val paymentIntentRepository: PaymentIntentRepository
 ) : ViewModel() {
@@ -24,13 +23,13 @@ class TarjetaViewModel @Inject constructor(
     fun obtenerClientSecret() {
         viewModelScope.launch {
             try {
-                val response = paymentIntentRepository.crearPaymentIntent()
+                // Usar el monto que necesitas
+                val amount = 1000 // Por ejemplo, 10.00 USD (en centavos)
+                val response = paymentIntentRepository.crearPaymentIntent(amount)
                 if (response.isSuccessful && response.body() != null) {
                     _clientSecret.value = response.body()!!.clientSecret
                 } else {
-                    _clientSecret.value = "Error obteniendo clientSecret: ${
-                        response.errorBody()?.string() ?: "Error desconocido"
-                    }"
+                    _clientSecret.value = "Error obteniendo clientSecret: ${response.errorBody()?.string() ?: "Error desconocido"}"
                 }
             } catch (e: Exception) {
                 _clientSecret.value = "Excepción: ${e.localizedMessage ?: "Error desconocido"}"

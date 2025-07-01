@@ -75,20 +75,28 @@ import pe.edu.upeu.appturismo202501.modelo.CarritoItemUi
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Payment
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
+import pe.edu.upeu.appturismo202501.modelo.CheckoutRequest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShoppingCartScreen(
-    viewModel: CarritoViewModel = hiltViewModel(),
-    onCheckout: (total: Double) -> Unit = {}
+    viewModel: CarritoViewModel = hiltViewModel()
 ) {
     val cartItems by viewModel.itemsUi.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val message by viewModel.message.collectAsState()
-    
-    // 2) Calcula el total real
-    val total = remember(cartItems) { cartItems.sumOf { it.subtotal } }
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -98,6 +106,14 @@ fun ShoppingCartScreen(
             snackbarHostState.showSnackbar(it)
             viewModel.clearMessage()
         }
+    }
+
+    var showPaymentForm by remember { mutableStateOf(false) }
+
+    // Efecto para recargar el carrito cada vez que la pantalla se reanuda
+    LaunchedEffect(Unit) {
+        // Esto ejecuta la carga de los datos cada vez que la pantalla es reanudada
+        viewModel.cargarCarrito()
     }
 
     Scaffold(
@@ -118,70 +134,227 @@ fun ShoppingCartScreen(
                 actions = {
                     IconButton(onClick = { viewModel.clearCart() }) {
                         Icon(
-                            imageVector     = Icons.Default.Delete,
+                            imageVector = Icons.Default.Delete,
                             contentDescription = "Vaciar carrito",
-                            tint            = MaterialTheme.colorScheme.onPrimaryContainer
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
+                    }
+
+                    IconButton(onClick = { showPaymentForm = true }) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Payment,
+                                contentDescription = "Pago",
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                        }
                     }
                 }
             )
-        },
-        bottomBar = {
-            PaymentFooter(total = total)
         }
     ) { innerPadding ->
-
-        if (isLoading) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else if (cartItems.isEmpty()) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                EmptyCartMessage()
-            }
+        if (showPaymentForm) {
+            PaymentFormScreen(
+                onProceedWithPayment = {
+                    // Llamamos a realizarCheckout con el token predeterminado
+                    viewModel.realizarCheckout { response ->
+                        // Aquí puedes manejar el resultado del checkout si lo necesitas
+                    }
+                    showPaymentForm = false
+                },
+                onCancel = { showPaymentForm = false }
+            )
         } else {
-            LazyColumn(
-                contentPadding = innerPadding,
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                item { Spacer(Modifier.height(8.dp)) }
-
-                // Aquí SÍ se llama a la extensión genérica de items(List<T>)
-                items(
-                    cartItems,                   // tu lista
-                    key = { it.carritoId }       // 'it' es un CarritoItemUi
-                ) { item ->
-                    CartItemCard(
-                        item       = item,
-                        onQuantityChange  = { newQty ->
-                            viewModel.actualizarCantidad(
-                                item,
-                                newQty,
-                                item.stockDisponible
-                            )
-                        },
-                        onRemove   = {
-                            viewModel.eliminarDelCarrito(item.carritoId)
-                        }
-                    )
+            if (isLoading) {
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
+            } else if (cartItems.isEmpty()) {
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    EmptyCartMessage()
+                }
+            } else {
+                LazyColumn(
+                    contentPadding = innerPadding,
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    item { Spacer(Modifier.height(8.dp)) }
 
-                item { Spacer(Modifier.height(80.dp)) }
+                    items(cartItems, key = { it.carritoId }) { item ->
+                        CartItemCard(
+                            item = item,
+                            onQuantityChange = { newQty ->
+                                viewModel.actualizarCantidad(item, newQty, item.stockDisponible)
+                            },
+                            onRemove = {
+                                viewModel.eliminarDelCarrito(item.carritoId)
+                            }
+                        )
+                    }
+
+                    item { Spacer(Modifier.height(80.dp)) }
+                }
             }
         }
     }
 }
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PaymentFormScreen(
+    onProceedWithPayment: () -> Unit,  // Ahora solo pasa la función
+    onCancel: () -> Unit
+) {
+    var cardNumber by remember { mutableStateOf("") }
+    var expirationDate by remember { mutableStateOf("") }
+    var cvv by remember { mutableStateOf("") }
+    var cardHolderName by remember { mutableStateOf("") }
+
+    // Validaciones
+    val isFormValid = remember(cardNumber, expirationDate, cvv, cardHolderName) {
+        cardNumber.length == 16 && expirationDate.length == 5 && cvv.length == 3 && cardHolderName.isNotEmpty()
+    }
+
+    // Diseño
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Formulario de Pago", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = onCancel) {
+                        Icon(imageVector = Icons.Default.Close, contentDescription = "Cancelar")
+                    }
+                }
+            )
+        },
+        content = { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)  // Espacio entre los elementos
+            ) {
+
+                // Título y subtitulo para una introducción clara
+                Text(
+                    text = "Por favor, ingresa los detalles de tu tarjeta",
+                    style = TextStyle(
+                        fontSize = 16.sp,  // Tamaño de fuente estándar de Android
+                        fontWeight = FontWeight.Normal,
+                        color = Color.Black
+                    ),
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                // Número de tarjeta sin formato (solo 16 dígitos)
+                OutlinedTextField(
+                    value = cardNumber,
+                    onValueChange = {
+                        // Solo números y limitados a 16 dígitos
+                        cardNumber = it.take(16).replace(Regex("[^0-9]"), "") // Solo números, limitamos a 16 dígitos
+                    },
+                    label = { Text("Número de tarjeta") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.CreditCard,
+                            contentDescription = "Ícono tarjeta",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    isError = cardNumber.length != 16,  // Error si no tiene 16 dígitos
+                    visualTransformation = VisualTransformation.None
+                )
+
+                // Fecha de vencimiento (MM/AA) sin formato automático
+                OutlinedTextField(
+                    value = expirationDate,
+                    onValueChange = { expirationDate = it.take(5) }, // Limitamos a MM/AA
+                    label = { Text("Fecha de vencimiento (MM/AA)") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.CalendarToday,
+                            contentDescription = "Fecha de vencimiento",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    isError = expirationDate.length != 5 // Error si no es MM/AA
+                )
+
+                // Código de seguridad (CVV)
+                OutlinedTextField(
+                    value = cvv,
+                    onValueChange = { cvv = it.take(3) }, // Limitamos a 3 dígitos
+                    label = { Text("Código de seguridad (CVV)") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = "CVV",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    isError = cvv.length != 3  // Error si el CVV no tiene 3 dígitos
+                )
+
+                // Nombre del titular
+                OutlinedTextField(
+                    value = cardHolderName,
+                    onValueChange = { cardHolderName = it },
+                    label = { Text("Nombre del titular") },
+                    modifier = Modifier.fillMaxWidth(),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Titular",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Botón "Proceder con el pago"
+                Button(
+                    onClick = {
+                        onProceedWithPayment()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),  // Botón más alto
+                    enabled = isFormValid,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isFormValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Pagar ahora", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                }
+            }
+        }
+    )
+}
+
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun CartItemCard(
@@ -486,7 +659,7 @@ fun PaymentFooter(total: Double) {
         ) {
             Text(
                 text = "Pagar ahora",
-                color = Color.White,
+                color = Color.White,  // Mantén el color blanco
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )
@@ -495,7 +668,7 @@ fun PaymentFooter(total: Double) {
 
             Text(
                 text = "$${"%.2f".format(total)}",
-                color = Color.White.copy(alpha = 0.9f),
+                color = Color.White.copy(alpha = 0.9f), // Asegúrate de que el color tenga buen contraste
                 fontWeight = FontWeight.SemiBold
             )
         }

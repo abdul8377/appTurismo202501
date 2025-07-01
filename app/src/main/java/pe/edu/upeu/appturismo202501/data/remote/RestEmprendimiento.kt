@@ -83,7 +83,7 @@ data class EmprendimientoRequest(
 // Request para enviar solicitud para unirse a emprendimiento
 data class SolicitudEmprendimientoRequest(
     val codigo_unico: String,
-    val rol_solicitado: String // "colaborador" o "propietario"
+    val rol_solicitado: String = "colaborador" // "colaborador" por defecto
 )
 
 // Request para responder a solicitud (aprobar o rechazar)

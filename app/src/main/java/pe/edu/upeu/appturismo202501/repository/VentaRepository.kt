@@ -13,9 +13,6 @@ interface VentaRepository {
     /** Realiza el checkout inicial creando una venta pendiente */
     suspend fun realizarCheckout(checkoutRequest: CheckoutRequest): Response<VentaDto>
 
-    /** Procesa el pago usando un PaymentIntent de Stripe */
-    suspend fun procesarPago(ventaId: Long, pagoRequest: PagoRequest): Response<VentaDto>
-
     /** Obtiene el historial de compras del usuario */
     suspend fun listarCompras(): Response<List<VentaDto>>
 }
@@ -29,12 +26,13 @@ class VentaRepositoryImp @Inject constructor(
     private val restVenta: RestVenta
 ) : VentaRepository {
 
-    override suspend fun realizarCheckout(checkoutRequest: CheckoutRequest): Response<VentaDto> =
-        restVenta.realizarCheckout(checkoutRequest)
+    // Implementación del método realizarCheckout
+    override suspend fun realizarCheckout(checkoutRequest: CheckoutRequest): Response<VentaDto> {
+        return restVenta.realizarCheckout(checkoutRequest)
+    }
 
-    override suspend fun procesarPago(ventaId: Long, pagoRequest: PagoRequest): Response<VentaDto> =
-        restVenta.procesarPago(ventaId, pagoRequest)
-
-    override suspend fun listarCompras(): Response<List<VentaDto>> =
-        restVenta.listarCompras()
+    // Implementación del método listarCompras
+    override suspend fun listarCompras(): Response<List<VentaDto>> {
+        return restVenta.listarCompras()
+    }
 }

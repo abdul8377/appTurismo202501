@@ -173,13 +173,18 @@ fun ServicioGrid(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 rowItems.forEach { item ->
+                    val primeraUrl = item.images
+                        ?.firstOrNull()      // saca el primer ImagenDto o null
+                        ?.url                // coge su propiedad url
+                        ?: "https://via.placeholder.com/150"
+
                     ServicioCard(
                         id = item.id,
                         title = item.title,
-                        description = item.subtitle,  // breve descripción
+                        description = item.description,  // breve descripción
                         priceFormatted = item.priceFormatted,
                         rating = item.rating,
-                        imageUrl = item.imageUrl,
+                        imageUrl = primeraUrl,
                         isFavorite = favorites[item.id] ?: false,
                         onFavoriteClick = { onFavoriteClick(item.id) },
                         onItemClick = { onItemClick(item.id) },

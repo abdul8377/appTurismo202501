@@ -8,9 +8,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import org.intellij.lang.annotations.Flow
+import pe.edu.upeu.appturismo202501.modelo.AlojamientoDetalleUi
 import pe.edu.upeu.appturismo202501.modelo.ServicioUi
+import pe.edu.upeu.appturismo202501.modelo.toAlojamientoDetalleUi
 
 import pe.edu.upeu.appturismo202501.modelo.toServicioUi
 import pe.edu.upeu.appturismo202501.repository.ServicioRepository
@@ -45,6 +48,24 @@ class ServiciosViewModel @Inject constructor(
             }
             Log.d("ServiciosVM", "URL Base: ${TokenUtils.API_URL}")
             Log.d("ServiciosVM", "Tipo Negocio ID: $tipoNegocioId")
+        }
+    }
+
+    fun fetchServicioDetalle(id: Long): kotlinx.coroutines.flow.Flow<ServicioUi?> {
+        return flow {
+            try {
+                val response = servicioRepository.servicioDetalle(id)
+                if (response.isSuccessful) {
+                    val servicio = response.body()
+                    emit(servicio?.toServicioUi())
+                } else {
+                    Log.e("ServicioVM", "Error: ${response.code()}")
+                    emit(null)
+                }
+            } catch (e: Exception) {
+                Log.e("ServicioVM", "Excepción: ${e.message}")
+                emit(null)
+            }
         }
     }
 

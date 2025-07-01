@@ -2,6 +2,8 @@ package pe.edu.upeu.appturismo202501.data.remote
 
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import pe.edu.upeu.appturismo202501.modelo.CrearProductoResponse
+import pe.edu.upeu.appturismo202501.modelo.ProductDto
 import pe.edu.upeu.appturismo202501.modelo.ProductResp
 import pe.edu.upeu.appturismo202501.modelo.ProductoDetalleResponse
 import pe.edu.upeu.appturismo202501.modelo.ZonaTuristicaResp
@@ -26,28 +28,40 @@ interface RestProductos {
     @GET("api/productos/{id}")
     suspend fun getProduct(@Path("id") id: Long): ProductResp
 
-    /*@Multipart
-    @POST("api/productos")
-    suspend fun createProduct(
-        @Part("emprendimientos_id") emprendimientosId: RequestBody,
-        @Part("categorias_productos_id") categoriaId: RequestBody,
+    @GET("emprendedor/productos")
+    suspend fun listarMios(): Response<List<ProductResp>>
+
+    @GET("emprendedor/productos/{id}")
+    suspend fun getById(
+        @Path("id") id: Long
+    ): Response<ProductResp>
+
+    @Multipart
+    @POST("emprendedor/productos")
+    suspend fun crear(
+        @Part("categorias_productos_id")   categoriasProductosId: RequestBody,
+        @Part("nombre")                    nombre: RequestBody,
+        @Part("descripcion")               descripcion: RequestBody,
+        @Part("precio")                    precio: RequestBody,
+        @Part("stock")                     stock: RequestBody,
+        @Part("estado")                    estado: RequestBody,
+        @Part              imagenes: List<MultipartBody.Part>
+    ): Response<CrearProductoResponse>
+
+    @Multipart
+    @POST("emprendedor/productos/{id}")
+    suspend fun actualizar(
+        @Path("id") id: Long,
+        @Part("_method") method: RequestBody,
+        @Part("categorias_productos_id") categoriasProductosId: RequestBody,
         @Part("nombre") nombre: RequestBody,
-        @Part("descripcion") descripcion: RequestBody?,
+        @Part("descripcion") descripcion: RequestBody,
         @Part("precio") precio: RequestBody,
         @Part("stock") stock: RequestBody,
         @Part("estado") estado: RequestBody,
-        @Part imagen: MultipartBody.Part?
-    ): Response<ProductResp>
-*/
-    /*@Multipart
-    @PUT("api/productos/{id}")
-    suspend fun updateProduct(
-        @Path("id") id: Long,
-        @PartMap fields: Map<String, @JvmSuppressWildcards RequestBody>,
-        @Part imagen: MultipartBody.Part?
-    ): Response<ProductResp>
-*/
-    /*@DELETE("api/productos/{id}")
-    suspend fun deleteProduct(@Path("id") id: Long): Response<DeleteResponse>
-    */
+        @Part            imagenes: List<MultipartBody.Part>
+    ): Response<CrearProductoResponse>
+
+    @DELETE("emprendedor/productos/{id}")
+    suspend fun eliminar(@Path("id") id: Long): Response<Void>
 }

@@ -23,7 +23,8 @@ fun ProductosContent(
     catVm: CategoryViewModel = hiltViewModel(),
     favVm: FavoritosViewModel = hiltViewModel()
 ) {
-    val productos by prodVm.productosUi.collectAsState(initial = emptyList())
+
+    val productos  by prodVm.productosUi.collectAsState(initial = emptyList())
     val categorias by catVm.categoriesUi.collectAsState(initial = emptyList())
     val favUiState by favVm.uiState.collectAsState()
 

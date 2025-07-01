@@ -45,22 +45,8 @@ import pe.edu.upeu.appturismo202501.ui.presentation.alertas.AlertDialogComponent
 import pe.edu.upeu.appturismo202501.ui.navigation.Destinations
 import androidx.navigation.NavController
 import android.widget.Toast
+import pe.edu.upeu.appturismo202501.modelo.AlojamientoDetalleUi
 
-data class AlojamientoDetalleUi(
-    val id: Long,
-    val title: String,
-    val description: String,
-    val priceFormatted: String,
-    val rating: Double = 4.5,
-    val opiniones: Int = 0,
-    val duracionServicio: String,
-    val capacidadMaxima: Int,
-    val imageUrl: String,
-    val isFavorite: Boolean,
-    val emprendimientoName: String,
-    val emprendimientoImageUrl: String
-
-)
 
 @Composable
 fun ServicioDetailScreen(
@@ -80,7 +66,7 @@ fun ServicioDetailScreen(
 
         Box(modifier = Modifier.fillMaxWidth()) {
             AsyncImage(
-                model = servicio.imageUrl,
+                model = servicio.images,
                 contentDescription = servicio.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

@@ -3,7 +3,7 @@ package pe.edu.upeu.appturismo202501.modelo
 import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 
-// DTO para la venta
+// DTO para la venta actualizada
 data class VentaDto(
     @SerializedName("venta_id")
     val ventaId: Long,
@@ -24,16 +24,19 @@ data class VentaDto(
     val metodoPagoId: Long?,
 
     @SerializedName("total_pagado")
-    val totalPagado: BigDecimal? = null,
+    val totalPagado: BigDecimal?,
 
     @SerializedName("fecha_pago")
-    val fechaPago: String? = null,
+    val fechaPago: String?,
+
+    @SerializedName("metodo_pago")
+    val metodoPago: MetodoPagoDto?,
 
     @SerializedName("detalles")
     val detalles: List<DetalleVentaDto>
 )
 
-// DTO para el detalle de la venta
+// DTO para detalle de la venta
 data class DetalleVentaDto(
     @SerializedName("detalle_venta_id")
     val detalleVentaId: Long,
@@ -54,13 +57,38 @@ data class DetalleVentaDto(
     val cantidad: Int,
 
     @SerializedName("precio_unitario")
-    val precioUnitario: Double,
+    val precioUnitario: BigDecimal,
 
     @SerializedName("subtotal")
-    val subtotal: Double
+    val subtotal: BigDecimal,
+
+    @SerializedName("producto")
+    val producto: ProductoDto?,
+
+    @SerializedName("servicio")
+    val servicio: ServicioDto?
 )
 
-// DTO para el pago
+// DTO para Producto
+data class ProductoDto(
+    @SerializedName("productos_id")
+    val productosId: Long,
+
+    @SerializedName("nombre")
+    val nombre: String,
+
+    @SerializedName("descripcion")
+    val descripcion: String?,
+
+    @SerializedName("precio")
+    val precio: BigDecimal,
+
+    @SerializedName("stock")
+    val stock: Int
+)
+
+
+// DTO para el Pago
 data class PagoDto(
     @SerializedName("pago_id")
     val pagoId: Long,
@@ -81,8 +109,7 @@ data class PagoDto(
     val estado: String
 )
 
-
-// DTO para el movimiento de cuenta
+// DTO para Movimiento Cuenta
 data class MovimientoCuentaDto(
     @SerializedName("movimiento_cuenta_id")
     val movimientoCuentaId: Long,
@@ -103,17 +130,22 @@ data class MovimientoCuentaDto(
     val monto: BigDecimal,
 
     @SerializedName("estado")
-    val estado: String
+    val estado: String,
+
+    @SerializedName("stripe_id")
+    val stripeId: String?
 )
 
-// DTO para parámetros financieros
-data class ParametroFinancieroDto(
-    @SerializedName("parametro_financiero_id")
-    val parametroFinancieroId: Long,
+// ↓↓↓↓↓ **Estas dos clases van separadas claramente (no anidadas)** ↓↓↓↓↓
 
-    @SerializedName("clave")
-    val clave: String,
+// DTO específico para el checkout inicial
+data class CheckoutRequest(
+    @SerializedName("metodo_pago_id")
+    val metodoPagoId: Long
+)
 
-    @SerializedName("valor")
-    val valor: String
+// DTO específico para procesar el pago
+data class PagoRequest(
+    @SerializedName("payment_intent_id")
+    val paymentIntentId: String
 )

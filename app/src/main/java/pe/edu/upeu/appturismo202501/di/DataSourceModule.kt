@@ -16,6 +16,8 @@ import pe.edu.upeu.appturismo202501.repository.ChatRepository
 import pe.edu.upeu.appturismo202501.repository.ChatRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.FavoritoRepository
 import pe.edu.upeu.appturismo202501.repository.FavoritoRepositoryImp
+import pe.edu.upeu.appturismo202501.repository.PaqueteRepository
+import pe.edu.upeu.appturismo202501.repository.PaqueteRepositoryImpl
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -38,13 +40,18 @@ class DataSourceModule {
         HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
+    @Provides
+    @Singleton
+    fun provideRestPaquetes(retrofit: Retrofit): RestPaquetes =
+        retrofit.create(RestPaquetes::class.java)
 
     @Provides
     @Singleton
+    fun provideAuthInterceptor(@ApplicationContext context: Context): AuthInterceptor {
+        return AuthInterceptor(context)
+    }
 
-    fun provideAuthInterceptor(
-        @ApplicationContext ctx: Context
-    ): AuthInterceptor = AuthInterceptor(ctx)
+
 
     @Provides
     @Singleton
@@ -149,13 +156,15 @@ class DataSourceModule {
     @Singleton
     fun provideRestVenta(): RestVenta {
         return Retrofit.Builder()
-            .baseUrl("https://api.tuservidor.com/") // Reemplaza con la URL de tu servidor
+            .baseUrl("http://192.168.0.198:8000/") // Reemplaza con la URL de tu servidor
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(RestVenta::class.java)
     }
+
+
     @Provides
     @Singleton
-    fun provideRestPaquetes(retrofit: Retrofit): RestPaquetes =
-        retrofit.create(RestPaquetes::class.java)
+    fun provideRestPaymentIntent(retrofit: Retrofit): RestPaymentIntent =
+        retrofit.create(RestPaymentIntent::class.java)
 }

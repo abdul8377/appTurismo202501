@@ -18,6 +18,8 @@ import pe.edu.upeu.appturismo202501.repository.FavoritoRepository
 import pe.edu.upeu.appturismo202501.repository.FavoritoRepositoryImp
 import pe.edu.upeu.appturismo202501.repository.PaqueteRepository
 import pe.edu.upeu.appturismo202501.repository.PaqueteRepositoryImpl
+import pe.edu.upeu.appturismo202501.repository.VentaRepository
+import pe.edu.upeu.appturismo202501.repository.VentaRepositoryImp
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -152,16 +154,11 @@ class DataSourceModule {
     ): ChatRepository = ChatRepositoryImp(restChat) // Implementación de ChatRepository
 
     // Provisión de RestVenta (Retrofit)
+
     @Provides
     @Singleton
-    fun provideRestVenta(): RestVenta {
-        return Retrofit.Builder()
-            .baseUrl("http://192.168.0.198:8000/") // Reemplaza con la URL de tu servidor
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(RestVenta::class.java)
-    }
-
+    fun provideRestVenta(retrofit: Retrofit): RestVenta =
+        retrofit.create(RestVenta::class.java)
 
     @Provides
     @Singleton

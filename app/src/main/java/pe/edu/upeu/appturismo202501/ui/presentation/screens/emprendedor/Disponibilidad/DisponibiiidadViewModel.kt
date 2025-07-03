@@ -39,4 +39,10 @@ class DisponibilidadViewModel @Inject constructor(
             }
             .onFailure { _error.value = it.message }
     }
+
+    fun fetchAll(servicioId: Long) = viewModelScope.launch {
+        repo.fetchAll(servicioId)
+            .onSuccess { _lista.value = it }
+            .onFailure { _error.value = it.message }
+    }
 }

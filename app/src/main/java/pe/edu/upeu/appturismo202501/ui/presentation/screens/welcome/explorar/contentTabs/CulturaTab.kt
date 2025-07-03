@@ -30,7 +30,11 @@ import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.CulturalBanner
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.CulturalSpacesSection
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.Experience
 import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.ExperiencesSection
+import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.PaqueteTuristico
+import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.PaquetesTuristicosSection
+import pe.edu.upeu.appturismo202501.ui.presentation.componentsA.ServicioPaquete
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.viewModel.ZonaTuristicaViewModel
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.viewModel.PaquetesViewModel
 
 class CulturaTab {
 }
@@ -38,13 +42,31 @@ class CulturaTab {
 @Composable
 fun CulturaContent(
     navController: NavController,
-    zonaViewModel: ZonaTuristicaViewModel = hiltViewModel()
+    zonaViewModel: ZonaTuristicaViewModel = hiltViewModel(),
+    paquetesViewModel: PaquetesViewModel = hiltViewModel()
 ) {
     val banners    by zonaViewModel.banners.collectAsState(initial = emptyList())
+    val paquetes by paquetesViewModel.paquetes.collectAsState()
+    val isLoading by paquetesViewModel.isLoading.collectAsState()
+    val error by paquetesViewModel.error.collectAsState()
 
     Column (
         modifier = Modifier.fillMaxWidth()
     ) {
+        when {
+            isLoading -> {
+                androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+            }
+            error != null -> {
+                Text("Error: $error", color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp))
+            }
+            else -> {
+                PaquetesTuristicosSection(
+                    paquetes = paquetes
+                )
+            }
+        }
+
         // 1️⃣ Experiencias culturales
         val culturalExperiences = listOf(
             Experience(
@@ -88,10 +110,6 @@ fun CulturaContent(
                 navController.navigate("zona/${banner.name}")
             }
         )
-
-
-
     }
-
 }
 

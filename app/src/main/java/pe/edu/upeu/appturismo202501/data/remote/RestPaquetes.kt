@@ -16,7 +16,6 @@ interface RestPaquetes {
     @GET("paquetes")
     suspend fun getAllPaquetes(): Response<List<PaqueteDto>>
 
-    // Emprendedor: list only my paquetes
     @GET("emprendedor/paquetes")
     suspend fun getMyPaquetes(): Response<List<PaqueteDto>>
 

@@ -7,18 +7,10 @@ import retrofit2.http.*
 interface RestVenta {
 
     // Realizar checkout inicial (crear venta pendiente, sin pago)
-    @POST("checkout")
+    // Realizar checkout inicial (crear venta pendiente, sin pago)
+    @POST("venta")  // Ruta para crear la venta (Checkout)
     suspend fun realizarCheckout(@Body checkoutRequest: CheckoutRequest): Response<VentaDto>
-
-    // Procesar el pago confirmando PaymentIntent
-    @POST("ventas/{venta}/pagar")
-    suspend fun procesarPago(
-        @Path("venta") ventaId: Long,
-        @Body pagoRequest: PagoRequest
-    ): Response<VentaDto>
-
-    // Obtener historial de compras
-    @GET("compras")
+    // Obtener historial de compras del usuario
+    @GET("ventas")  // Ruta para obtener el historial de compras
     suspend fun listarCompras(): Response<List<VentaDto>>
 }
-

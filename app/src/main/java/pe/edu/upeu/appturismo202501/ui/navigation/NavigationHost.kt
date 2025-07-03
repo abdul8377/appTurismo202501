@@ -7,17 +7,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.stripe.android.payments.paymentlauncher.PaymentLauncher
+import com.stripe.android.payments.paymentlauncher.rememberPaymentLauncher
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.LoginScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.forgotpassword.ForgotPasswordScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.SearchScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.administrador.AdministradorScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.EmprendedorScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedorcreate.EmprendimientoCreateScreen
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedorcreate.UnirseEmprendimientoScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.register.RegisterScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.tipodenegocio.VerTipoDeNegocioScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.user.UserScreen
@@ -28,6 +32,7 @@ import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.con
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.detalleServicios.ServiceDetailScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.explorar.contentTabs.notificaciones.NotificationsScreen
 import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.main.WelcomeMain
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.welcome.tarjeta.TarjetaScreen
 import pe.edu.upeu.appturismo202501.utils.SessionManager
 import pe.edu.upeu.appturismo202501.utils.TokenUtils
 
@@ -159,6 +164,10 @@ fun NavigationHost(
             EmprendimientoCreateScreen(navController = navController)
         }
 
+        composable(Destinations.Unirse_Emprendimiento.route) {
+            UnirseEmprendimientoScreen(navController = navController)
+        }
+
 
 
 
@@ -192,5 +201,9 @@ fun NavigationHost(
         composable(Destinations.Notifications.route) {
             NotificationsScreen()
         }
+
+
+
+
     }
 }

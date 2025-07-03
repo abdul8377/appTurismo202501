@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.*
 import androidx.compose.ui.geometry.Offset
@@ -34,8 +33,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+// import androidx.compose.material.icons.filled.* // duplicate removed
+// import androidx.compose.material3.* // duplicate removed
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,16 +53,20 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+// import androidx.compose.material.icons.filled.Add
+// import androidx.compose.material3.FloatingActionButton
+// import androidx.compose.material3.Icon
+// import androidx.compose.material3.Text
+// import androidx.compose.runtime.Composable // duplicate with star import
+// import androidx.compose.ui.text.TextStyle // needed? used plugin; keep maybe separate
+// import androidx.compose.material3.Typography
+// import androidx.compose.material3.lightColorScheme
+import androidx.hilt.navigation.compose.hiltViewModel
+import pe.edu.upeu.appturismo202501.ui.presentation.screens.emprendedor.servicios.ServiciosViewModel
+import pe.edu.upeu.appturismo202501.modelo.ServicioEmprendedorUi
+import pe.edu.upeu.appturismo202501.modelo.DisponibilidadDto
+import androidx.compose.material3.Typography           // <<– material3, no material
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.material3.Typography
-import androidx.compose.material3.lightColorScheme
-
 
 // Modelos de datos
 data class Service(
@@ -97,12 +100,20 @@ sealed class AvailabilityScreenState {
 }
 
 @Composable
-fun ServiceAvailabilityApp() {
+fun ServiceAvailabilityApp(
+    serviciosViewModel: ServiciosViewModel = hiltViewModel(),
+    disponibilidadViewModel: DisponibilidadViewModel = hiltViewModel()
+) {
     var screenState by remember { mutableStateOf<AvailabilityScreenState>(AvailabilityScreenState.ServiceList) }
 
-    // Datos de prueba
-    val services = remember { generateSampleServices() }
-    val availabilities = remember { generateSampleAvailabilities() }
+    // Cargar servicios del emprendedor al iniciar
+    LaunchedEffect(Unit) { serviciosViewModel.loadPropios() }
+
+    val serviciosUi by serviciosViewModel.serviciosEmprendedor.collectAsState()
+    val services = serviciosUi.map { it.toService() }
+
+    val dispDtos by disponibilidadViewModel.lista.collectAsState()
+    val allAvailabilities = dispDtos.map { it.toAvailability() }
 
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         when (val state = screenState) {
@@ -110,12 +121,15 @@ fun ServiceAvailabilityApp() {
                 ServiceListScreen(
                     services = services,
                     onViewAvailability = { service ->
+                        disponibilidadViewModel.fetchAll(service.id.toLong())
                         screenState = AvailabilityScreenState.ViewAvailability(service)
                     },
                     onAddAvailability = { service ->
+                        disponibilidadViewModel.fetchAll(service.id.toLong())
                         screenState = AvailabilityScreenState.AddAvailability(service)
                     },
                     onDeleteAvailability = { service ->
+                        disponibilidadViewModel.fetchAll(service.id.toLong())
                         screenState = AvailabilityScreenState.DeleteAvailability(service)
                     },
                     onAddNewAvailability = {
@@ -124,9 +138,10 @@ fun ServiceAvailabilityApp() {
                 )
             }
             is AvailabilityScreenState.ViewAvailability -> {
+                val availForService = allAvailabilities.filter { it.serviceId == state.service.id }
                 ViewAvailabilityScreen(
                     service = state.service,
-                    availabilities = availabilities.filter { it.serviceId == state.service.id },
+                    availabilities = availForService,
                     onBack = { screenState = AvailabilityScreenState.ServiceList }
                 )
             }
@@ -135,17 +150,24 @@ fun ServiceAvailabilityApp() {
                     selectedService = state.service,
                     services = services,
                     onBack = { screenState = AvailabilityScreenState.ServiceList },
-                    onServiceSelected = { service ->
-                        screenState = AvailabilityScreenState.AddAvailability(service)
+                    onServiceSelected = { svc ->
+                        disponibilidadViewModel.fetchAll(svc.id.toLong())
+                        screenState = AvailabilityScreenState.AddAvailability(svc)
                     },
-                    onAvailabilityAdded = { /* Lógica para agregar disponibilidad */ }
+                    onAvailabilityAdded = { svcId ->
+                        disponibilidadViewModel.fetchAll(svcId.toLong())
+                        screenState = AvailabilityScreenState.ServiceList
+                    }
                 )
             }
             is AvailabilityScreenState.DeleteAvailability -> {
+                val availForService = allAvailabilities.filter { it.serviceId == state.service.id }
                 DeleteAvailabilityScreen(
                     service = state.service,
-                    availabilities = availabilities.filter { it.serviceId == state.service.id },
-                    onDelete = { /* Lógica para eliminar disponibilidad */ },
+                    availabilities = availForService,
+                    onDelete = { id ->
+                        disponibilidadViewModel.delete(id.toLong())
+                    },
                     onBack = { screenState = AvailabilityScreenState.ServiceList }
                 )
             }
@@ -394,6 +416,7 @@ fun ViewAvailabilityScreen(
 
         CalendarView(
             occupiedDates = occupiedDates,
+            selectedDates = emptySet(),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp)
@@ -438,6 +461,7 @@ fun ViewAvailabilityScreen(
 @Composable
 fun CalendarView(
     occupiedDates: Set<LocalDate>,
+    selectedDates: Set<LocalDate> = emptySet(),
     modifier: Modifier = Modifier,
     onDateClick: (LocalDate) -> Unit = {}
 ) {
@@ -508,6 +532,8 @@ fun CalendarView(
                                     date == null -> MaterialTheme.colorScheme.surfaceVariant
                                     occupiedDates.contains(date) ->
                                         MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
+                                    selectedDates.contains(date) ->
+                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
                                     else ->
                                         MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
                                 }
@@ -521,10 +547,11 @@ fun CalendarView(
                             Text(
                                 text = date.dayOfMonth.toString(),
                                 style = MaterialTheme.typography.bodySmall,
-                                color = if (occupiedDates.contains(date))
-                                    MaterialTheme.colorScheme.onErrorContainer
-                                else
-                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                color = when {
+                                    occupiedDates.contains(date) -> MaterialTheme.colorScheme.onErrorContainer
+                                    selectedDates.contains(date) -> MaterialTheme.colorScheme.onPrimaryContainer
+                                    else -> MaterialTheme.colorScheme.onPrimaryContainer
+                                }
                             )
                         }
                     }
@@ -540,7 +567,7 @@ fun AddAvailabilityScreen(
     services: List<Service>,
     onBack: () -> Unit,
     onServiceSelected: (Service) -> Unit,
-    onAvailabilityAdded: () -> Unit
+    onAvailabilityAdded: (Int) -> Unit = {}  // devuelve serviceId para refrescar, default vacio
 ) {
     var currentService by remember { mutableStateOf(selectedService) }
 
@@ -585,15 +612,40 @@ fun AddAvailabilityScreen(
             // Formulario para añadir disponibilidad
             val service = currentService!!
 
-            // Selector de fechas/horas según el tipo de servicio
+            val disponibilidadVM: DisponibilidadViewModel = hiltViewModel()
+
             if (service.type == ServiceType.ACCOMMODATION) {
                 DateRangeSelector(
-                    onAdd = onAvailabilityAdded,
+                    onAdd = { start, end ->
+                        val dto = DisponibilidadDto(
+                            disponibilidadId = 0,
+                            serviciosId       = service.id.toLong(),
+                            fechaInicio       = start.toString(),
+                            fechaFin          = end.toString(),
+                            horaInicio        = null,
+                            horaFin           = null
+                        )
+                        disponibilidadVM.create(service.id.toLong(), dto)
+                        onAvailabilityAdded(service.id)
+                        onBack()
+                    },
                     modifier = Modifier.fillMaxSize()
                 )
             } else {
                 TimeSlotSelector(
-                    onAdd = onAvailabilityAdded,
+                    onAdd = { date, startT, endT ->
+                        val dto = DisponibilidadDto(
+                            disponibilidadId = 0,
+                            serviciosId       = service.id.toLong(),
+                            fechaInicio       = date.toString(),
+                            fechaFin          = date.toString(),
+                            horaInicio        = startT.toString(),
+                            horaFin           = endT.toString()
+                        )
+                        disponibilidadVM.create(service.id.toLong(), dto)
+                        onAvailabilityAdded(service.id)
+                        onBack()
+                    },
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -654,11 +706,21 @@ fun ServiceSelectionItem(
 
 @Composable
 fun DateRangeSelector(
-    onAdd: () -> Unit,
+    onAdd: (LocalDate, LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var startDate by remember { mutableStateOf<LocalDate?>(null) }
     var endDate by remember { mutableStateOf<LocalDate?>(null) }
+
+    // Calculamos fechas seleccionadas para resaltarlas
+    val selectedDates: Set<LocalDate> = remember(startDate, endDate) {
+        if (startDate != null && endDate != null) {
+            generateSequence(startDate) { it!!.plusDays(1) }
+                .takeWhile { it!! <= endDate }
+                .map { it!! }
+                .toSet()
+        } else emptySet()
+    }
 
     Column(modifier = modifier) {
         Text(
@@ -667,17 +729,32 @@ fun DateRangeSelector(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Selector visual de calendario
         CalendarView(
             occupiedDates = emptySet(),
+            selectedDates = selectedDates,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp)
                 .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
                 .padding(16.dp)
-        )
+        ) { clickedDate ->
+            if (startDate == null || (startDate != null && endDate != null)) {
+                // Empezar nueva selección
+                startDate = clickedDate
+                endDate = null
+            } else {
+                // Definir fin si la fecha es posterior o igual
+                if (clickedDate >= startDate) {
+                    endDate = clickedDate
+                } else {
+                    // Si es anterior, reiniciamos
+                    startDate = clickedDate
+                    endDate = null
+                }
+            }
+        }
 
-        // Fechas seleccionadas
+        // Chips de fechas
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -687,19 +764,18 @@ fun DateRangeSelector(
             DateChip(
                 label = "Inicio",
                 date = startDate,
-                onClick = { /* Abrir selector de fecha */ }
+                onClick = { /* Podrías abrir un date picker nativo */ }
             )
 
             DateChip(
                 label = "Fin",
                 date = endDate,
-                onClick = { /* Abrir selector de fecha */ }
+                onClick = { /* Podrías abrir un date picker nativo */ }
             )
         }
 
-        // Botón para añadir
         Button(
-            onClick = onAdd,
+            onClick = { startDate?.let { s -> endDate?.let { e -> onAdd(s, e) } } },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 24.dp),
@@ -713,7 +789,7 @@ fun DateRangeSelector(
 
 @Composable
 fun TimeSlotSelector(
-    onAdd: () -> Unit,
+    onAdd: (LocalDate, LocalTime, LocalTime) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
@@ -764,7 +840,11 @@ fun TimeSlotSelector(
 
         // Botón para añadir
         Button(
-            onClick = onAdd,
+            onClick = {
+                if (selectedDate != null && startTime != null && endTime != null) {
+                    onAdd(selectedDate!!, startTime!!, endTime!!)
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 24.dp),
@@ -1173,4 +1253,30 @@ fun PreviewDeleteAvailabilityScreen() {
             onBack = {}
         )
     }
+}
+
+// ——————— EXTENSION MAPPERS ————————————
+private fun ServicioEmprendedorUi.toService(): Service = Service(
+    id          = this.id.toInt(),
+    name        = this.name,
+    description = this.description,
+    imageUrl    = this.images.firstOrNull()?.url ?: "https://via.placeholder.com/150",
+    duration    = this.duration.toIntOrNull() ?: 0,
+    type        = ServiceType.ACCOMMODATION // TODO map real type if se provee
+)
+
+private fun DisponibilidadDto.toAvailability(): Availability {
+    val startDate = runCatching { LocalDate.parse(fechaInicio) }.getOrNull()
+    val endDate   = runCatching { LocalDate.parse(fechaFin)   }.getOrNull()
+    val startTime = horaInicio?.let { runCatching { LocalTime.parse(it) }.getOrNull() }
+    val endTime   = horaFin?.let   { runCatching { LocalTime.parse(it) }.getOrNull() }
+
+    return Availability(
+        id        = disponibilidadId.toInt(),
+        serviceId = serviciosId.toInt(),
+        startDate = startDate,
+        endDate   = endDate,
+        startTime = startTime,
+        endTime   = endTime
+    )
 }

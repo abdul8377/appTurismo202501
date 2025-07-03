@@ -205,21 +205,21 @@ class EmprendedorCreateViewModel @Inject constructor(
     }
 
     // **Función para enviar solicitud para unirse a un emprendimiento**
-    fun enviarSolicitud(codigoUnico: String, rolSolicitado: String) {
+    fun enviarSolicitud(request: SolicitudEmprendimientoRequest) {
         val token = SessionManager.getToken() ?: run {
             _message.value = "No hay token disponible. Inicia sesión."
             return
         }
         val tokenBearer = "Bearer $token"
 
-        val request = SolicitudEmprendimientoRequest(codigo_unico = codigoUnico, rol_solicitado = rolSolicitado)
-
         viewModelScope.launch {
             _isLoading.value = true
             try {
+                // Llamada al repositorio para enviar la solicitud
                 val response = emprendimientoRepository.enviarSolicitud(tokenBearer, request)
+
                 if (response.isSuccessful && response.body() != null) {
-                    _message.value = "Solicitud enviada correctamente"
+                    _message.value = "Solicitud enviada con éxito, esperando aprobación."
                 } else {
                     _message.value = "Error al enviar solicitud: ${response.message()}"
                 }
@@ -230,6 +230,11 @@ class EmprendedorCreateViewModel @Inject constructor(
             }
         }
     }
+
+
+
+
+
 
     // **Función para listar solicitudes pendientes para un emprendimiento**
     fun listarSolicitudesPendientes(emprendimientoId: Long) {

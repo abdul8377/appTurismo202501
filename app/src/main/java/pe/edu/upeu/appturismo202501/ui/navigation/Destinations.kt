@@ -53,6 +53,14 @@ sealed class Destinations(
         Icons.Filled.Accessibility
     )
 
+    object Unirse_Emprendimiento : Destinations(
+
+        "unirse_emprendimiento",
+        "Unirse_Emprendimiento",
+        Icons.Filled.Accessibility
+    )
+
+
     object CulturaTab : Destinations("explorar/cultura", "Cultura", Icons.Filled.Museum)
     object ProductosTab : Destinations("explorar/productos", "Productos", Icons.Filled.ShoppingCart)
     object GastronomiaTab : Destinations("explorar/gastronomia", "Gastronomia", Icons.Filled.Cable)

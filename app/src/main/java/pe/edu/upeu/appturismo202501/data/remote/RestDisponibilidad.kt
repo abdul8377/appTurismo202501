@@ -10,19 +10,19 @@ import retrofit2.http.Path
 import retrofit2.Response
 
 interface RestDisponibilidad {
-    @GET("api/disponibilidad/{servicioId}")
+    @GET("emprendedor/servicios/{servicioId}/disponibilidades")
     suspend fun getDisponibilidades(
         @Path("servicioId") servicioId: Long
     ): Response<List<DisponibilidadDto>>
 
-    @POST("api/disponibilidad/{servicioId}")
+    @POST("emprendedor/servicios/{servicioId}/disponibilidades")
     suspend fun createDisponibilidad(
         @Path("servicioId") servicioId: Long,
         @Body nueva: DisponibilidadDto
     ): Response<DisponibilidadDto>
 
-    @DELETE("api/disponibilidad/{id}")
+    @DELETE("emprendedor/disponibilidades/{disponibilidadId}")
     suspend fun deleteDisponibilidad(
-        @Path("id") id: Long
-    ): Response<Unit>
+        @Path("disponibilidadId") disponibilidadId: Long
+    ): Response<Void>
 }

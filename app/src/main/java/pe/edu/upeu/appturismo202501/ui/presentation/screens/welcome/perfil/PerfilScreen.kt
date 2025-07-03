@@ -141,12 +141,16 @@ fun PerfilScreen(
                         items = listOf(
                             Triple("Activa tu perfil como emprendedor", "Publica tus negocios turísticos y llega a más personas") {
                                 navControllerLocal.navigate("emprendimiento_create")
+                            },
+                            Triple("Podrás unirte como colaborador... pide el código del emprendimiento a tu socio", "Publica tus negocios turísticos y llega a más personas") {
+                                navControllerLocal.navigate("unirse_emprendimiento")
                             }
                         ),
                         icons = listOf(Icons.Default.Star)
                     )
                 }
             }
+
 
             item {
                 SectionWithButtons("Ajustes", listOf(
